@@ -1,125 +1,146 @@
 "use client";
 
-interface SolutionItem {
-  title: string;
-  span: string;
-  tags: string[];
-  image: string;
-}
+import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
 
-const solutions: SolutionItem[] = [
+const solutions = [
   {
-    title: "ARTIFICIAL",
-    span: "(AI) INTELLIGENCE",
-    image: "/images/solution/st-service-1.webp",
-    tags: [
-      "Interactive AI & Holobox Experiences",
-      "AI Avatars & Virtual Agents",
-      "Custom AI Software Development",
-      "Voice AI Solutions"
-    ]
+    id: "01",
+    title: "AI Holobox Technology",
+    heading: "The Design, the Brain,\nand the Presence",
+    image: "/Tymore%20Ai%20with%20Holobox/2.1-—-Holobox-AI-Presence.jpg",
   },
   {
-    title: "Full Cycle",
-    span: "Management Technology",
-    image: "/images/solution/st-service-2.webp",
-    tags: [
-      "Interactive AI & Holobox Experiences",
-      "AI Avatars & Virtual Agents",
-      "Custom AI Software Development",
-      "Voice AI Solutions"
-    ]
+    id: "02",
+    title: "Conversational AI",
+    heading: "Meaningful Conversation Across\nany Language or Industry",
+    image: "/Tymore%20Ai%20with%20Holobox/2.2-—-Conversational-AI.jpg",
   },
   {
-    title: "Cybersecurity",
-    span: "AI Defense",
-    image: "/images/solution/st-service-3.webp",
-    tags: [
-      "Interactive AI & Holobox Experiences",
-      "AI Avatars & Virtual Agents",
-      "Custom AI Software Development",
-      "Voice AI Solutions"
-    ]
+    id: "03",
+    title: "AI Holobox Integration Services",
+    heading: "Connecting AI, Avatars and Business\nSystems for real-time interactions",
+    image: "/Tymore%20Ai%20with%20Holobox/2.3-—-AI-Integration-Services.jpg",
   },
   {
-    title: "Marketing",
-    span: "Markets Moves",
-    image: "/images/solution/st-service-4.webp",
-    tags: [
-      "Interactive AI & Holobox Experiences",
-      "AI Avatars & Virtual Agents",
-      "Custom AI Software Development",
-      "Voice AI Solutions"
-    ]
-  }
+    id: "04",
+    title: "Avatar & Metahuman Production",
+    heading: "Your MetaHuman, Crafted\nfrom the ground up",
+    image: "/Tymore%20Ai%20with%20Holobox/2.4-—-Avatar-Production-Support.jpg",
+  },
+  {
+    id: "05",
+    title: "Managed AI Systems",
+    heading: "End-to-end support\nfor Holobox AI",
+    image: "/Tymore%20Ai%20with%20Holobox/2.5-—-Managed-AI-Expertise.jpg",
+  },
+  {
+    id: "06",
+    title: "Live Beaming",
+    heading: "Be anywhere in the world\nwithout leaving the room",
+    image: "/Tymore%20Ai%20with%20Holobox/2.2-—-Conversational-AI-option-2.jpg",
+  },
 ];
 
 export default function Solutions() {
-  return (
-    <section className="bf-service-area !mt-20 py-5" id="solutions">
-      <div className="container">
-        {/* Heading */}
-        <div className="row mb-5">
-          <div className="col-lg-5">
-            <span className="bf-subtitle">OUR SOLUTIONS</span>
-          </div>
-          <div className="col-lg-7">
-            <h2 className="bf-title">
-              Solution we&apos;re <br /> always provides
-            </h2>
-            <p className="bf-desc">
-              Expertise Guides our Strategy. Follow-through defines our impact.
-            </p>
-          </div>
-        </div>
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
 
-        {/* SERVICE ITEMS */}
-        {solutions.map((item, index) => (
-          <div key={index} className="bf-service-item">
-            <div className="row align-items-center">
-              {/* LEFT SIDE */}
-              <div className="col-lg-6">
-                <div className="card">
-                  <div 
-                    className="image" 
-                    style={{ backgroundImage: `url(${item.image})` }}
-                  ></div>
-                  <div className="content">
-                    <h2>{item.title} <span>{item.span}</span></h2>
-                  </div>
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Map scroll progress to the active index with improved alignment
+  useEffect(() => {
+    return scrollYProgress.on("change", (latest) => {
+      const count = solutions.length;
+      const index = Math.min(
+        Math.floor(latest * count),
+        count - 1
+      );
+      setActiveIndex(index);
+    });
+  }, [scrollYProgress]);
+
+  // Horizontal movement for the image track
+  const x = useTransform(scrollYProgress, [0, 1], ["0%", `-${(solutions.length - 1) * 50}vw`]);
+
+  // LIVE SCROLL COUNTER: Direct mapping for the "real counter up" feel
+  const tickerY = useTransform(scrollYProgress, [0, 1], [0, -(solutions.length - 1) * 144]);
+  // Heavier spring: less stiffness, more damping for fluid, organic motion
+  const smoothTickerY = useSpring(tickerY, { stiffness: 40, damping: 30, restDelta: 0.001 });
+
+  return (
+    <section ref={containerRef} className="solutions-scroll-section" id="solutions">
+      <div className="solutions-sticky-wrapper">
+        <div className="container-fluid h-100 p-0">
+          <div className="row g-0 h-100">
+            {/* LEFT CONTENT AREA */}
+            <div className="col-lg-6 position-relative d-flex flex-column justify-content-between p-6 p-lg-10 bg-white">
+              <div className="solutions-left-top">
+                <div className="solutions-list" style={{ paddingBottom: '30px' }}>
+                  {solutions.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className={`solution-list-item ${index === activeIndex ? "active" : ""}`}
+                      onMouseEnter={() => setActiveIndex(index)}
+                    >
+                      {item.title}
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* RIGHT SIDE */}
-              <div className="col-lg-6">
-                <div className="bf-right position-relative">
-                  <div className="bf-service-item-3-btn">
-                    <a href="#">
-                      <span>
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M1 13L13 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                          <path d="M1 1H13V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                      </span>
-                    </a>
-                  </div>
-
-                  <div className="bf-tags-marquee">
-                    <div className="bf-tags-track">
-                      {item.tags.map((tag, tIndex) => (
-                        <span key={tIndex}>{tag}</span>
-                      ))}
-                      {/* duplicate for smooth loop */}
-                      {item.tags.map((tag, tIndex) => (
-                        <span key={`dup-${tIndex}`}>{tag}</span>
-                      ))}
+              {/* Large Counter: Simplified Transition */}
+              <div className="solutions-counter-wrap">
+                <motion.div
+                  style={{ y: smoothTickerY }}
+                  className="solutions-counter-ticker"
+                >
+                  {solutions.map((item) => (
+                    <div key={item.id} className="solutions-big-number">
+                      {item.id}
                     </div>
-                  </div>
-                </div>
+                  ))}
+                </motion.div>
+              </div>
+
+              {/* Changing Headline at Bottom Left */}
+              <div className="solutions-bottom-left">
+                <AnimatePresence mode="popLayout">
+                  <motion.h2
+                    key={activeIndex}
+                    initial={{ y: 0, opacity: 0, filter: 'blur(2px)' }}
+                    animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+                    exit={{ y: 0, opacity: 0, filter: 'blur(2px)' }}
+                    transition={{
+                      duration: 1.0,
+                      ease: [0.25, 0, 0.35, 0.5] // Gentle ease-in-out for slow motion
+                    }}
+                    className="solutions-dynamic-heading"
+                    style={{ position: 'relative' }}
+                  >
+                    {solutions[activeIndex].heading.split('\n').map((line, i) => (
+                      <span key={i}>{line}<br /></span>
+                    ))}
+                  </motion.h2>
+                </AnimatePresence>
               </div>
             </div>
+
+            {/* RIGHT SIDE (Horizontal Image Scroll) */}
+            <div className="col-lg-6 overflow-hidden position-relative bg-black h-100">
+              <motion.div style={{ x }} className="solutions-image-track">
+                {solutions.map((item) => (
+                  <div key={item.id} className="solutions-image-box">
+                    <img src={item.image} alt={item.title} />
+                  </div>
+                ))}
+              </motion.div>
+            </div>
           </div>
-        ))}
+        </div>
       </div>
     </section>
   );

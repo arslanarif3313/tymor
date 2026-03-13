@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import MarqueeSection from "@/components/MarqueeSection";
-// import CreativeHero from "@/components/CreativeHero";
+import CreativeHero from "@/components/CreativeHero";
 import Solutions from "@/components/Solutions";
 import ProjectBanner from "@/components/ProjectBanner";
 import ProjectList from "@/components/ProjectList";
@@ -11,6 +11,7 @@ import StepSection from "@/components/StepSection";
 import WorkStrip from "@/components/WorkStrip";
 import Team from "@/components/Team";
 import Footer from "@/components/Footer";
+import Banner from "@/components/Banner";
 
 const marqueeItems = [
   { text: "INFOGRAPHIC AND OTHER" },
@@ -24,16 +25,17 @@ export default function Home() {
   return (
     <main>
       <Navbar />
-      {/* <CreativeHero /> */}
+      <CreativeHero />
       {/* <MarqueeSection items={marqueeItems} /> */}
       <Solutions />
-      <ProjectBanner />
+      {/* <ProjectBanner /> */}
       <ProjectList />
+      <Banner />
       <CaseStudies />
       <ImpactSection />
-      <StepSection />
-      <WorkStrip />
-      <Team />
+      {/* <StepSection /> */}
+      {/* <WorkStrip /> */}
+      {/* <Team /> */}
       <Footer />
     </main>
   );

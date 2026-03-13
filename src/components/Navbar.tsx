@@ -20,20 +20,20 @@ export default function Navbar() {
     <nav className={`navbar navbar-expand-lg fixed-top ${scrolled ? "scrolled" : ""}`}>
       <div className="container">
         <Link href="/" className="navbar-brand d-flex align-items-center gap-2">
-          <Image 
-            src="/images/logo-tymor.png" 
-            alt="Tymor AI" 
-            width={150} 
-            height={60} 
+          <Image
+            src="/images/logo-tymor.png"
+            alt="Tymor AI"
+            width={150}
+            height={60}
             style={{ height: "60px", width: "auto" }}
           />
         </Link>
 
-        <button 
-          className={`navbar-toggler ${isMenuOpen ? "active" : ""}`} 
-          type="button" 
+        <button
+          className={`navbar-toggler ${isMenuOpen ? "active" : ""}`}
+          type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          data-bs-toggle="collapse" 
+          data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
         >
           <span></span>
