@@ -185,7 +185,7 @@ const steps = [
         id: 2,
         title: "Step 02 — Design Your Meta Human",
         description: "Every MetaHuman is built from scratch. We start with you. Your brand brief, your audience, your tone, your world.",
-        image: "/Tymore%20Ai%20with%20Holobox/Step%2002%20—%20Design%20Your%20Meta%20Human.jpg"
+        image: "/Tymore%20Ai%20with%20Holobox/Step-02-—-Design-Your-Meta-Human.jpg"
     },
     {
         id: 3,
