@@ -215,6 +215,7 @@ const steps = [
 
 export default function Banner() {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
 
     return (
         <section className="banner-section py-100" id="process" style={{ backgroundColor: '#0f1012' }}>
@@ -227,10 +228,10 @@ export default function Banner() {
                             onMouseEnter={() => setHoveredIndex(index)}
                             onMouseLeave={() => setHoveredIndex(null)}
                             style={{
-                                top: `${150 + (index * 45)}px`,
+                                top: isMobile ? `${100 + (index * 30)}px` : `${150 + (index * 45)}px`,
                                 zIndex: index + 1,
-                                width: '75%', // Slightly smaller width for better spacing
-                                margin: '0 auto 500px auto',
+                                width: isMobile ? '95%' : '75%', // Slightly smaller width for better spacing
+                                margin: isMobile ? '0 auto 100px auto' : '0 auto 500px auto',
                                 overflow: 'visible',
                                 borderRadius: '40px'
                             }}
@@ -238,8 +239,8 @@ export default function Banner() {
                             <motion.div
                                 className="position-relative overflow-hidden w-100"
                                 style={{
-                                    height: '65vh',
-                                    minHeight: '400px',
+                                    height: isMobile ? '50vh' : '65vh',
+                                    minHeight: '300px',
                                     maxHeight: '700px',
                                     background: '#0f1012',
                                     borderRadius: '40px'
@@ -252,13 +253,13 @@ export default function Banner() {
                                 <img src={step.image} alt={step.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0 }} />
                                 <LiquidDistortion image={step.image} active={hoveredIndex === index} />
 
-                                <div className="banner-content" style={{ zIndex: 10, pointerEvents: 'none' }}>
+                                <div className="banner-content" style={{ zIndex: 10, pointerEvents: 'none', padding: isMobile ? '20px' : '40px' }}>
                                     <div className="banner-tags" style={{ pointerEvents: 'auto' }}>
-                                        <span className="text-nowrap">PROCESS</span>
-                                        <span className="text-nowrap">STEP {step.id < 10 ? `0${step.id}` : step.id}</span>
+                                        <span className="text-nowrap" style={{ fontSize: isMobile ? '10px' : '14px', padding: isMobile ? '6px 12px' : '10px 24px' }}>PROCESS</span>
+                                        <span className="text-nowrap" style={{ fontSize: isMobile ? '10px' : '14px', padding: isMobile ? '6px 12px' : '10px 24px' }}>STEP {step.id < 10 ? `0${step.id}` : step.id}</span>
                                     </div>
-                                    <h2 className="text-white mt-4 anton-font text-uppercase" style={{ fontSize: '3rem' }}>{step.title}</h2>
-                                    <p className="text-white-50 mt-3" style={{ fontSize: '1.2rem', maxWidth: '600px' }}>{step.description}</p>
+                                    <h2 className="text-white mt-4 anton-font text-uppercase" style={{ fontSize: isMobile ? '1.8rem' : '3rem' }}>{step.title}</h2>
+                                    <p className="text-white-50 mt-3" style={{ fontSize: isMobile ? '0.9rem' : '1.2rem', maxWidth: '600px' }}>{step.description}</p>
                                 </div>
                             </motion.div>
                         </div>

@@ -53,7 +53,6 @@ const IndustryCard = ({ industry }: { industry: typeof industriesRow1[0] }) => {
       className="industry-marquee-card position-relative overflow-hidden cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ width: "300px", height: "300px", margin: "0 10px", flexShrink: 0, borderRadius: "20px" }}
     >
       <img
         src={industry.image}
@@ -104,14 +103,14 @@ export default function CaseStudies() {
       <div className="marquee marquee-right">
         <div className="marquee-inner">
           {industriesRow1.map((item) => <IndustryCard key={item.id} industry={item} />)}
-          <div className="marquee-video" style={{ width: "400px", height: "300px", borderRadius: "20px" }}>
+          <div className="marquee-video">
             <video loop muted autoPlay playsInline className="w-100 h-100 object-fit-cover">
               <source src={videoUrl} type="video/mp4" />
             </video>
           </div>
           {/* Repeat for seamless loop */}
           {industriesRow1.map((item) => <IndustryCard key={`${item.id}-dup`} industry={item} />)}
-          <div className="marquee-video" style={{ width: "400px", height: "300px", borderRadius: "20px" }}>
+          <div className="marquee-video">
             <video loop muted autoPlay playsInline className="w-100 h-100 object-fit-cover">
               <source src={videoUrl} type="video/mp4" />
             </video>
@@ -122,14 +121,14 @@ export default function CaseStudies() {
       {/* ROW 2 (LEFT) */}
       <div className="marquee marquee-left mt-4">
         <div className="marquee-inner">
-          <div className="marquee-video" style={{ width: "400px", height: "300px", borderRadius: "20px" }}>
+          <div className="marquee-video">
             <video loop muted autoPlay playsInline className="w-100 h-100 object-fit-cover">
               <source src={videoUrl} type="video/mp4" />
             </video>
           </div>
           {industriesRow2.map((item) => <IndustryCard key={item.id} industry={item} />)}
           {/* Repeat */}
-          <div className="marquee-video" style={{ width: "400px", height: "300px", borderRadius: "20px" }}>
+          <div className="marquee-video">
             <video loop muted autoPlay playsInline className="w-100 h-100 object-fit-cover">
               <source src={videoUrl} type="video/mp4" />
             </video>

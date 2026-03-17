@@ -71,7 +71,7 @@ const WorkStrip = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 1024);
+    const check = () => setIsMobile(window.innerWidth < 992);
     check();
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
@@ -97,18 +97,19 @@ const WorkStrip = () => {
     <section
       ref={containerRef}
       className="relative bg-background text-foreground"
-      style={{ height: `${features.length * 70}vh` }}
+      style={{ height: isMobile ? 'auto' : `${features.length * 70}vh` }}
     >
-      <div className="sticky top-0 h-screen flex flex-col lg:flex-row overflow-hidden">
+      <div className={`${isMobile ? 'py-5' : 'sticky top-0 h-screen'} flex flex-col lg:flex-row overflow-hidden`}>
         {/* Left Column */}
-        <div className="w-full lg:w-1/2 flex items-center px-8 lg:px-16 xl:px-24 py-12 lg:py-0">
+        <div className="w-full lg:w-1/2 flex items-center px-6 lg:px-16 xl:px-24 py-12 lg:py-0 text-center text-lg-start justify-content-center justify-content-lg-start">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeFeature.id}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: isMobile ? 0 : 40 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -40 }}
+              exit={{ opacity: 0, y: isMobile ? 0 : -40 }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
+              className="w-100"
             >
               <span className="text-muted-foreground font-mono text-xs lg:text-sm mb-3 block">
                 {activeFeature.id}
@@ -117,20 +118,22 @@ const WorkStrip = () => {
                 <span className="text-primary font-mono italic">//</span>{' '}
                 {activeFeature.title}
               </h3>
-              <p className="text-muted-foreground text-xs lg:text-[15px] leading-relaxed max-w-lg mb-6 lg:mb-8">
+              <p className="text-muted-foreground text-xs lg:text-[15px] leading-relaxed max-w-lg mb-6 lg:mb-8 mx-auto mx-lg-0">
                 {activeFeature.description}
               </p>
-              <a
-                href="#"
-                className="inline-flex items-center gap-1.5 text-foreground text-xs lg:text-sm font-medium hover:text-primary transition-colors group"
-              >
-                Get started
-                <ArrowUpRight
-                  size={14}
-                  className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
-                />
-              </a>
-              <div className="mt-8 lg:mt-10 border-b border-border/40 max-w-lg" />
+              <div className="d-flex justify-content-center justify-content-lg-start">
+                <a
+                  href="#"
+                  className="inline-flex items-center gap-1.5 text-foreground text-xs lg:text-sm font-medium hover:text-primary transition-colors group"
+                >
+                  Get started
+                  <ArrowUpRight
+                    size={14}
+                    className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                  />
+                </a>
+              </div>
+              <div className="mt-8 lg:mt-10 border-b border-border/40 max-w-lg mx-auto mx-lg-0" />
             </motion.div>
           </AnimatePresence>
         </div>
@@ -209,7 +212,12 @@ function TileItem({
         rotateX: 20,
         rotateY: -12,
       }}
-      transition={{ type: 'spring', stiffness: 80, damping: 20 }}
+      transition={{ 
+        type: isMobile ? 'tween' : 'spring', 
+        stiffness: 80, 
+        damping: 20,
+        duration: isMobile ? 0 : undefined 
+      }}
       style={{
         position: 'absolute',
         left: pos.x,

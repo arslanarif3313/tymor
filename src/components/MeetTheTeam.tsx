@@ -43,7 +43,7 @@ export default function MeetTheTeam() {
 function TeamCard({ member }: { member: any }) {
   if (member.type === "image") {
     return (
-      <div className="team-card-img" style={{ width: "350px", height: "450px", margin: "0 10px", flexShrink: 0, borderRadius: "40px", overflow: "hidden", position: "relative", border: "1px solid rgba(255,255,255,0.1)" }}>
+      <div className="team-card-img">
         <img src={member.src} alt={member.name} className="w-100 h-100 object-fit-cover" style={{ filter: "grayscale(20%)" }} />
         <div className="position-absolute bottom-0 start-0 w-100 p-4" style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.9))" }}>
           <h4 className="text-white fw-bold mb-1">{member.name}</h4>
@@ -54,8 +54,7 @@ function TeamCard({ member }: { member: any }) {
   }
 
   return (
-    <div className="team-card-text d-flex flex-column justify-content-center align-items-center p-5 text-center" 
-         style={{ width: "350px", height: "450px", margin: "0 10px", flexShrink: 0, borderRadius: "40px", background: "#f8f9fa", border: "1px solid rgba(0,0,0,0.05)" }}>
+    <div className="team-card-text d-flex flex-column justify-content-center align-items-center p-5 text-center">
       <div className="mb-4" style={{ height: "1px", width: "60px", background: "var(--accent)" }}></div>
       <h2 className="anton-font text-uppercase" style={{ color: "#000", fontSize: "3.5rem", lineHeight: "1" }}>{member.name}</h2>
       <p className="text-primary text-uppercase font-mono small mt-3" style={{ fontSize: "11px", letterSpacing: "0.2em" }}>{member.role}</p>

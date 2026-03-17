@@ -63,8 +63,11 @@ export default function Solutions() {
     });
   }, [scrollYProgress]);
 
+  // Adjust transformations for mobile
+  const isMobile = typeof window !== 'undefined' ? window.innerWidth < 992 : false;
+
   // Horizontal movement for the image track
-  const x = useTransform(scrollYProgress, [0, 1], ["0%", `-${(solutions.length - 1) * 50}vw`]);
+  const x = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "0%" : `-${(solutions.length - 1) * 50}vw`]);
 
   // LIVE SCROLL COUNTER: Direct mapping for the "real counter up" feel
   const tickerY = useTransform(scrollYProgress, [0, 1], [0, -(solutions.length - 1) * 144]);
@@ -73,11 +76,11 @@ export default function Solutions() {
 
   return (
     <section ref={containerRef} className="solutions-scroll-section" id="solutions">
-      <div className="solutions-sticky-wrapper">
+      <div className={`${isMobile ? "" : "solutions-sticky-wrapper"}`}>
         <div className="container-fluid h-100 p-0">
           <div className="row g-0 h-100">
             {/* LEFT CONTENT AREA */}
-            <div className="col-lg-6 position-relative d-flex flex-column justify-content-between p-6 p-lg-10 bg-white">
+            <div className="col-lg-6 position-relative d-flex flex-column justify-content-between p-6 p-lg-10 bg-white text-center text-lg-start">
               <div className="solutions-left-top">
                 <div className="solutions-list" style={{ paddingBottom: '30px' }}>
                   {solutions.map((item, index) => (
@@ -85,6 +88,7 @@ export default function Solutions() {
                       key={item.id}
                       className={`solution-list-item ${index === activeIndex ? "active" : ""}`}
                       onMouseEnter={() => setActiveIndex(index)}
+                      onClick={() => setActiveIndex(index)}
                     >
                       {item.title}
                     </div>
@@ -130,14 +134,24 @@ export default function Solutions() {
             </div>
 
             {/* RIGHT SIDE (Horizontal Image Scroll) */}
-            <div className="col-lg-6 overflow-hidden position-relative bg-black h-100">
-              <motion.div style={{ x }} className="solutions-image-track">
-                {solutions.map((item) => (
-                  <div key={item.id} className="solutions-image-box">
-                    <img src={item.image} alt={item.title} />
-                  </div>
-                ))}
-              </motion.div>
+            <div className="col-lg-6 overflow-hidden position-relative bg-black h-100 d-flex align-items-center justify-content-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeIndex}
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05 }}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                  className="solutions-image-box h-100 w-100"
+                >
+                  <img 
+                    src={solutions[activeIndex].image} 
+                    alt={solutions[activeIndex].title}
+                    className="w-100 h-100"
+                    style={{ objectFit: 'cover' }}
+                  />
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </div>

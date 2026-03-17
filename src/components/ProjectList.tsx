@@ -74,20 +74,20 @@ const ProjectCard = ({ project, index }: { project: ProjectItem, index: number }
       </div>
 
       {/* Info Column */}
-      <div className={`col-lg flex-grow-1 d-flex flex-column justify-content-center ${isRight ? 'align-items-start ps-lg-5 ps-4' : 'align-items-end pe-lg-5 pe-4'}`}>
+      <div className={`col-lg flex-grow-1 d-flex flex-column justify-content-center ${isRight ? 'align-items-center align-items-lg-start ps-lg-5' : 'align-items-center align-items-lg-end pe-lg-5'} px-4`}>
         <motion.div
           className="project-info py-5 w-100"
           style={{
-            textAlign: isRight ? 'left' : 'right',
+            textAlign: typeof window !== 'undefined' && window.innerWidth < 992 ? 'center' : (isRight ? 'left' : 'right'),
             opacity,
             x: xOffset
           }}
         >
-          <div className={`d-flex align-items-baseline gap-3 mb-2 ${isRight ? 'justify-content-start' : 'justify-content-end'}`}>
+          <div className={`d-flex align-items-baseline gap-3 mb-2 justify-content-center ${isRight ? 'justify-content-lg-start' : 'justify-content-lg-end'}`}>
             <h4 className="project-company-name mb-0">{project.company}.</h4>
             <span className="project-category-text">{project.category}</span>
           </div>
-          <p className="project-description-text mt-2">{project.description}</p>
+          <p className="project-description-text mt-2 mx-auto mx-lg-0" style={{ maxWidth: '450px' }}>{project.description}</p>
         </motion.div>
       </div>
     </div>
@@ -95,14 +95,16 @@ const ProjectCard = ({ project, index }: { project: ProjectItem, index: number }
 };
 
 export default function ProjectList() {
+  const isMobile = typeof window !== 'undefined' ? window.innerWidth < 992 : false;
+
   return (
-    <section className="project-grid-area bg-white" style={{ marginTop: '350px', overflow: 'hidden' }}>
+    <section className="project-grid-area bg-white" style={{ marginTop: isMobile ? '100px' : '350px', overflow: 'hidden' }}>
       <div className="container-fluid p-0">
         <div className="container">
           <div className="row mb-50">
             <div className="col-12 text-center">
               <h2 className="project-grid-subtitle text-uppercase">Projects</h2>
-              <h1 className="project-grid-title mt-3 mx-auto">Projects that deliver real results</h1>
+              <h1 className="project-grid-title mt-3 mx-auto" style={{ fontSize: isMobile ? '2rem' : '3.5rem' }}>Projects that deliver real results</h1>
             </div>
           </div>
         </div>

@@ -197,15 +197,42 @@ body {
 
 .hero-title {
   font-family: var(--font-plus-jakarta);
-  font-size: 69px;
+  font-size: clamp(32px, 8vw, 69px);
   font-weight: 600;
   line-height: 1.2;
   color: #fff;
 }
 
 @media(max-width: 991px) {
-  .hero-title {
-    font-size: 60px;
+  .navbar-collapse {
+    background: rgba(15, 15, 15, 0.98);
+    backdrop-filter: blur(20px);
+    padding: 30px;
+    border-radius: 20px;
+    margin-top: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .nav-item {
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .nav-item:last-child {
+    border-bottom: none;
+  }
+
+  .nav-link {
+    padding: 15px 0;
+    display: block;
+    font-size: 16px;
+  }
+
+  .nav-cta {
+    margin: 20px 0 0 0;
+    text-align: center;
+    display: inline-block;
+    width: 100%;
   }
 }
 
@@ -436,22 +463,19 @@ body {
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  padding-top: 80px;
-  /* Offset for fixed navbar */
 }
 
 .hero-content-inner {
   width: 100%;
   max-width: 1400px;
-  padding: 80px 40px 0;
-  /* Added top padding for 'margin top' request */
+  padding: 0 40px;
 }
 
 .hero-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 30px;
+  gap: 20px;
   width: 100%;
 }
 
@@ -468,10 +492,30 @@ body {
 
 .hero-img-box {
   border-radius: 0;
-  /* No roundness on images */
   overflow: hidden;
   flex-shrink: 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.video-box { width: 200px; height: 115px; margin: 0 15px; border-radius: 50px !important; }
+.main-img-box { width: 360px; height: 300px; margin: 0 20px; }
+.sub-img-box { width: 280px; height: 180px; margin: 0 15px; }
+
+.hero-row-1 { margin-top: 0; }
+.hero-row-2 { margin-top: -30px; }
+.hero-row-3 { margin-top: -60px; }
+
+@media (max-width: 991px) {
+  .video-box { width: 140px; height: 80px; }
+  .main-img-box { width: 240px; height: 180px; }
+  .sub-img-box { width: 200px; height: 130px; }
+}
+
+@media (max-width: 768px) {
+  .hero-img-box {
+    margin: 5px !important;
+  }
 }
 
 .hero-img-box img,
@@ -550,8 +594,35 @@ body {
 }
 
 @media (max-width: 991px) {
+  .hero-sticky-wrapper {
+    height: auto;
+    min-height: 100vh;
+    padding-bottom: 50px;
+  }
+
+  .hero-scroll-container {
+    height: auto;
+  }
+
   .hero-text {
-    font-size: clamp(30px, 10vw, 60px);
+    font-size: clamp(40px, 12vw, 85px) !important;
+    line-height: 1.1 !important;
+    white-space: normal !important;
+    text-align: center !important;
+    display: block;
+    width: 100%;
+    transform: none !important; /* Disable parallax on mobile to keep it centered */
+  }
+
+  .hero-row-1, .hero-row-2, .hero-row-3 {
+    margin-top: 0 !important;
+  }
+
+  .hero-row {
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 0 !important;
+    padding: 20px 0;
   }
 
   .hero-img-box {
@@ -591,8 +662,34 @@ body {
   line-height: 85px;
 }
 
-.bf-desc {
-  opacity: 0.7;
+@media (max-width: 991px) {
+  .solutions-sticky-wrapper {
+    position: relative !important;
+    height: auto !important;
+  }
+
+  .solutions-scroll-section {
+    height: auto !important;
+  }
+
+  .solutions-left-top {
+    padding-bottom: 40px;
+  }
+
+  .solutions-image-box {
+    width: 100% !important;
+    height: 400px !important; /* Slightly taller for mobile single view */
+    margin-bottom: 0;
+  }
+
+  .solutions-counter-wrap {
+    display: none;
+  }
+
+  .solutions-dynamic-heading {
+    font-size: 32px !important;
+    line-height: 1.2 !important;
+  }
 }
 
 .bf-service-item {
@@ -795,11 +892,11 @@ body {
   overflow: hidden;
 }
 
-.content {
-  margin-left: 0;
-  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-  text-transform: uppercase;
-  z-index: 2;
+/* ProjectBanner Responsive */
+@media (max-width: 768px) {
+  .bloom-container {
+    zoom: 0.6;
+  }
 }
 
 .content h2 {
@@ -908,6 +1005,21 @@ body {
   font-size: 12px;
 }
 
+@media (max-width: 768px) {
+  .banner-card {
+    width: 95% !important;
+    margin-bottom: 100px !important;
+  }
+  
+  .banner-content h2 {
+    font-size: 1.8rem !important;
+  }
+  
+  .banner-content p {
+    font-size: 1rem !important;
+  }
+}
+
 .project-item {
   cursor: pointer;
   position: relative;
@@ -928,15 +1040,33 @@ body {
 }
 
 .project-item h4 {
-  font-size: 80px;
+  font-size: clamp(40px, 8vw, 80px);
   font-weight: 600;
-  line-height: 0.75;
+  line-height: 1;
   margin-bottom: 0;
   color: #d3d3d3;
   transition: 0.3s;
   letter-spacing: -0.01em;
   text-transform: uppercase;
   font-family: var(--font-anton);
+}
+
+@media (max-width: 991px) {
+  .project-grid-area {
+    margin-top: 100px !important;
+  }
+  
+  .project-company-name {
+    font-size: 24px !important;
+  }
+  
+  .project-category-text {
+    font-size: 10px !important;
+  }
+
+  .project-description-text {
+    font-size: 14px !important;
+  }
 }
 
 .project-item .border-bottom {
@@ -1035,17 +1165,41 @@ body {
 .case-studies h2 {
   font-family: var(--font-anton);
   color: rgb(255, 103, 27);
-  margin: 0 0 80px 0;
-  font-size: 100px;
+  margin: 0 0 40px 0;
+  font-size: clamp(40px, 10vw, 100px);
+}
+
+.industry-marquee-card {
+  width: 300px;
+  height: 300px;
+  margin: 0 10px;
+  flex-shrink: 0;
+  border-radius: 20px;
 }
 
 .marquee-video {
-  width: 300px;
+  width: 400px;
   height: 300px;
-  margin-right: 20px;
-  border-radius: 14px;
+  margin: 0 10px;
+  border-radius: 20px;
   overflow: hidden;
   flex-shrink: 0;
+}
+
+@media(max-width: 768px) {
+  .case-studies h2 {
+    margin-bottom: 20px;
+  }
+  
+  .industry-marquee-card {
+    width: 220px !important;
+    height: 220px !important;
+  }
+
+  .marquee-video {
+    width: 300px !important;
+    height: 220px !important;
+  }
 }
 
 .marquee-video video {
@@ -1216,44 +1370,55 @@ body {
 
 @media(max-width: 992px) {
   .impact-title {
-    font-size: 44px;
+    font-size: clamp(32px, 8vw, 44px);
   }
 
   .impact-pill {
-    min-width: 280px;
-    padding: 25px 50px;
+    width: 300px;
+    height: 150px;
+  }
+
+  .impact-reel-item {
+    height: 150px;
+  }
+
+  .impact-reel-item-small {
+    height: 100px;
   }
 
   .impact-number {
-    font-size: 70px;
+    font-size: 80px;
   }
 
   .impact-text {
-    font-size: 22px;
+    font-size: 20px;
   }
 }
 
 @media(max-width: 576px) {
   .impact-section {
-    padding: 60px 0;
-  }
-
-  .impact-title {
-    font-size: 34px;
+    padding: 40px 0;
   }
 
   .impact-pill {
-    min-width: auto;
-    width: 100%;
-    padding: 20px 30px;
+    width: 240px;
+    height: 120px;
+  }
+
+  .impact-reel-item {
+    height: 120px;
+  }
+
+  .impact-reel-item-small {
+    height: 80px;
   }
 
   .impact-number {
-    font-size: 56px;
+    font-size: 60px;
   }
 
   .impact-text {
-    font-size: 18px;
+    font-size: 16px;
   }
 }
 
@@ -1389,13 +1554,36 @@ body {
   position: relative;
 }
 
-.team-img img {
-  width: 100%;
-  transition: transform .6s ease;
+.team-card-img {
+  width: 350px;
+  height: 450px;
+  margin: 0 10px;
+  flex-shrink: 0;
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
-.team-card:hover img {
-  transform: scale(1.06);
+.team-card-text {
+  width: 350px;
+  height: 450px;
+  margin: 0 10px;
+  flex-shrink: 0;
+  border-radius: 40px;
+  background: #f8f9fa;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+@media (max-width: 768px) {
+  .team-card-img, .team-card-text {
+    width: 260px !important;
+    height: 350px !important;
+  }
+  
+  .team-card-text h2 {
+    font-size: 2.2rem !important;
+  }
 }
 
 .team-social {
@@ -1515,18 +1703,27 @@ body {
   /* Increased to ensure it's on top of any background layers */
 }
 
-.footer-big-title {
-  font-size: clamp(60px, 12vw, 150px);
-  font-weight: 300;
-  color: #fff;
-  line-height: 0.95;
-  font-family: var(--font-anton);
-  z-index: 10;
-  /* Keep text visible on top */
-  position: relative;
-  letter-spacing: 5px;
-  pointer-events: none;
-  /* Let clicks pass through to the button behind it */
+@media (max-width: 991px) {
+  .footer-big-title {
+    font-size: clamp(40px, 15vw, 80px);
+    letter-spacing: 2px;
+  }
+
+  .footer-cta-container {
+    min-height: 400px;
+  }
+
+  .footer-cta-btn {
+    width: 160px !important;
+    height: 160px !important;
+    font-size: 18px;
+    padding: 20px !important;
+  }
+
+  .footer-cta-button-wrapper {
+    top: 60%;
+    left: 70%;
+  }
 }
 
 .cta-orange-capsule {

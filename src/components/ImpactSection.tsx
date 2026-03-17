@@ -38,12 +38,17 @@ export default function ImpactSection() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Determine stage (0 to length - 1)
+  // Calculate stage (0 to length - 1)
   const stage = progress * (impactData.length - 1);
 
   // Translation percentage relative to WHOLE reel
-  // Adding a small manual adjustment if needed via style or margin
   const translateY = -(stage / impactData.length) * 100;
+
+  // Responsive values for text container height
+  const isMobile = typeof window !== 'undefined' ? window.innerWidth < 992 : false;
+  const isSmallMobile = typeof window !== 'undefined' ? window.innerWidth < 576 : false;
+  
+  const textContainerHeight = isSmallMobile ? '80px' : isMobile ? '100px' : '120px';
 
   return (
     <div className="impact-wrapper" ref={wrapperRef}>
@@ -51,19 +56,18 @@ export default function ImpactSection() {
         <div className="container">
           <div className="row align-items-center text-white">
             {/* LEFT */}
-            <div className="col-lg-3 mb-4 mb-lg-0 text-center text-lg-start">
+            <div className="col-lg-3 mb-5 mb-lg-0 text-center text-lg-start">
               <div className="impact-small">01.04</div>
               <h2 className="impact-title">IMPACT HIGHLIGHT</h2>
             </div>
 
             {/* CENTER NUMBER REEL */}
-            <div className="col-lg-6 text-center mb-4 mb-lg-0 d-flex justify-content-center">
+            <div className="col-lg-6 text-center mb-5 mb-lg-0 d-flex justify-content-center">
               <div className="impact-pill">
                 <div 
                   className="impact-number-reel"
                   style={{ 
                     transform: `translateY(${translateY}%)`,
-                    marginTop: '0px' // Initial adjustment
                   }}
                 >
                   {impactData.map((item, index) => (
@@ -76,12 +80,11 @@ export default function ImpactSection() {
             </div>
 
             {/* RIGHT TEXT REEL */}
-            <div className="col-lg-3 text-center text-lg-end overflow-hidden" style={{ height: '120px', position: 'relative' }}>
+            <div className="col-lg-3 text-center text-lg-end overflow-hidden d-flex justify-content-center justify-content-lg-end" style={{ height: textContainerHeight, position: 'relative' }}>
               <div 
                 className="impact-text-reel"
                 style={{ 
                   transform: `translateY(${translateY}%)`,
-                  marginTop: '0px'
                 }}
               >
                 {impactData.map((item, index) => (

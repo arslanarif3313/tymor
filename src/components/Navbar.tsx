@@ -64,8 +64,15 @@ export default function Navbar() {
             <li className="nav-item">
               <Link className="nav-link" href="#contact">Contact</Link>
             </li>
+            <li className="nav-item d-lg-none">
+              <Link className="nav-link nav-cta" href="#contact" onClick={() => setIsMenuOpen(false)}>Get Started</Link>
+            </li>
           </ul>
         </div>
+        
+        <Link href="#contact" className="nav-cta d-none d-lg-block">
+          Get Started
+        </Link>
       </div>
     </nav>
   );

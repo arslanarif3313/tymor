@@ -184,7 +184,7 @@ const StepSection = () => {
           <h2
             className="uppercase leading-[0.85] tracking-tighter text-center text-white"
             style={{
-              fontSize: 'min(12vw, 8rem)',
+              fontSize: 'clamp(3rem, 12vw, 8rem)',
               fontWeight: 800,
               fontFamily: 'Inter, sans-serif'
             }}

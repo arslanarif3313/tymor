@@ -69,18 +69,13 @@ export default function CreativeHero() {
       >
         <div className="hero-content-inner">
 
-          {/* Row 1: get the intelligence makes [VIDEO] left-size that futures */}
-          <div className="hero-row">
+          <div className="hero-row hero-row-1">
             <motion.span style={{ x: xLeft1 }} className="hero-text">
               get the
             </motion.span>
-            {/* Image: static, no animation */}
-            <div
-              className="hero-img-box"
-              style={{ width: '200px', height: '115px', margin: '0 15px', flexShrink: 0, borderRadius: '50px' }}
-            >
+            <div className="hero-img-box video-box">
               <video autoPlay muted loop playsInline>
-                <source src="/1.mp4" type="video/mp4" />
+                <source src="./1.mp4" type="video/mp4" />
               </video>
             </div>
             <motion.span style={{ x: xRight1 }} className="hero-text">
@@ -88,16 +83,11 @@ export default function CreativeHero() {
             </motion.span>
           </div>
 
-          {/* Row 2: intelligence [IMG] that */}
-          <div className="hero-row" style={{ marginTop: '-30px' }}>
+          <div className="hero-row hero-row-2">
             <motion.span style={{ x: xLeft2 }} className="hero-text">
               intelligence
             </motion.span>
-            {/* Row 2 Image: bigger, no roundness */}
-            <div
-              className="hero-img-box"
-              style={{ width: '360px', height: '300px', margin: '0 20px', flexShrink: 0 }}
-            >
+            <div className="hero-img-box main-img-box">
               <img src="/Tymore%20Ai%20with%20Holobox/Hero-Banner.jpg" alt="Creative Experience" />
             </div>
             <motion.span style={{ x: xRight2 }} className="hero-text">
@@ -105,16 +95,11 @@ export default function CreativeHero() {
             </motion.span>
           </div>
 
-          {/* Row 3: makes [IMG] futures */}
-          <div className="hero-row" style={{ marginTop: '-60px' }}>
+          <div className="hero-row hero-row-3">
             <motion.span style={{ x: xLeft3 }} className="hero-text">
               shapes
             </motion.span>
-            {/* Row 3 Image: bigger, no roundness */}
-            <div
-              className="hero-img-box"
-              style={{ width: '280px', height: '180px', margin: '0 15px', flexShrink: 0 }}
-            >
+            <div className="hero-img-box sub-img-box">
               <img src="/Tymore%20Ai%20with%20Holobox/2.1-—-Holobox-AI-Presence.jpg" alt="Shaping Tomorrow" />
             </div>
             <motion.span style={{ x: xRight3 }} className="hero-text">

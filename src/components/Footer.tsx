@@ -94,7 +94,7 @@ export default function Footer() {
           <motion.div className="col-12" variants={itemVariants}>
             <div className="footer-cta-container position-relative d-flex justify-content-center align-items-center">
               <motion.h2 
-                className="footer-big-title anton-font text-uppercase m-0 cursor-default position-relative"
+                className="footer-big-title anton-font text-uppercase m-0 cursor-default position-relative text-center"
                 style={{ zIndex: 10 }}
               >
                 ONE DEMO<br /><span className="text-highlight-teal">CHANGES</span><br />EVERYTHING
@@ -238,10 +238,10 @@ export default function Footer() {
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <div className="col-md-6 mb-3 mb-md-0">
+          <div className="col-md-6 mb-3 mb-md-0 text-center text-md-start">
             <p className="opacity-50 small mb-0">© 2026 Tymor, All rights reserved.</p>
           </div>
-          <div className="col-md-6 text-md-end">
+          <div className="col-md-6 text-center text-md-end">
             <MagneticLink>
               <a href="#" onClick={scrollToTop} className="footer-back-link small text-uppercase opacity-50">
                 Back to top ↑
