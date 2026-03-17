@@ -1,110 +1,93 @@
 "use client";
 
-import React from 'react';
+import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import Link from 'next/link';
 
-const industries = [
-  { id: 1, name: "Real Estate", image: "/images/industries/real-estate.png", rotate: -70, x: -440, y: 140 },
-  { id: 2, name: "Hospitality", image: "/images/industries/hospitality.png", rotate: -50, x: -460, y: -140 },
-  { id: 3, name: "Education", image: "/images/industries/education.png", rotate: -25, x: -280, y: -400 },
-  { id: 4, name: "Retail", image: "/images/industries/retail.png", rotate: 0, x: 0, y: -480 },
-  { id: 5, name: "Healthcare", image: "/images/industries/healthcare.png", rotate: 25, x: 280, y: -400 },
-  { id: 6, name: "Marketing", image: "/images/industries/marketing.png", rotate: 50, x: 460, y: -140 },
-  { id: 7, name: "Government", image: "/images/industries/government.png", rotate: 70, x: 440, y: 140 },
-  { id: 8, name: "Corporate", image: "/images/industries/corporate.png", rotate: 90, x: 120, y: 400 },
+const CARDS = [
+  { id: 1, image: "/Tymore%20Ai%20with%20Holobox/3.1-—-Real-Estate.jpg", label: "Real Estate", angle: 0 },
+  { id: 2, image: "/Tymore%20Ai%20with%20Holobox/3.2-—-Hospitality.jpg", label: "Hospitality", angle: 45 },
+  { id: 3, image: "/Tymore%20Ai%20with%20Holobox/3.3-—-Education.jpg", label: "Education", angle: 90 },
+  { id: 4, image: "/Tymore%20Ai%20with%20Holobox/2.2-—-Conversational-AI.jpg", label: "Retail", angle: 135 },
+  { id: 5, image: "/Tymore%20Ai%20with%20Holobox/3.5-—-Healthcare.jpg", label: "Healthcare", angle: 180 },
+  { id: 6, image: "/Tymore%20Ai%20with%20Holobox/3.6-—-Marketing.jpg", label: "Marketing", angle: 225 },
+  { id: 7, image: "/Tymore%20Ai%20with%20Holobox/3.7-—-Government.jpg", label: "Government", angle: 270 },
+  { id: 8, image: "/Tymore%20Ai%20with%20Holobox/3.8-—-Corporate.jpg", label: "Corporate/Executive", angle: 315 },
 ];
 
-export default function ProjectBanner() {
-  const containerRef = React.useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
+function BloomCard({ angle, image, label, scrollProgress, groupRotation }: { angle: number; image: string; label: string; scrollProgress: any; groupRotation: any }) {
+  // Continuous expansion: images move "far and far" throughout the scroll
+  const radius = useTransform(scrollProgress, [0.1, 1], [0, 650]);
+  const scale = useTransform(scrollProgress, [0.1, 0.4], [0.4, 1]);
 
-  // CONTENT REVEAL: Delayed even further for "reveal from inside" effect
-  const opacity = useTransform(scrollYProgress, [0.55, 0.75], [0, 1]);
-  const contentScale = useTransform(scrollYProgress, [0.55, 0.75], [0.5, 1]);
-  
-  // CARDS FADE: Visible earlier
-  const cardsOpacity = useTransform(scrollYProgress, [0.05, 0.25], [0, 1]);
+  const angleRad = (angle - 90) * (Math.PI / 180);
+  const x = useTransform(radius, (r) => Math.cos(angleRad) * r);
+  const y = useTransform(radius, (r) => Math.sin(angleRad) * r);
+
+  // Counter-rotate each card to stay perfectly straight
+  const counterRotate = useTransform(groupRotation, (r: number) => -r);
 
   return (
-    <section ref={containerRef} className="industry-fan-section py-0" style={{ position: 'relative', zIndex: 9999 }}>
-      <div className="container position-relative" style={{ minHeight: '850px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        
-        {/* Industry Cards Container */}
-        <div className="industry-cards-wrap" style={{ overflow: 'visible' }}>
-          {industries.map((ind, index) => {
-            // SLOWER BLOOM: Start scale at 0.4 for better initial coverage of central text
-            const rotate = useTransform(scrollYProgress, [0.1, 0.8], [0, ind.rotate]);
-            const x = useTransform(scrollYProgress, [0.1, 0.8], [0, ind.x]);
-            const y = useTransform(scrollYProgress, [0.1, 0.8], [0, ind.y]);
-            const scale = useTransform(scrollYProgress, [0.1, 0.8], [0.4, 1]);
+    <motion.div
+      style={{ x, y, scale, rotate: counterRotate, zIndex: 9999 }}
+      className="absolute w-[220px] h-[300px] rounded-2xl overflow-hidden shadow-bloom-card"
+    >
+      <img src={image} alt={label} className="w-full h-full object-cover" />
+      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent px-3 py-3">
+        <span className="text-xs font-semibold uppercase tracking-wider text-white">{label}</span>
+      </div>
+    </motion.div>
+  );
+}
 
-            return (
-              <motion.div
-                key={ind.id}
-                className="industry-card"
-                style={{
-                  rotate,
-                  x,
-                  y,
-                  scale,
-                  opacity: cardsOpacity,
-                  zIndex: index
-                }}
-              >
-                <div className="industry-card-inner">
-                  <img src={ind.image} alt={ind.name} />
-                  <div className="industry-card-label">{ind.name}</div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+export default function ProjectBanner() {
+  const containerRef = useRef<HTMLDivElement>(null);
 
-        {/* Central Content: Absolute Centered Reveal */}
-        <motion.div 
-          className="industry-fan-content"
-          style={{ 
-            opacity, 
-            scale: contentScale, 
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            x: '-50%',
-            y: '-50%',
-            zIndex: 100,
-            width: '100%',
-            maxWidth: '600px',
-            textAlign: 'center'
-          }}
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end end"],
+  });
+
+  // Continuous clockwise rotation: spins more as it expands
+  const groupRotate = useTransform(scrollYProgress, [0.1, 1], [0, 540]);
+  const centerOpacity = useTransform(scrollYProgress, [0.5, 0.7], [0, 1]);
+  const centerScale = useTransform(scrollYProgress, [0.5, 0.7], [0.85, 1]);
+
+  return (
+    <div ref={containerRef} className="relative h-[400vh]" style={{ zIndex: 1100 }}>
+      <div className="sticky top-0 flex h-svh w-full items-center justify-center bg-white" style={{ zIndex: 1100 }}>
+        <motion.div
+          style={{ rotate: groupRotate }}
+          className="relative flex items-center justify-center"
         >
-          <h2 className="industry-fan-title">
-            YOUR INDUSTRY POWERED BY<br />
-            <span className="text-silver">HOLOBOX TECHNOLOGY</span>
-          </h2>
-          
-          <div className="d-flex flex-column align-items-center gap-4 mt-5">
-            <Link href="/contact" className="capsule-btn-orange">
-              Get a Demo
-            </Link>
-            
-            <Link href="/solutions" className="explore-link">
-              Explore our Holobox further
-              <motion.span
-                animate={{ x: [0, 5, 0] }}
-                transition={{ repeat: Infinity, duration: 1.5 }}
-                className="ms-2"
-              >
-                →
-              </motion.span>
-            </Link>
-          </div>
+          {CARDS.map((card) => (
+            <BloomCard
+              key={card.id}
+              angle={card.angle}
+              image={card.image}
+              label={card.label}
+              scrollProgress={scrollYProgress}
+              groupRotation={groupRotate}
+            />
+          ))}
         </motion.div>
 
+        <motion.div
+          style={{ opacity: centerOpacity, scale: centerScale }}
+          className="absolute z-20 flex flex-col items-center text-center max-w-2xl px-4 pointer-events-auto"
+        >
+          <h2 className="text-3xl md:text-5xl font-black text-black leading-tight mb-8 tracking-tighter">
+            YOUR INDUSTRY POWERED BY<br />HOLOBOX TECHNOLOGY
+          </h2>
+          <motion.button
+            whileHover={{ scale: 1.05, backgroundColor: '#e66e00' }}
+            whileTap={{ scale: 0.95 }}
+            className="px-12 py-4 text-base font-bold text-white transition-all shadow-lg"
+            style={{ backgroundColor: '#FF7A00', border: 'none', borderRadius: '100px' }}
+          >
+            Get a Demo
+          </motion.button>
+        </motion.div>
       </div>
-    </section>
+    </div>
   );
-} 
+}

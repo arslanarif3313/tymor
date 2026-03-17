@@ -28,12 +28,12 @@ export default function Home() {
       <CreativeHero />
       {/* <MarqueeSection items={marqueeItems} /> */}
       <Solutions />
-      {/* <ProjectBanner /> */}
+      <ProjectBanner />
       <ProjectList />
       <Banner />
       <CaseStudies />
       <ImpactSection />
-      {/* <StepSection /> */}
+      <StepSection />
       {/* <WorkStrip /> */}
       {/* <Team /> */}
       <Footer />

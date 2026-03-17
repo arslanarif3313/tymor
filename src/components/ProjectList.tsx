@@ -25,7 +25,7 @@ const projects: ProjectItem[] = [
 const ProjectCard = ({ project, index }: { project: ProjectItem, index: number }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isRight = index % 2 !== 0;
-  
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"]
@@ -33,7 +33,7 @@ const ProjectCard = ({ project, index }: { project: ProjectItem, index: number }
 
   // L-Shape Reveal Progress (Architectural reveal from images)
   const revealProgress = useTransform(scrollYProgress, [0.1, 0.45], [0, 100]);
-  
+
   const lReveal = useTransform(revealProgress, (p) => {
     if (isRight) {
       // Top-Right L-Reveal
@@ -56,15 +56,15 @@ const ProjectCard = ({ project, index }: { project: ProjectItem, index: number }
       {/* Image Column */}
       <div className={`${project.width} p-0 m-0`}>
         <div className="project-img-wrapper h-100 position-relative" style={{ margin: 0, overflow: 'hidden' }}>
-          <motion.img 
-            src={project.image} 
+          <motion.img
+            src={project.image}
             alt={project.company}
             className="w-100 h-100 object-fit-cover d-block"
-            style={{ 
+            style={{
               clipPath: lReveal as any,
               scale: imageScale,
             }}
-            whileHover={{ 
+            whileHover={{
               scale: 1.05,
               filter: 'brightness(1.1) contrast(1.05)'
             }}
@@ -72,12 +72,12 @@ const ProjectCard = ({ project, index }: { project: ProjectItem, index: number }
           />
         </div>
       </div>
-      
+
       {/* Info Column */}
       <div className={`col-lg flex-grow-1 d-flex flex-column justify-content-center ${isRight ? 'align-items-start ps-lg-5 ps-4' : 'align-items-end pe-lg-5 pe-4'}`}>
-        <motion.div 
+        <motion.div
           className="project-info py-5 w-100"
-          style={{ 
+          style={{
             textAlign: isRight ? 'left' : 'right',
             opacity,
             x: xOffset
@@ -96,7 +96,7 @@ const ProjectCard = ({ project, index }: { project: ProjectItem, index: number }
 
 export default function ProjectList() {
   return (
-    <section className="project-grid-area bg-white" style={{ marginTop: '150px', overflow: 'hidden' }}>
+    <section className="project-grid-area bg-white" style={{ marginTop: '350px', overflow: 'hidden' }}>
       <div className="container-fluid p-0">
         <div className="container">
           <div className="row mb-50">
@@ -106,7 +106,7 @@ export default function ProjectList() {
             </div>
           </div>
         </div>
-        
+
         <div className="project-rows-connected" style={{ maxWidth: '1400px', margin: '0 auto', borderBottom: '1px solid #eee' }}>
           {projects.map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} />

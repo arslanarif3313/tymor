@@ -80,7 +80,7 @@ export default function CreativeHero() {
               style={{ width: '200px', height: '115px', margin: '0 15px', flexShrink: 0, borderRadius: '50px' }}
             >
               <video autoPlay muted loop playsInline>
-                <source src="https://html.aqlova.com/videos/bfolio/video-4.mp4" type="video/mp4" />
+                <source src="/1.mp4" type="video/mp4" />
               </video>
             </div>
             <motion.span style={{ x: xRight1 }} className="hero-text">
