@@ -61,7 +61,7 @@ export default function CreativeHero() {
   const xLeft3 = useTransform(scrollYProgress, [0.2, 0.95], ["25px", "-25vw"]);
   const xRight3 = useTransform(scrollYProgress, [0.2, 0.95], ["-18px", "25vw"]);
   return (
-    <section ref={containerRef} className="hero-scroll-container">
+    <section ref={containerRef} className="pt-24 hero-scroll-container">
       <div
         className="hero-sticky-wrapper"
         onMouseMove={handleMouseMove}
