@@ -174,22 +174,22 @@ const StepSection = () => {
       >
         <motion.div
           className="absolute inset-x-0 flex items-center justify-center z-50 pointer-events-none"
-          style={{ 
-            opacity: introOpacity, 
-            scale: introScale, 
-            top: '50%', 
-            translateY: '-50%' 
+          style={{
+            opacity: introOpacity,
+            scale: introScale,
+            top: '50%',
+            translateY: '-50%'
           }}
         >
-          <h2 
+          <h2
             className="uppercase leading-[0.85] tracking-tighter text-center text-white"
-            style={{ 
-              fontSize: 'min(15vw, 11rem)', 
-              fontWeight: 900,
+            style={{
+              fontSize: 'min(12vw, 8rem)',
+              fontWeight: 800,
               fontFamily: 'Inter, sans-serif'
             }}
           >
-            MEET OUR<br />TEAM
+            WHAT OUR<br />CLIENTS SAY
           </h2>
         </motion.div>
 
@@ -267,7 +267,7 @@ const StepSection = () => {
           </p>
           <p
             className="text-[10px] uppercase tracking-[0.25em] font-medium mb-5"
-            style={{ color: 'rgba(255,255,255,0.5)' }}
+            style={{ color: 'var(--accent)' }}
           >
             {current.role}
           </p>

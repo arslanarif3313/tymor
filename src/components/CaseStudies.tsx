@@ -77,7 +77,7 @@ const IndustryCard = ({ industry }: { industry: typeof industriesRow1[0] }) => {
           >
             <motion.h4
               className="text-uppercase anton-font mb-2"
-              style={{ color: "#00f0ff", letterSpacing: "1px" }}
+              style={{ color: "var(--accent)", letterSpacing: "1px" }}
             >
               {industry.name}
             </motion.h4>

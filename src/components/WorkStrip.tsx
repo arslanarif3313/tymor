@@ -1,20 +1,244 @@
 "use client";
+import { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
+import {
+  Layers,
+  Cpu,
+  Box,
+  Zap,
+  RefreshCw,
+  Infinity,
+  BarChart3,
+  ArrowUpRight,
+} from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 
-export default function WorkStrip() {
+const features = [
+  {
+    id: "01",
+    title: "Full Stack Ownership",
+    description:
+      "Tymor is the only Holobox solution built by an IT company. That distinction matters. It means one accountable partner for everything — end-to-end deployment, infrastructure, cybersecurity, enterprise integration, and ongoing support. No gaps between vendors. No finger-pointing when something goes wrong. Just Tymor, owning the full stack.",
+    icon: Layers,
+  },
+  {
+    id: "02",
+    title: "Intelligence Behind Presence",
+    description:
+      "Anyone can project an image. Not everyone can make it think, speak, respond, and remember. Tymor builds the intelligence behind it — the knowledge base, conversation architecture, guardrails, and enterprise integrations. The face is what visitors see. The AI is what makes them come back.",
+    icon: Cpu,
+  },
+  {
+    id: "03",
+    title: "Versatility Across Industries",
+    description:
+      "From hotel lobbies to enterprise headquarters, healthcare facilities to military training sessions, Tymor's HoloBox adapts to diverse use cases — offering scalable packages and configurations that fit unique needs and budgets.",
+    icon: Box,
+  },
+  {
+    id: "04",
+    title: "Launch Then Evolve",
+    description:
+      "Most vendors measure success at delivery. Tymor measures it every day after. Professional setup, training, analytics, and continuous optimization ensure your Holobox never stops performing — and never stops evolving.",
+    icon: Zap,
+  },
+  {
+    id: "05",
+    title: "Changes With You",
+    description:
+      "Redeploying a human employee costs time, money, and disruption. Redeploying your Holobox MetaHuman to a new location, a new role, or a new knowledge base is a managed update. Same character. New purpose. Zero downtime.",
+    icon: RefreshCw,
+  },
+  {
+    id: "06",
+    title: "No Off Days",
+    description:
+      "Your best human employee has a limit — one conversation at a time. Your Holobox MetaHuman does not. During a trade show rush or a busy retail Saturday, your MetaHuman performs identically for the hundredth visitor as it did for the first.",
+    icon: Infinity,
+  },
+  {
+    id: "07",
+    title: "Interactions Become Intelligence",
+    description:
+      "Every interaction is logged, measured, and reported. What visitors asked, how long they engaged, what topics surfaced most. Most vendors give you a display. Tymor gives you intelligence about your audience that you never had before.",
+    icon: BarChart3,
+  },
+];
+
+const WorkStrip = () => {
+  const containerRef = useRef<HTMLElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
+  });
+
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    const index = Math.min(
+      features.length - 1,
+      Math.floor(latest * features.length)
+    );
+    setActiveIndex(index);
+  });
+
+  const activeFeature = features[activeIndex];
+  const Icon = activeFeature.icon;
+
   return (
-    <section className="work-strip">
-      <div className="container">
-        <div className="row align-items-center">
-          <div className="col-md-6">
-            <p className="strip-left mb-0">HOW WE WORKS</p>
-          </div>
-          <div className="col-md-6 text-md-end">
-            <p className="strip-right mb-0">
-              CRAFTING UNIQUE STORIES FOR BRANDS
-            </p>
+    <section
+      ref={containerRef}
+      className="relative bg-background text-foreground"
+      style={{ height: `${features.length * 70}vh` }}
+    >
+      <div className="sticky top-0 h-screen flex flex-col lg:flex-row overflow-hidden">
+        {/* Left Column */}
+        <div className="w-full lg:w-1/2 flex items-center px-8 lg:px-16 xl:px-24 py-12 lg:py-0">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeFeature.id}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -40 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            >
+              <span className="text-muted-foreground font-mono text-xs lg:text-sm mb-3 block">
+                {activeFeature.id}
+              </span>
+              <h3 className="text-xl lg:text-3xl font-semibold tracking-tight text-foreground mb-4 lg:mb-5">
+                <span className="text-primary font-mono italic">//</span>{' '}
+                {activeFeature.title}
+              </h3>
+              <p className="text-muted-foreground text-xs lg:text-[15px] leading-relaxed max-w-lg mb-6 lg:mb-8">
+                {activeFeature.description}
+              </p>
+              <a
+                href="#"
+                className="inline-flex items-center gap-1.5 text-foreground text-xs lg:text-sm font-medium hover:text-primary transition-colors group"
+              >
+                Get started
+                <ArrowUpRight
+                  size={14}
+                  className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                />
+              </a>
+              <div className="mt-8 lg:mt-10 border-b border-border/40 max-w-lg" />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Right Column - tiles cluster */}
+        <div className="w-full lg:w-1/2 relative flex items-center justify-center overflow-hidden">
+          <div className="relative w-[300px] lg:w-[400px] h-[300px] lg:h-[500px]" style={{ perspective: '800px' }}>
+            {features.map((feature, index) => (
+              <TileItem
+                key={feature.id}
+                feature={feature}
+                index={index}
+                activeIndex={activeIndex}
+                total={features.length}
+                isMobile={isMobile}
+              />
+            ))}
           </div>
         </div>
       </div>
     </section>
   );
+};
+
+// Grid layout: 3 columns, staggered rows
+const tileGrid = [
+  { x: 0, y: 0 },
+  { x: 140, y: -20 },
+  { x: 280, y: 10 },
+  { x: 60, y: 110 },
+  { x: 200, y: 90 },
+  { x: 0, y: 210 },
+  { x: 140, y: 190 },
+];
+
+function TileItem({
+  feature,
+  index,
+  activeIndex,
+  total,
+  isMobile,
+}: {
+  feature: (typeof features)[number];
+  index: number;
+  activeIndex: number;
+  total: number;
+  isMobile: boolean;
+}) {
+  const Icon = feature.icon;
+  const grid = isMobile 
+    ? [
+        { x: 0, y: 0 },
+        { x: 100, y: -10 },
+        { x: 200, y: 5 },
+        { x: 40, y: 90 },
+        { x: 140, y: 75 },
+        { x: 0, y: 160 },
+        { x: 100, y: 145 },
+      ]
+    : tileGrid;
+
+  const pos = grid[index];
+
+  // Each tile moves up based on how many steps have passed relative to its index
+  const stepsPassed = activeIndex;
+  const stepHeight = isMobile ? 35 : 45;
+  const yOffset = -stepsPassed * stepHeight + index * 8;
+
+  const isHighlighted = index <= activeIndex;
+
+  return (
+    <motion.div
+      animate={{
+        y: pos.y + yOffset,
+        opacity: isHighlighted ? 1 : 0.2,
+        rotateX: 20,
+        rotateY: -12,
+      }}
+      transition={{ type: 'spring', stiffness: 80, damping: 20 }}
+      style={{
+        position: 'absolute',
+        left: pos.x,
+        top: isMobile ? 120 : 200,
+        transformStyle: 'preserve-3d',
+      }}
+      className="w-[80px] h-[80px] lg:w-[100px] lg:h-[100px]"
+    >
+      <div
+        className="w-full h-full rounded-xl border border-border/50 flex items-center justify-center"
+        style={{
+          background:
+            'linear-gradient(145deg, var(--card) 0%, var(--secondary) 100%)',
+          boxShadow: isHighlighted
+            ? '0 8px 32px rgba(249,101,1,0.2), inset 0 1px 0 rgba(255,255,255,0.05)'
+            : '0 4px 16px rgba(0,0,0,0.4)',
+        }}
+      >
+        <Icon
+          size={isMobile ? 24 : 32}
+          strokeWidth={1.5}
+          className="text-primary"
+          style={{
+            filter: isHighlighted ? 'var(--tymor-glow)' : 'none',
+          }}
+        />
+      </div>
+    </motion.div>
+  );
 }
+
+export default WorkStrip;

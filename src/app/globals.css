@@ -6,6 +6,16 @@
   --accent: #f96501;
   --card-bg: #151515;
   --section-bg: #0d0d0d;
+
+  /* Shadcn-like tokens for WorkStrip compatibility */
+  --primary: var(--accent);
+  --muted-foreground: #a1a1aa;
+  --border: rgba(255, 255, 255, 0.1);
+  --secondary: #1e1e1e;
+  --card: #151515;
+
+  /* Custom Glow Effect */
+  --tymor-glow: 0 0 20px rgba(249, 101, 1, 0.5);
 }
 
 @theme inline {
