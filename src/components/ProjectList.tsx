@@ -15,7 +15,7 @@ interface ProjectItem {
 
 const projects: ProjectItem[] = [
   { id: "01", company: "Brandlift", description: "Strategic Branding and Motion Identity", category: "PRODUCT DESIGN, MOTION", image: "/images/solution/Real Estate.jpg", width: "col-lg-4", aspect: "1:1" },
-  { id: "02", company: "Devnest", description: "Full-stack Platform Development", category: "DEVELOPMENT, BRANDING", image: "/images/solution/Hospitality.avif", width: "col-lg-8", aspect: "16/9" },
+  { id: "02", company: "Devnest", description: "Full-stack Platform Development", category: "DEVELOPMENT, BRANDING", image: "/images/solution/hospitality.avif", width: "col-lg-8", aspect: "16/9" },
   { id: "03", company: "Wiregrid", description: "Enterprise Strategy and Digital Motion", category: "STRATEGY, MOTION", image: "/images/solution/retail.jpg", width: "col-lg-5", aspect: "16/10" },
   { id: "04", company: "Agencylabs", description: "UI/UX Design and Product Scalability", category: "UI/UX, DEVELOPMENT", image: "/images/solution/education.avif", width: "col-lg-7", aspect: "1:1" },
   { id: "05", company: "Visionary", description: "Immersive 3D Environments", category: "AR/VR, DESIGN", image: "/images/solution/Healthcare.avif", width: "col-lg-6", aspect: "16/10" },
