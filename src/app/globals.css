@@ -498,18 +498,52 @@ body {
   transition: all 0.3s ease;
 }
 
-.video-box { width: 200px; height: 115px; margin: 0 15px; border-radius: 50px !important; }
-.main-img-box { width: 360px; height: 300px; margin: 0 20px; }
-.sub-img-box { width: 280px; height: 180px; margin: 0 15px; }
+.video-box {
+  width: 200px;
+  height: 115px;
+  margin: 0 15px;
+  border-radius: 50px !important;
+}
 
-.hero-row-1 { margin-top: 0; }
-.hero-row-2 { margin-top: -30px; }
-.hero-row-3 { margin-top: -60px; }
+.main-img-box {
+  width: 360px;
+  height: 300px;
+  margin: 0 20px;
+}
+
+.sub-img-box {
+  width: 280px;
+  height: 180px;
+  margin: 0 15px;
+}
+
+.hero-row-1 {
+  margin-top: 0;
+}
+
+.hero-row-2 {
+  margin-top: -30px;
+}
+
+.hero-row-3 {
+  margin-top: -60px;
+}
 
 @media (max-width: 991px) {
-  .video-box { width: 140px; height: 80px; }
-  .main-img-box { width: 240px; height: 180px; }
-  .sub-img-box { width: 200px; height: 130px; }
+  .video-box {
+    width: 140px;
+    height: 80px;
+  }
+
+  .main-img-box {
+    width: 240px;
+    height: 180px;
+  }
+
+  .sub-img-box {
+    width: 200px;
+    height: 130px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -611,10 +645,13 @@ body {
     text-align: center !important;
     display: block;
     width: 100%;
-    transform: none !important; /* Disable parallax on mobile to keep it centered */
+    transform: none !important;
+    /* Disable parallax on mobile to keep it centered */
   }
 
-  .hero-row-1, .hero-row-2, .hero-row-3 {
+  .hero-row-1,
+  .hero-row-2,
+  .hero-row-3 {
     margin-top: 0 !important;
   }
 
@@ -676,10 +713,17 @@ body {
     padding-bottom: 40px;
   }
 
+  .solutions-image-track {
+    display: flex;
+    flex-direction: column !important;
+    transform: none !important;
+    width: 100% !important;
+  }
+
   .solutions-image-box {
     width: 100% !important;
-    height: 400px !important; /* Slightly taller for mobile single view */
-    margin-bottom: 0;
+    height: 300px !important;
+    margin-bottom: 20px;
   }
 
   .solutions-counter-wrap {
@@ -1010,11 +1054,11 @@ body {
     width: 95% !important;
     margin-bottom: 100px !important;
   }
-  
+
   .banner-content h2 {
     font-size: 1.8rem !important;
   }
-  
+
   .banner-content p {
     font-size: 1rem !important;
   }
@@ -1055,11 +1099,11 @@ body {
   .project-grid-area {
     margin-top: 100px !important;
   }
-  
+
   .project-company-name {
     font-size: 24px !important;
   }
-  
+
   .project-category-text {
     font-size: 10px !important;
   }
@@ -1190,7 +1234,7 @@ body {
   .case-studies h2 {
     margin-bottom: 20px;
   }
-  
+
   .industry-marquee-card {
     width: 220px !important;
     height: 220px !important;
@@ -1562,7 +1606,7 @@ body {
   border-radius: 40px;
   overflow: hidden;
   position: relative;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .team-card-text {
@@ -1572,15 +1616,17 @@ body {
   flex-shrink: 0;
   border-radius: 40px;
   background: #f8f9fa;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 @media (max-width: 768px) {
-  .team-card-img, .team-card-text {
+
+  .team-card-img,
+  .team-card-text {
     width: 260px !important;
     height: 350px !important;
   }
-  
+
   .team-card-text h2 {
     font-size: 2.2rem !important;
   }
@@ -1701,6 +1747,15 @@ body {
   transform: translate(-50%, -50%);
   z-index: 5;
   /* Increased to ensure it's on top of any background layers */
+}
+
+.footer-big-title {
+  font-size: clamp(80px, 12vw, 120px);
+  line-height: .95;
+  font-weight: 900;
+  letter-spacing: -2px;
+  color: #fff;
+  transition: all 0.5s ease;
 }
 
 @media (max-width: 991px) {
@@ -1888,14 +1943,47 @@ body {
   animation: mesh-float 20s infinite ease-in-out;
 }
 
-.mesh-1 { width: 400px; height: 400px; background: #00f0ff1a; top: -100px; left: -100px; animation-delay: 0s; }
-.mesh-2 { width: 500px; height: 500px; background: #008cff1a; bottom: -150px; right: -100px; animation-delay: -5s; }
-.mesh-3 { width: 300px; height: 300px; background: #00f0ff0d; top: 20%; right: 20%; animation-delay: -10s; }
+.mesh-1 {
+  width: 400px;
+  height: 400px;
+  background: #00f0ff1a;
+  top: -100px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.mesh-2 {
+  width: 500px;
+  height: 500px;
+  background: #008cff1a;
+  bottom: -150px;
+  right: -100px;
+  animation-delay: -5s;
+}
+
+.mesh-3 {
+  width: 300px;
+  height: 300px;
+  background: #00f0ff0d;
+  top: 20%;
+  right: 20%;
+  animation-delay: -10s;
+}
 
 @keyframes mesh-float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(100px, 50px) scale(1.1); }
-  66% { transform: translate(-50px, 100px) scale(0.9); }
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(100px, 50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-50px, 100px) scale(0.9);
+  }
 }
 
 .footer-marquee-container {
@@ -1935,8 +2023,13 @@ body {
 }
 
 @keyframes marquee-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .newsletter-box {

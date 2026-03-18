@@ -134,24 +134,14 @@ export default function Solutions() {
             </div>
 
             {/* RIGHT SIDE (Horizontal Image Scroll) */}
-            <div className="col-lg-6 overflow-hidden position-relative bg-black h-100 d-flex align-items-center justify-content-center">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeIndex}
-                  initial={{ opacity: 0, scale: 1.05 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.05 }}
-                  transition={{ duration: 0.6, ease: "easeInOut" }}
-                  className="solutions-image-box h-100 w-100"
-                >
-                  <img 
-                    src={solutions[activeIndex].image} 
-                    alt={solutions[activeIndex].title}
-                    className="w-100 h-100"
-                    style={{ objectFit: 'cover' }}
-                  />
-                </motion.div>
-              </AnimatePresence>
+            <div className="col-lg-6 overflow-hidden position-relative bg-black h-100">
+              <motion.div style={{ x }} className="solutions-image-track">
+                {solutions.map((item) => (
+                  <div key={item.id} className="solutions-image-box">
+                    <img src={item.image} alt={item.title} />
+                  </div>
+                ))}
+              </motion.div>
             </div>
           </div>
         </div>
