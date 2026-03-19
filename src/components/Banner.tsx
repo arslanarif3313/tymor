@@ -5,7 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const LiquidDistortion = ({ image, active }: { image: string, active: boolean }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const mouse = useRef({ x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5 });
+    const mouse = useRef({
+        x: 0.5, y: 0.5,
+        targetX: 0.5, targetY: 0.5,
+        trail: [] as { x: number, y: number, age: number }[]
+    });
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -30,41 +34,63 @@ const LiquidDistortion = ({ image, active }: { image: string, active: boolean })
             precision highp float;
             varying vec2 vUv;
             uniform sampler2D uTexture;
-            uniform vec2 uMouse;
             uniform vec2 uResolution;
             uniform float uTime;
             uniform float uActive;
+            
+            // Increased Trail Capacity for massive smoothness
+            uniform vec2 uTrailPoints[40];
+            uniform float uTrailAges[40];
+            uniform int uTrailCount;
 
             void main() {
                 vec2 uv = vUv;
-                
-                // 1. Correct aspect ratio for a perfect circle
                 vec2 aspect = vec2(uResolution.x / uResolution.y, 1.0);
-                float dist = distance(uv * aspect, uMouse * aspect);
+                vec2 uvPos = uv * aspect;
                 
-                // 2. Focused "Small Circle" interaction
-                float radius = 0.15; 
-                float interactionZone = 1.0 - smoothstep(0.0, radius, dist);
+                vec2 totalDistortion = vec2(0.0);
                 
-                // 3. Subtle background ambient liquid flow
-                float flowX = sin(uv.y * 5.0 + uTime * 0.3) * 0.0015;
-                float flowY = cos(uv.x * 5.0 + uTime * 0.3) * 0.0015;
+                // Fine-tuned ambient liquid flow - slightly faster
+                totalDistortion += vec2(
+                    sin(uv.y * 12.0 + uTime * 0.8) * 0.0006,
+                    cos(uv.x * 12.0 + uTime * 0.8) * 0.0006
+                );
+
+                // Calculate seamless wake from high-density trail
+                for(int i = 0; i < 40; i++) {
+                    if(i >= uTrailCount) break;
+                    
+                    vec2 p = uTrailPoints[i] * aspect;
+                    float age = uTrailAges[i];
+                    float dist = distance(uvPos, p);
+                    
+                    // Tighter, faster waves for a "premium" precise look
+                    float rippleRadius = 0.12 + age * 0.08;
+                    float wave = sin(dist * 80.0 - age * 25.0) * 0.015;
+                    float mask = (1.0 - smoothstep(0.0, rippleRadius, dist)) * pow(1.0 - age, 1.8);
+                    
+                    if(dist > 0.0001) {
+                        vec2 dir = normalize(uvPos - p);
+                        totalDistortion -= dir * wave * mask;
+                    }
+                }
                 
-                vec2 dir = normalize((uv - uMouse) * aspect);
-                if(dist == 0.0) dir = vec2(0.0);
-                
-                // Refined delicate displacement - slightly faster ripples
-                float ripple = sin(dist * 50.0 - uTime * 6.0) * 0.006 * interactionZone * uActive;
-                float push = interactionZone * 0.02 * uActive;
-                
-                vec2 finalUv = uv + vec2(flowX, flowY) - dir * (push + ripple);
+                vec2 finalUv = uv + totalDistortion * uActive;
                 finalUv = clamp(finalUv, 0.001, 0.999);
                 
                 vec4 color = texture2D(uTexture, finalUv);
                 
-                // Soft reflective highlight
-                float highlight = smoothstep(0.01, 0.0, abs(dist - radius * 0.5)) * 0.04 * uActive;
-                color.rgb += highlight;
+                // Focused micro-highlights for sharper water shimmer
+                float highlight = 0.0;
+                for(int i = 0; i < 40; i++) {
+                    if(i >= uTrailCount) break;
+                    vec2 p = uTrailPoints[i] * aspect;
+                    float age = uTrailAges[i];
+                    float dist = distance(uvPos, p);
+                    float h = pow(max(0.0, 1.0 - abs(sin(dist * 80.0 - age * 25.0) * 10.0)), 25.0);
+                    highlight += h * (1.0 - smoothstep(0.0, 0.08, dist)) * (1.0 - age);
+                }
+                color.rgb += highlight * 0.06 * uActive;
 
                 gl_FragColor = color;
             }
@@ -98,10 +124,12 @@ const LiquidDistortion = ({ image, active }: { image: string, active: boolean })
         gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
 
         const uTextureLoc = gl.getUniformLocation(program, 'uTexture');
-        const uMouseLoc = gl.getUniformLocation(program, 'uMouse');
         const uResolutionLoc = gl.getUniformLocation(program, 'uResolution');
         const uTimeLoc = gl.getUniformLocation(program, 'uTime');
         const uActiveLoc = gl.getUniformLocation(program, 'uActive');
+        const uTrailPointsLoc = gl.getUniformLocation(program, 'uTrailPoints');
+        const uTrailAgesLoc = gl.getUniformLocation(program, 'uTrailAges');
+        const uTrailCountLoc = gl.getUniformLocation(program, 'uTrailCount');
 
         const img = new Image();
         img.crossOrigin = "anonymous";
@@ -125,18 +153,38 @@ const LiquidDistortion = ({ image, active }: { image: string, active: boolean })
                 gl.viewport(0, 0, canvas.width, canvas.height);
             }
 
-            // Snappier mouse tracking
-            mouse.current.x += (mouse.current.targetX - mouse.current.x) * 0.15;
-            mouse.current.y += (mouse.current.targetY - mouse.current.y) * 0.15;
+            // Snappier mouse following
+            mouse.current.x += (mouse.current.targetX - mouse.current.x) * 0.2;
+            mouse.current.y += (mouse.current.targetY - mouse.current.y) * 0.2;
 
-            // Snappier active state transition
+            // Update trail with faster dissipation (0.02)
+            mouse.current.trail = (mouse.current.trail || [])
+                .map(p => ({ ...p, age: p.age + 0.02 }))
+                .filter(p => p.age < 1.0);
+
+            if (active && (mouse.current.trail.length === 0 ||
+                Math.hypot(mouse.current.x - mouse.current.trail[0].x, mouse.current.y - mouse.current.trail[0].y) > 0.006)) {
+                mouse.current.trail.unshift({ x: mouse.current.x, y: mouse.current.y, age: 0 });
+            }
+            if (mouse.current.trail.length > 40) mouse.current.trail.pop();
+
             const targetActive = active ? 1.0 : 0.0;
-            currentActive += (targetActive - currentActive) * (active ? 0.12 : 0.08);
+            currentActive += (targetActive - currentActive) * (active ? 0.12 : 0.06);
 
-            gl.uniform2f(uMouseLoc, mouse.current.x, mouse.current.y);
             gl.uniform2f(uResolutionLoc, canvas.width, canvas.height);
             gl.uniform1f(uTimeLoc, time * 0.001);
             gl.uniform1f(uActiveLoc, currentActive);
+
+            const points = new Float32Array(80);
+            const ages = new Float32Array(40);
+            mouse.current.trail.forEach((p, i) => {
+                points[i * 2] = p.x;
+                points[i * 2 + 1] = p.y;
+                ages[i] = p.age;
+            });
+            gl.uniform2fv(uTrailPointsLoc, points);
+            gl.uniform1fv(uTrailAgesLoc, ages);
+            gl.uniform1i(uTrailCountLoc, mouse.current.trail.length);
 
             if (texture) {
                 gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -259,7 +307,7 @@ export default function Banner() {
                                         <span className="text-nowrap" style={{ fontSize: isMobile ? '10px' : '14px', padding: isMobile ? '6px 12px' : '10px 24px' }}>STEP {step.id < 10 ? `0${step.id}` : step.id}</span>
                                     </div>
                                     <h2 className="text-white mt-4 anton-font text-uppercase" style={{ fontSize: isMobile ? '1.8rem' : '3rem' }}>{step.title}</h2>
-                                    <p className="text-white-50 mt-3" style={{ fontSize: isMobile ? '0.9rem' : '1.2rem', maxWidth: '600px' }}>{step.description}</p>
+                                    <p className="text-black mt-3" style={{ fontSize: isMobile ? '0.9rem' : '1.2rem', maxWidth: '600px' }}>{step.description}</p>
                                 </div>
                             </motion.div>
                         </div>

@@ -42,8 +42,8 @@ const testimonials = [
   },
 ];
 
-const CUBE_SIZE = 420;
-const MOBILE_CUBE_SIZE = 280;
+const CUBE_SIZE = 340;
+const MOBILE_CUBE_SIZE = 240;
 
 const cubeFaceTransform = (i: number, size: number): string => {
   const half = size / 2;
@@ -102,25 +102,28 @@ const StepSection = () => {
   const introScale = useTransform(smoothProgress, [0, 0.05], [1, 1.2]);
 
   // Cube entrance from bottom - delayed slightly to let intro breathe
-  const cubeY = useTransform(smoothProgress, [0.04, 0.1], [600, 0]);
-  const cubeScale = useTransform(smoothProgress, [0.04, 0.1], [0.6, 1]);
+  const cubeY = useTransform(smoothProgress, [0.04, 0.12], [800, 0]);
+  const cubeScale = useTransform(smoothProgress, [0.04, 0.12], [0.4, 1]);
   const cubeOpacity = useTransform(smoothProgress, [0.04, 0.08], [0, 1]);
 
-  // Cube rotation keyframes
-  const rotXStops: number[] = [];
-  const rotYStops: number[] = [];
-  const progressStops: number[] = [];
+  // Cube rotation keyframes - starting with an entrance rotation
+  const rotXStops: number[] = [90, 90, 0];
+  const rotYStops: number[] = [-45, -45, 0];
+  const progressStops: number[] = [0, 0.04, 0.12];
 
   for (let i = 0; i < 6; i++) {
     const segStart = ZONE_START + i * SEG;
     const rotateStart = segStart + SEG * 0.55;
     const rotateEnd = segStart + SEG * 0.85;
 
-    progressStops.push(rotateStart);
-    rotXStops.push(rotationTargets[i].x);
-    rotYStops.push(rotationTargets[i].y);
+    // Only add stops that are beyond the entrance phase
+    if (rotateStart > 0.12) {
+      progressStops.push(rotateStart);
+      rotXStops.push(rotationTargets[i].x);
+      rotYStops.push(rotationTargets[i].y);
+    }
 
-    if (i < 5) {
+    if (i < 5 && rotateEnd > 0.12) {
       progressStops.push(rotateEnd);
       rotXStops.push(rotationTargets[i + 1].x);
       rotYStops.push(rotationTargets[i + 1].y);
@@ -248,19 +251,19 @@ const StepSection = () => {
             opacity: textOpacity,
             top: '50%',
             translateY: '-50%',
-            width: isMobile ? 300 : 420,
+            width: isMobile ? 240 : 340,
             zIndex: 20,
             mixBlendMode: 'difference',
           }}
         >
           <p
-            className="text-7xl md:text-9xl font-black leading-none tracking-tighter mb-4"
+            className="text-5xl md:text-7xl font-black leading-none tracking-tighter mb-4"
             style={{ color: '#fff' }}
           >
             {String(activeIndex + 1).padStart(2, '0')}
           </p>
           <p
-            className="text-xl md:text-3xl font-bold mb-1 tracking-tight"
+            className="text-lg md:text-2xl font-bold mb-1 tracking-tight"
             style={{ color: '#fff' }}
           >
             {current.author}
@@ -272,7 +275,7 @@ const StepSection = () => {
             {current.role}
           </p>
           <p
-            className="text-sm md:text-base leading-relaxed"
+            className="text-xs md:text-sm leading-relaxed"
             style={{ color: 'rgba(255,255,255,0.7)' }}
           >
             {current.quote}

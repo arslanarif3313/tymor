@@ -103,7 +103,7 @@ export default function CreativeHero() {
               <img src="/Tymore%20Ai%20with%20Holobox/2.1-—-Holobox-AI-Presence.jpg" alt="Shaping Tomorrow" />
             </div>
             <motion.span style={{ x: xRight3 }} className="hero-text">
-              tomorrow now
+              tomorrow
             </motion.span>
           </div>
 
