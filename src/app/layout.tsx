@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Plus_Jakarta_Sans, Space_Grotesk, Anton } from "next/font/google";
+import { DM_Sans, Plus_Jakarta_Sans, Space_Grotesk, Anton, Inter } from "next/font/google";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -24,6 +24,11 @@ const anton = Anton({
   variable: "--font-anton",
   subsets: ["latin"],
   weight: ["400"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -53,7 +58,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${dmSans.variable} ${plusJakartaSans.variable} ${spaceGrotesk.variable} ${anton.variable} antialiased`}
+        className={`${dmSans.variable} ${plusJakartaSans.variable} ${spaceGrotesk.variable} ${anton.variable} ${inter.variable} antialiased`}
       >
         {children}
       </body>

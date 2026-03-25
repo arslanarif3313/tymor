@@ -266,7 +266,7 @@ export default function Banner() {
     const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
 
     return (
-        <section className="banner-section py-100" id="process" style={{ backgroundColor: '#0f1012' }}>
+        <section className="banner-section pt-100" id="process" style={{ backgroundColor: '#0f1012' }}>
             <div className="container-fluid px-md-5">
                 <div className="banner-stack d-flex flex-column align-items-center w-100">
                     {steps.map((step, index) => (
@@ -276,10 +276,10 @@ export default function Banner() {
                             onMouseEnter={() => setHoveredIndex(index)}
                             onMouseLeave={() => setHoveredIndex(null)}
                             style={{
-                                top: isMobile ? `${100 + (index * 30)}px` : `${150 + (index * 45)}px`,
+                                top: isMobile ? `${100 + (index * 30)}px` : `${150 + (index * 15)}px`,
                                 zIndex: index + 1,
                                 width: isMobile ? '95%' : '75%', // Slightly smaller width for better spacing
-                                margin: isMobile ? '0 auto 100px auto' : '0 auto 500px auto',
+                                margin: isMobile ? '0 auto 100px auto' : '0 auto 0px auto',
                                 overflow: 'visible',
                                 borderRadius: '40px'
                             }}
@@ -287,7 +287,7 @@ export default function Banner() {
                             <motion.div
                                 className="position-relative overflow-hidden w-100"
                                 style={{
-                                    height: isMobile ? '50vh' : '65vh',
+                                    height: isMobile ? '50vh' : '62vh',
                                     minHeight: '300px',
                                     maxHeight: '700px',
                                     background: '#0f1012',

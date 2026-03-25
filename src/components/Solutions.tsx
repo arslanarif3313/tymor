@@ -63,6 +63,22 @@ export default function Solutions() {
     });
   }, [scrollYProgress]);
 
+  const handleTabClick = (index: number) => {
+    if (!containerRef.current) return;
+    
+    // Calculate the scroll position required to reach the center of this item's visual range
+    const rect = containerRef.current.getBoundingClientRect();
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const start = rect.top + scrollTop;
+    const scrollableDistance = rect.height - window.innerHeight;
+    
+    // Target progress is the middle of the range assigned to this index
+    const targetProgress = (index + 0.5) / solutions.length;
+    const targetScroll = start + (targetProgress * scrollableDistance);
+    
+    window.scrollTo({ top: targetScroll, behavior: "smooth" });
+  };
+
   // Adjust transformations for mobile
   const isMobile = typeof window !== 'undefined' ? window.innerWidth < 992 : false;
 
@@ -70,13 +86,14 @@ export default function Solutions() {
   const x = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "0%" : `-${(solutions.length - 1) * 50}vw`]);
 
   // LIVE SCROLL COUNTER: Direct mapping for the "real counter up" feel
-  const tickerY = useTransform(scrollYProgress, [0, 1], [0, -(solutions.length - 1) * 144]);
+  const tickerY = useTransform(scrollYProgress, [0, 1], [0, -(solutions.length - 1) * 187]);
   // Heavier spring: less stiffness, more damping for fluid, organic motion
   const smoothTickerY = useSpring(tickerY, { stiffness: 40, damping: 30, restDelta: 0.001 });
 
   return (
     <section ref={containerRef} className="solutions-scroll-section" id="solutions">
       <div className={`${isMobile ? "" : "solutions-sticky-wrapper"}`}>
+        <div className="solutions-main-header">INTELLIGENT SERVICES</div>
         <div className="container-fluid h-100 p-0">
           <div className="row g-0 h-100">
             {/* LEFT CONTENT AREA */}
@@ -86,9 +103,9 @@ export default function Solutions() {
                   {solutions.map((item, index) => (
                     <div
                       key={item.id}
+                      onClick={() => handleTabClick(index)}
                       className={`solution-list-item ${index === activeIndex ? "active" : ""}`}
-                      onMouseEnter={() => setActiveIndex(index)}
-                      onClick={() => setActiveIndex(index)}
+                      style={{ cursor: "pointer" }}
                     >
                       {item.title}
                     </div>

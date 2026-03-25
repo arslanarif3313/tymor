@@ -39,7 +39,7 @@ body {
 .navbar {
   padding: 18px 0;
   transition: all .4s ease;
-  background: rgba(15, 15, 15, 0.4);
+  background: #111111;
   backdrop-filter: blur(15px);
 }
 
@@ -128,6 +128,7 @@ body {
   color: #fff !important;
   margin-left: 15px;
   transition: .4s;
+  text-decoration: none !important;
 }
 
 .navbar-toggler {
@@ -448,8 +449,8 @@ body {
 
 /* New Animated Hero Styles */
 .hero-scroll-container {
-  height: 145vh;
-  /* Slightly increased to match new sticky height */
+  height: 400vh;
+  /* Significantly increased to ensure animation completes long before next section */
   position: relative;
   background: #000;
 }
@@ -480,7 +481,7 @@ body {
 }
 
 .hero-text {
-  font-family: var(--font-plus-jakarta), sans-serif;
+  font-family: var(--font-inter), sans-serif;
   font-size: clamp(80px, 10vw, 140px);
   font-weight: 400;
   line-height: 0.1;
@@ -2093,6 +2094,21 @@ body {
   overflow: hidden;
 }
 
+.solutions-main-header {
+  position: absolute;
+  top: 50px;
+  left: 14%;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  z-index: 50;
+  mix-blend-mode: difference;
+  pointer-events: none;
+}
+
 .p-lg-10 {
   padding: 6rem !important;
 }
@@ -2120,7 +2136,6 @@ body {
   font-weight: 800;
   color: #c0c0c0;
   transition: all 0.4s ease;
-  cursor: pointer;
   font-family: var(--font-plus-jakarta);
 }
 
@@ -2131,24 +2146,24 @@ body {
 
 .solutions-counter-wrap {
   position: absolute;
-  top: 23%;
-  right: 10%;
-  height: 144px;
-  /* 160px * 0.9 line-height */
+  top: 15%;
+  right: 5%;
+  height: 187px;
+  /* Matches line-height of .solutions-big-number */
   overflow: hidden;
   pointer-events: none;
 }
 
 .solutions-big-number {
-  font-family: var(--font-anton), sans-serif;
-  font-size: 160px;
-  line-height: .9;
-  color: #000;
-  letter-spacing: 0.1em;
-  text-align: right;
-  font-weight: 400;
+  font-family: 'Anton', var(--font-anton), sans-serif !important;
+  font-size: 170px !important;
+  line-height: 187px !important;
+  color: #000 !important;
+  letter-spacing: 0.02em !important;
+  text-align: right !important;
+  font-weight: 400 !important;
   display: block;
-  height: 144px;
+  height: 187px;
 }
 
 .solutions-bottom-left {

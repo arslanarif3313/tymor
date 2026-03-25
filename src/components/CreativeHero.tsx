@@ -6,9 +6,10 @@ import { useRef } from "react";
 export default function CreativeHero() {
   const containerRef = useRef<HTMLElement>(null);
   const buttonRef = useRef<HTMLAnchorElement>(null);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end start"],
+    offset: ["start start", "end end"],
   });
 
   // Cursor Following Logic for the Bottom Section
@@ -49,17 +50,20 @@ export default function CreativeHero() {
   };
 
   // Row 1: get the [VIDEO] left-size
-  // Starting at 20px / -20px to make them "more in touch" with the video
-  const xLeft1 = useTransform(scrollYProgress, [0.1, 0.75], ["18px", "-25vw"]);
-  const xRight1 = useTransform(scrollYProgress, [0.1, 0.75], ["-18px", "25vw"]);
+  // Now using ["start start", "end end"] offset. 
+  // 1.0 = bottom of hero at bottom of screen.
+  // 0.8 = finish well before next section enters.
+  // Reduced travel distance as requested by user.
+  const xLeft1 = useTransform(scrollYProgress, [0.1, 0.8], ["18px", "-10vw"]);
+  const xRight1 = useTransform(scrollYProgress, [0.1, 0.8], ["-18px", "10vw"]);
 
   // Row 2: intelligence [IMG] that
-  const xLeft2 = useTransform(scrollYProgress, [0.15, 0.85], ["25px", "-25vw"]);
-  const xRight2 = useTransform(scrollYProgress, [0.15, 0.85], ["-29px", "25vw"]);
+  const xLeft2 = useTransform(scrollYProgress, [0.15, 0.82], ["25px", "-10vw"]);
+  const xRight2 = useTransform(scrollYProgress, [0.15, 0.82], ["-29px", "10vw"]);
 
   // Row 3: makes [IMG] futures
-  const xLeft3 = useTransform(scrollYProgress, [0.2, 0.95], ["25px", "-25vw"]);
-  const xRight3 = useTransform(scrollYProgress, [0.2, 0.95], ["-18px", "25vw"]);
+  const xLeft3 = useTransform(scrollYProgress, [0.2, 0.85], ["25px", "-10vw"]);
+  const xRight3 = useTransform(scrollYProgress, [0.2, 0.85], ["-18px", "10vw"]);
   return (
     <section ref={containerRef} className="pt-12 hero-scroll-container">
       <div
@@ -71,7 +75,7 @@ export default function CreativeHero() {
 
           <div className="hero-row hero-row-1">
             <motion.span style={{ x: xLeft1 }} className="hero-text">
-              get the
+              unlock
             </motion.span>
             <div className="hero-img-box video-box">
               <video autoPlay muted loop playsInline>
@@ -79,7 +83,7 @@ export default function CreativeHero() {
               </video>
             </div>
             <motion.span style={{ x: xRight1 }} className="hero-text">
-              left-size
+              life-size
             </motion.span>
           </div>
 
@@ -97,13 +101,13 @@ export default function CreativeHero() {
 
           <div className="hero-row hero-row-3">
             <motion.span style={{ x: xLeft3 }} className="hero-text">
-              shapes
+              defines
             </motion.span>
             <div className="hero-img-box sub-img-box">
               <img src="/Tymore%20Ai%20with%20Holobox/2.1-—-Holobox-AI-Presence.jpg" alt="Shaping Tomorrow" />
             </div>
             <motion.span style={{ x: xRight3 }} className="hero-text">
-              tomorrow
+              experience
             </motion.span>
           </div>
 
