@@ -1,7 +1,6 @@
 "use client";
-
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, useMotionValueEvent, useSpring, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValueEvent, useSpring } from 'framer-motion';
 
 const testimonials = [
   {
@@ -38,11 +37,11 @@ const testimonials = [
     quote: "Planning a Holobox deployment inside a complex enterprise environment is not easy. Tymor made it feel that way. Their guidance never wavered and their technical depth never ran out.",
     author: "Catherine Laurent",
     role: "Operations Head",
-    image: "/images/clients/client-6.png",
+    image: "/images/clients/client-1.png",
   },
 ];
 
-const CUBE_SIZE = 340;
+const CUBE_SIZE = 330;
 const MOBILE_CUBE_SIZE = 240;
 
 const cubeFaceTransform = (i: number, size: number): string => {
@@ -52,25 +51,31 @@ const cubeFaceTransform = (i: number, size: number): string => {
     case 1: return `rotateY(90deg) translateZ(${half}px)`;
     case 2: return `rotateY(180deg) translateZ(${half}px)`;
     case 3: return `rotateY(-90deg) translateZ(${half}px)`;
-    case 4: return `rotateX(90deg) translateZ(${half}px)`;
-    case 5: return `rotateX(-90deg) translateZ(${half}px)`;
+    case 4: return `rotateX(90deg) rotateZ(90deg) translateZ(${half}px)`;
+    case 5: return `rotateX(-90deg) rotateZ(90deg) translateZ(${half}px)`;
     default: return '';
   }
 };
 
 const rotationTargets = [
   { x: 0, y: 0 },
-  { x: 0, y: -90 },
-  { x: 0, y: -180 },
   { x: 0, y: 90 },
-  { x: -90, y: 0 },
-  { x: 90, y: 0 },
+  { x: 0, y: 180 },
+  { x: 0, y: 270 },
+  { x: 90, y: 270 },   // Simple downward flip from prev
+  { x: -90, y: 90 },
 ];
 
-const ZONE_START = 0.22; // Starts rotation after entrance phase
+const ZONE_START = 0.22;
 const ZONE_END = 0.95;
 const ZONE_SIZE = ZONE_END - ZONE_START;
 const SEG = ZONE_SIZE / 6;
+
+const entranceStops = [0.12, 0.131, 0.142, 0.153, 0.164, 0.175, 0.186, 0.197, 0.208, 0.219, 1];
+const entranceScale = [0.338, 0.389, 0.445, 0.562, 0.630, 0.690, 0.762, 0.820, 0.911, 0.987, 1.0];
+const entranceRotX = [-29.1, -20.0, -9.9, 11.2, 23.3, 34.2, 47.1, 57.6, 73.9, 87.7, 0];
+const entranceRotY = [59.6, 55.0, 49.9, 39.4, 33.3, 27.9, 21.5, 16.2, 8.0, 1.2, 0];
+const entranceTransX = [-54, -62, -71, -70, -59, -50, -38, -29, -14, -2, 0];
 
 const StepSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -78,7 +83,7 @@ const StepSection = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 1024); 
+    const check = () => setIsMobile(window.innerWidth < 1024);
     check();
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
@@ -97,25 +102,24 @@ const StepSection = () => {
     restDelta: 0.0001,
   });
 
-  // 1. Color Phase (0.0 -> 0.05)
   const bgColor = useTransform(smoothProgress, [0, 0.05], ["#ffffff", "#000000"]);
   const headingColor = useTransform(smoothProgress, [0, 0.05], ["rgb(0,0,0)", "rgb(255,255,255)"]);
   const headingScale = useTransform(smoothProgress, [0, 0.05], [1, 0.6]);
-  
-  // 2. Hold Phase (0.05 -> 0.12) - Background stays black, heading stays fixed
 
-  // 3. Exit/Entrance Phase (0.12 -> 0.22)
   const introY = useTransform(smoothProgress, [0.12, 0.22], [0, -1000]);
   const introOpacity = useTransform(smoothProgress, [0.12, 0.17], [1, 0]);
 
-  const cubeY = useTransform(smoothProgress, [0.12, 0.22], [800, 0]);
-  const cubeScale = useTransform(smoothProgress, [0.12, 0.22], [0.1, 1]);
-  const cubeOpacity = useTransform(smoothProgress, [0.12, 0.17], [0, 1]);
+  const cubeEntranceY = useTransform(smoothProgress, [0.12, 0.22], [600, 0]);
+  const cubeEntranceScale = useTransform(smoothProgress, entranceStops, entranceScale);
+  const cubeOpacity = useTransform(smoothProgress, [0.12, 0.16], [0, 1]);
+  const cubeEntranceTransX = useTransform(smoothProgress, entranceStops, entranceTransX);
 
-  // Cube rotation stops
-  const rotXStops: number[] = [-35, -35, 0];
-  const rotYStops: number[] = [-45, -45, 0];
-  const progressStops: number[] = [0, 0.1, 0.22]; 
+  const entranceRotXTransform = useTransform(smoothProgress, entranceStops, entranceRotX);
+  const entranceRotYTransform = useTransform(smoothProgress, entranceStops, entranceRotY);
+
+  const postRotXStops: number[] = [0.22];
+  const postRotYStops: number[] = [0];
+  const postProgressStops: number[] = [0.22];
 
   for (let i = 0; i < 6; i++) {
     const segStart = ZONE_START + i * SEG;
@@ -123,20 +127,45 @@ const StepSection = () => {
     const rotateEnd = segStart + SEG * 0.85;
 
     if (rotateStart > 0.22) {
-      progressStops.push(rotateStart);
-      rotXStops.push(rotationTargets[i].x);
-      rotYStops.push(rotationTargets[i].y);
+      postProgressStops.push(rotateStart);
+      postRotXStops.push(rotationTargets[i].x);
+      postRotYStops.push(rotationTargets[i].y);
     }
 
     if (i < 5 && rotateEnd > 0.22) {
-      progressStops.push(rotateEnd);
-      rotXStops.push(rotationTargets[i + 1].x);
-      rotYStops.push(rotationTargets[i + 1].y);
+      postProgressStops.push(rotateEnd);
+      postRotXStops.push(rotationTargets[i + 1].x);
+      postRotYStops.push(rotationTargets[i + 1].y);
     }
   }
 
-  const cubeRotateX = useTransform(smoothProgress, progressStops, rotXStops);
-  const cubeRotateY = useTransform(smoothProgress, progressStops, rotYStops);
+  const postCubeRotateX = useTransform(smoothProgress, postProgressStops, postRotXStops);
+  const postCubeRotateY = useTransform(smoothProgress, postProgressStops, postRotYStops);
+
+  const cubeRotateX = useTransform(smoothProgress, (v: number) => {
+    if (v < 0.22) return entranceRotXTransform.get();
+    return postCubeRotateX.get();
+  });
+
+  const cubeRotateY = useTransform(smoothProgress, (v: number) => {
+    if (v < 0.22) return entranceRotYTransform.get();
+    return postCubeRotateY.get();
+  });
+
+  const cubeTransX = useTransform(smoothProgress, (v: number) => {
+    if (v < 0.22) return cubeEntranceTransX.get();
+    return 0;
+  });
+
+  const cubeScaleFinal = useTransform(smoothProgress, (v: number) => {
+    if (v < 0.22) return cubeEntranceScale.get();
+    return 1;
+  });
+
+  const cubeYFinal = useTransform(smoothProgress, (v: number) => {
+    if (v < 0.22) return cubeEntranceY.get();
+    return 0;
+  });
 
   const textX = useTransform(scrollYProgress, (v: number) => {
     if (v < ZONE_START || v > ZONE_END) return 1500;
@@ -208,8 +237,9 @@ const StepSection = () => {
         <motion.div
           className="relative"
           style={{
-            y: cubeY,
-            scale: cubeScale,
+            y: cubeYFinal,
+            scale: cubeScaleFinal,
+            x: cubeTransX,
             opacity: cubeOpacity,
             zIndex: 10,
           }}
@@ -266,13 +296,12 @@ const StepSection = () => {
           }}
         >
           <p
-            className="text-5xl md:text-7xl font-black leading-none tracking-tighter mb-4"
+            className="text-5xl font-black leading-none tracking-tighter !-mt-26 -ml-2"
             style={{ color: '#fff' }}
           >
             {String(activeIndex + 1).padStart(2, '0')}
           </p>
           <p className="text-lg md:text-2xl font-bold mb-1 tracking-tight" style={{ visibility: 'hidden' }}>{current.author}</p>
-          <p className="text-[10px] uppercase tracking-[0.25em] font-medium mb-5" style={{ visibility: 'hidden' }}>{current.role}</p>
           <p className="text-xs md:text-sm leading-relaxed" style={{ visibility: 'hidden' }}>{current.quote}</p>
         </motion.div>
 
@@ -293,22 +322,10 @@ const StepSection = () => {
           >
             {String(activeIndex + 1).padStart(2, '0')}
           </p>
-          <p
-            className="text-lg md:text-2xl font-bold mb-1 tracking-tight"
-            style={{ color: '#fff' }}
-          >
+          <p className="text-lg md:text-4xl mb-4 font-bold -ml-2 tracking-tight" style={{ color: '#fff' }}>
             {current.author}
           </p>
-          <p
-            className="text-[10px] uppercase tracking-[0.25em] font-medium mb-5"
-            style={{ color: '#fff' }}
-          >
-            {current.role}
-          </p>
-          <p
-            className="text-xs md:text-sm leading-relaxed"
-            style={{ color: '#fff' }}
-          >
+          <p className="text-xs md:text-lg leading-relaxed -ml-2" style={{ color: '#fff' }}>
             {current.quote}
           </p>
         </motion.div>
