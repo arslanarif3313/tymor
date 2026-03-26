@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, useMotionValueEvent, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValueEvent, useSpring, AnimatePresence } from 'framer-motion';
 
 const testimonials = [
   {
@@ -67,7 +67,7 @@ const rotationTargets = [
   { x: 90, y: 0 },
 ];
 
-const ZONE_START = 0.1;
+const ZONE_START = 0.22; // Starts rotation after entrance phase
 const ZONE_END = 0.95;
 const ZONE_SIZE = ZONE_END - ZONE_START;
 const SEG = ZONE_SIZE / 6;
@@ -78,7 +78,7 @@ const StepSection = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
+    const check = () => setIsMobile(window.innerWidth < 1024); 
     check();
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
@@ -97,34 +97,38 @@ const StepSection = () => {
     restDelta: 0.0001,
   });
 
-  const introY = useTransform(smoothProgress, [0, 0.12], [0, -1000]);
-  const introScale = useTransform(smoothProgress, [0, 0.12], [1, 0.4]);
-  const introOpacity = 1; // Content exists and moves up off-screen
+  // 1. Color Phase (0.0 -> 0.05)
+  const bgColor = useTransform(smoothProgress, [0, 0.05], ["#ffffff", "#000000"]);
+  const headingColor = useTransform(smoothProgress, [0, 0.05], ["rgb(0,0,0)", "rgb(255,255,255)"]);
+  const headingScale = useTransform(smoothProgress, [0, 0.05], [1, 0.6]);
+  
+  // 2. Hold Phase (0.05 -> 0.12) - Background stays black, heading stays fixed
 
-  // Cube entrance from bottom - delayed slightly to let intro breathe
-  // Cube entrance: starts small at bottom, moves to center and grows
-  const cubeY = useTransform(smoothProgress, [0, 0.1], [800, 0]);
-  const cubeScale = useTransform(smoothProgress, [0, 0.1], [0.1, 1]);
-  const cubeOpacity = useTransform(smoothProgress, [0, 0.05], [0, 1]);
+  // 3. Exit/Entrance Phase (0.12 -> 0.22)
+  const introY = useTransform(smoothProgress, [0.12, 0.22], [0, -1000]);
+  const introOpacity = useTransform(smoothProgress, [0.12, 0.17], [1, 0]);
 
-  // Cube rotation keyframes - starting with a tilted entrance rotation (isometric-like, showing top face)
+  const cubeY = useTransform(smoothProgress, [0.12, 0.22], [800, 0]);
+  const cubeScale = useTransform(smoothProgress, [0.12, 0.22], [0.1, 1]);
+  const cubeOpacity = useTransform(smoothProgress, [0.12, 0.17], [0, 1]);
+
+  // Cube rotation stops
   const rotXStops: number[] = [-35, -35, 0];
   const rotYStops: number[] = [-45, -45, 0];
-  const progressStops: number[] = [0, 0.04, 0.1];
+  const progressStops: number[] = [0, 0.1, 0.22]; 
 
   for (let i = 0; i < 6; i++) {
     const segStart = ZONE_START + i * SEG;
     const rotateStart = segStart + SEG * 0.55;
     const rotateEnd = segStart + SEG * 0.85;
 
-    // Only add stops that are beyond the entrance phase
-    if (rotateStart > 0.1) {
+    if (rotateStart > 0.22) {
       progressStops.push(rotateStart);
       rotXStops.push(rotationTargets[i].x);
       rotYStops.push(rotationTargets[i].y);
     }
 
-    if (i < 5 && rotateEnd > 0.1) {
+    if (i < 5 && rotateEnd > 0.22) {
       progressStops.push(rotateEnd);
       rotXStops.push(rotationTargets[i + 1].x);
       rotYStops.push(rotationTargets[i + 1].y);
@@ -134,7 +138,6 @@ const StepSection = () => {
   const cubeRotateX = useTransform(smoothProgress, progressStops, rotXStops);
   const cubeRotateY = useTransform(smoothProgress, progressStops, rotYStops);
 
-  // Text sweep: far right → passes through cube → far left
   const textX = useTransform(scrollYProgress, (v: number) => {
     if (v < ZONE_START || v > ZONE_END) return 1500;
     const pos = (v - ZONE_START) / SEG;
@@ -144,7 +147,6 @@ const StepSection = () => {
 
     if (segFrac <= sweepEnd) {
       const t = segFrac / sweepEnd;
-      // Start from far right (+vw), sweep all the way to far left (-vw)
       return vw * (1 - t * 2);
     }
     return -vw * 1.5;
@@ -172,33 +174,37 @@ const StepSection = () => {
 
   return (
     <div ref={containerRef} style={{ height: '800vh', position: 'relative' }}>
-      <div
+      <motion.div
         className="sticky top-0 w-full h-screen flex items-center justify-center overflow-hidden font-sans antialiased"
-        style={{ backgroundColor: '#000' }}
+        style={{ backgroundColor: bgColor }}
       >
+        {/* Intro Heading Layer */}
         <motion.div
           className="absolute inset-x-0 flex items-center justify-center z-50 pointer-events-none"
           style={{
             opacity: introOpacity,
-            scale: introScale,
+            scale: headingScale,
             top: '50%',
             y: introY,
             translateY: '-50%'
           }}
         >
-          <h2
-            className="uppercase leading-[0.85] tracking-tighter text-center text-white"
+          <motion.h2
+            className="uppercase leading-[0.9] tracking-tighter text-center"
             style={{
-              fontSize: 'clamp(3rem, 12vw, 8rem)',
-              fontWeight: 800,
-              fontFamily: 'Inter, sans-serif'
+              fontSize: isMobile ? 'clamp(5rem, 18vw, 8rem)' : '200px',
+              fontWeight: 400,
+              fontFamily: 'Anton, var(--font-anton), sans-serif',
+              color: headingColor,
+              lineHeight: isMobile ? '0.9' : '210px',
+              maxWidth: '1400px'
             }}
           >
             WHAT OUR<br />CLIENTS SAY
-          </h2>
+          </motion.h2>
         </motion.div>
 
-        {/* Cube - centered, z-index below text so text passes over it */}
+        {/* Cube Layer */}
         <motion.div
           className="relative"
           style={{
@@ -245,8 +251,7 @@ const StepSection = () => {
           </div>
         </motion.div>
 
-        {/* Text layer - passes OVER the cube with mix-blend-mode for color shift */}
-        {/* Step Number - Isolated for blend effect over cube */}
+        {/* Testimonial Active Text Layer */}
         <motion.div
           className="absolute"
           style={{
@@ -266,13 +271,11 @@ const StepSection = () => {
           >
             {String(activeIndex + 1).padStart(2, '0')}
           </p>
-          {/* Shadow elements for alignment */}
           <p className="text-lg md:text-2xl font-bold mb-1 tracking-tight" style={{ visibility: 'hidden' }}>{current.author}</p>
           <p className="text-[10px] uppercase tracking-[0.25em] font-medium mb-5" style={{ visibility: 'hidden' }}>{current.role}</p>
           <p className="text-xs md:text-sm leading-relaxed" style={{ visibility: 'hidden' }}>{current.quote}</p>
         </motion.div>
 
-        {/* Other Text - Normal white without blend mode */}
         <motion.div
           className="absolute"
           style={{
@@ -284,7 +287,6 @@ const StepSection = () => {
             zIndex: 21,
           }}
         >
-          {/* Shadow number for alignment */}
           <p
             className="text-5xl md:text-7xl font-black leading-none tracking-tighter mb-4"
             style={{ color: '#fff', visibility: 'hidden' }}
@@ -324,7 +326,7 @@ const StepSection = () => {
             />
           ))}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
