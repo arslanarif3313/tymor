@@ -2097,11 +2097,11 @@ body {
 .solutions-main-header {
   position: absolute;
   top: 50px;
-  left: 14%;
+  left: 29%;
   font-family: var(--font-inter), sans-serif;
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+  font-size: 28px;
+  font-weight: 300;
+  /* letter-spacing: 0.05em; */
   text-transform: uppercase;
   color: #fff;
   z-index: 50;

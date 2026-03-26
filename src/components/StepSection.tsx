@@ -67,7 +67,7 @@ const rotationTargets = [
   { x: 90, y: 0 },
 ];
 
-const ZONE_START = 0.08;
+const ZONE_START = 0.1;
 const ZONE_END = 0.95;
 const ZONE_SIZE = ZONE_END - ZONE_START;
 const SEG = ZONE_SIZE / 6;
@@ -97,19 +97,20 @@ const StepSection = () => {
     restDelta: 0.0001,
   });
 
-  // Intro Title: Starts big and bold at the center, then fades out as cube enters
-  const introOpacity = useTransform(smoothProgress, [0, 0.05], [1, 0]);
-  const introScale = useTransform(smoothProgress, [0, 0.05], [1, 1.2]);
+  const introY = useTransform(smoothProgress, [0, 0.12], [0, -1000]);
+  const introScale = useTransform(smoothProgress, [0, 0.12], [1, 0.4]);
+  const introOpacity = 1; // Content exists and moves up off-screen
 
   // Cube entrance from bottom - delayed slightly to let intro breathe
-  const cubeY = useTransform(smoothProgress, [0.04, 0.12], [800, 0]);
-  const cubeScale = useTransform(smoothProgress, [0.04, 0.12], [0.4, 1]);
-  const cubeOpacity = useTransform(smoothProgress, [0.04, 0.08], [0, 1]);
+  // Cube entrance: starts small at bottom, moves to center and grows
+  const cubeY = useTransform(smoothProgress, [0, 0.1], [800, 0]);
+  const cubeScale = useTransform(smoothProgress, [0, 0.1], [0.1, 1]);
+  const cubeOpacity = useTransform(smoothProgress, [0, 0.05], [0, 1]);
 
-  // Cube rotation keyframes - starting with an entrance rotation
-  const rotXStops: number[] = [90, 90, 0];
+  // Cube rotation keyframes - starting with a tilted entrance rotation (isometric-like, showing top face)
+  const rotXStops: number[] = [-35, -35, 0];
   const rotYStops: number[] = [-45, -45, 0];
-  const progressStops: number[] = [0, 0.04, 0.12];
+  const progressStops: number[] = [0, 0.04, 0.1];
 
   for (let i = 0; i < 6; i++) {
     const segStart = ZONE_START + i * SEG;
@@ -117,13 +118,13 @@ const StepSection = () => {
     const rotateEnd = segStart + SEG * 0.85;
 
     // Only add stops that are beyond the entrance phase
-    if (rotateStart > 0.12) {
+    if (rotateStart > 0.1) {
       progressStops.push(rotateStart);
       rotXStops.push(rotationTargets[i].x);
       rotYStops.push(rotationTargets[i].y);
     }
 
-    if (i < 5 && rotateEnd > 0.12) {
+    if (i < 5 && rotateEnd > 0.1) {
       progressStops.push(rotateEnd);
       rotXStops.push(rotationTargets[i + 1].x);
       rotYStops.push(rotationTargets[i + 1].y);
@@ -181,6 +182,7 @@ const StepSection = () => {
             opacity: introOpacity,
             scale: introScale,
             top: '50%',
+            y: introY,
             translateY: '-50%'
           }}
         >
@@ -244,6 +246,7 @@ const StepSection = () => {
         </motion.div>
 
         {/* Text layer - passes OVER the cube with mix-blend-mode for color shift */}
+        {/* Step Number - Isolated for blend effect over cube */}
         <motion.div
           className="absolute"
           style={{
@@ -254,11 +257,37 @@ const StepSection = () => {
             width: isMobile ? 240 : 340,
             zIndex: 20,
             mixBlendMode: 'difference',
+            pointerEvents: 'none',
           }}
         >
           <p
             className="text-5xl md:text-7xl font-black leading-none tracking-tighter mb-4"
             style={{ color: '#fff' }}
+          >
+            {String(activeIndex + 1).padStart(2, '0')}
+          </p>
+          {/* Shadow elements for alignment */}
+          <p className="text-lg md:text-2xl font-bold mb-1 tracking-tight" style={{ visibility: 'hidden' }}>{current.author}</p>
+          <p className="text-[10px] uppercase tracking-[0.25em] font-medium mb-5" style={{ visibility: 'hidden' }}>{current.role}</p>
+          <p className="text-xs md:text-sm leading-relaxed" style={{ visibility: 'hidden' }}>{current.quote}</p>
+        </motion.div>
+
+        {/* Other Text - Normal white without blend mode */}
+        <motion.div
+          className="absolute"
+          style={{
+            x: textX,
+            opacity: textOpacity,
+            top: '50%',
+            translateY: '-50%',
+            width: isMobile ? 240 : 340,
+            zIndex: 21,
+          }}
+        >
+          {/* Shadow number for alignment */}
+          <p
+            className="text-5xl md:text-7xl font-black leading-none tracking-tighter mb-4"
+            style={{ color: '#fff', visibility: 'hidden' }}
           >
             {String(activeIndex + 1).padStart(2, '0')}
           </p>
@@ -270,13 +299,13 @@ const StepSection = () => {
           </p>
           <p
             className="text-[10px] uppercase tracking-[0.25em] font-medium mb-5"
-            style={{ color: 'var(--accent)' }}
+            style={{ color: '#fff' }}
           >
             {current.role}
           </p>
           <p
             className="text-xs md:text-sm leading-relaxed"
-            style={{ color: 'rgba(255,255,255,0.7)' }}
+            style={{ color: '#fff' }}
           >
             {current.quote}
           </p>

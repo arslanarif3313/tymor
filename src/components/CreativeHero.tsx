@@ -54,16 +54,16 @@ export default function CreativeHero() {
   // 1.0 = bottom of hero at bottom of screen.
   // 0.8 = finish well before next section enters.
   // Reduced travel distance as requested by user.
-  const xLeft1 = useTransform(scrollYProgress, [0.1, 0.8], ["18px", "-10vw"]);
-  const xRight1 = useTransform(scrollYProgress, [0.1, 0.8], ["-18px", "10vw"]);
+  const xLeft1 = useTransform(scrollYProgress, [0.1, 0.6], ["18px", "-6vw"]);
+  const xRight1 = useTransform(scrollYProgress, [0.1, 0.6], ["-18px", "6vw"]);
 
   // Row 2: intelligence [IMG] that
-  const xLeft2 = useTransform(scrollYProgress, [0.15, 0.82], ["25px", "-10vw"]);
-  const xRight2 = useTransform(scrollYProgress, [0.15, 0.82], ["-29px", "10vw"]);
+  const xLeft2 = useTransform(scrollYProgress, [0.15, 0.6], ["25px", "-5vw"]);
+  const xRight2 = useTransform(scrollYProgress, [0.15, 0.6], ["-29px", "5vw"]);
 
   // Row 3: makes [IMG] futures
-  const xLeft3 = useTransform(scrollYProgress, [0.2, 0.85], ["25px", "-10vw"]);
-  const xRight3 = useTransform(scrollYProgress, [0.2, 0.85], ["-18px", "10vw"]);
+  const xLeft3 = useTransform(scrollYProgress, [0.2, 0.6], ["25px", "-6vw"]);
+  const xRight3 = useTransform(scrollYProgress, [0.2, 0.6], ["-18px", "6vw"]);
   return (
     <section ref={containerRef} className="pt-12 hero-scroll-container">
       <div
@@ -71,7 +71,7 @@ export default function CreativeHero() {
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
-        <div className="hero-content-inner">
+        <div className="hero-content-inner xl:!mt-10">
 
           <div className="hero-row hero-row-1">
             <motion.span style={{ x: xLeft1 }} className="hero-text">
@@ -87,7 +87,7 @@ export default function CreativeHero() {
             </motion.span>
           </div>
 
-          <div className="hero-row hero-row-2">
+          <div className="hero-row hero-row-2 !-mt-8">
             <motion.span style={{ x: xLeft2 }} className="hero-text">
               intelligence
             </motion.span>
@@ -99,7 +99,7 @@ export default function CreativeHero() {
             </motion.span>
           </div>
 
-          <div className="hero-row hero-row-3">
+          <div className="hero-row hero-row-3 !-mt-16">
             <motion.span style={{ x: xLeft3 }} className="hero-text">
               defines
             </motion.span>
