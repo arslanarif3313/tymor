@@ -252,32 +252,6 @@ export default function WorkStrip() {
       style={{ height: `${totalSections * 100}vh` }}
     >
       <div className="sticky top-0 h-screen flex flex-col overflow-hidden">
-        {/* Headline at Left Center */}
-        <div className="absolute top-1/2 left-1/4 z-20 pointer-events-none -translate-x-1/2 -translate-y-1/2">
-          <motion.p
-            aria-hidden={activeIndex !== 0}
-            initial={false}
-            animate={{
-              opacity: activeIndex === 0 ? 1 : 0,
-              y: activeIndex === 0 ? 0 : -30
-            }}
-            transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
-            style={{
-              fontFamily: 'var(--font-manrope), Manrope, sans-serif',
-              fontSize: 'clamp(32px, 4.5vw, 56px)',
-              fontWeight: 800,
-              letterSpacing: '-0.03em',
-              color: '#FFFF00',
-              lineHeight: 1.1,
-              textAlign: 'center',
-              textTransform: 'uppercase',
-              maxWidth: '700px'
-            }}
-          >
-            Limits Are For Others
-          </motion.p>
-        </div>
-
         <div className="flex h-full w-full">
           {/* Left — text content */}
           <div className="w-1/2 flex items-center justify-center px-12 xl:px-24">
@@ -294,7 +268,7 @@ export default function WorkStrip() {
                     <span
                       style={{
                         fontFamily: 'var(--font-manrope), Manrope, sans-serif',
-                        fontSize: '16px',
+                        fontSize: '30px',
                         fontWeight: 600,
                         lineHeight: 1,
                         letterSpacing: '-0.04em',
@@ -339,7 +313,7 @@ export default function WorkStrip() {
                       className="group"
                       style={{
                         fontFamily: 'var(--font-dm-sans), system-ui, sans-serif',
-                        fontSize: '16px',
+                        fontSize: '20px',
                         fontWeight: 600,
                         color: '#ffffff',
                         textDecoration: 'none',
@@ -379,8 +353,46 @@ export default function WorkStrip() {
 
           {/* Right — Isometric Stack */}
           <div className="relative w-1/2 flex items-center justify-center overflow-visible px-4">
-            <div className="relative">
+            <div className="relative flex items-center justify-center">
+              <motion.div
+                aria-hidden={activeIndex !== 0}
+                initial={false}
+                animate={{
+                  opacity: activeIndex === 0 ? 1 : 0,
+                  x: activeIndex === 0 ? 0 : -30
+                }}
+                transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
+                style={{
+                  pointerEvents: 'none',
+                  position: 'absolute',
+                  right: '100%',
+                  bottom: '20px',
+                  marginRight: '150px',
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: 'var(--font-manrope), Manrope, sans-serif',
+                    fontSize: 'clamp(80px, 3.2vw, 90px)',
+                    fontWeight: 600,
+                    letterSpacing: '-0.03em',
+                    color: '#FFFF00',
+                    lineHeight: 1,
+                    textAlign: 'right',
+                    textTransform: 'uppercase',
+                    whiteSpace: 'nowrap',
+                    transform: 'rotate(40deg)',
+                    transformOrigin: '100% 100%',
+                    margin: 0,
+                  }}
+                >
+                  Limits Are For Others
+                </p>
+              </motion.div>
+
+              <div className="relative">
               <IsometricStack activeIndex={activeIndex} tileSize={tileSize} />
+              </div>
             </div>
           </div>
         </div>

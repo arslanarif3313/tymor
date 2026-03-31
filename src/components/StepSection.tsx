@@ -302,6 +302,7 @@ const StepSection = () => {
             {String(activeIndex + 1).padStart(2, '0')}
           </p>
           <p className="text-lg md:text-2xl font-bold mb-1 tracking-tight" style={{ visibility: 'hidden' }}>{current.author}</p>
+          <p className="text-sm md:text-lg mb-3 tracking-tight" style={{ visibility: 'hidden' }}>{current.role}</p>
           <p className="text-xs md:text-sm leading-relaxed" style={{ visibility: 'hidden' }}>{current.quote}</p>
         </motion.div>
 
@@ -322,8 +323,11 @@ const StepSection = () => {
           >
             {String(activeIndex + 1).padStart(2, '0')}
           </p>
-          <p className="text-lg md:text-4xl mb-4 font-bold -ml-2 tracking-tight" style={{ color: '#fff' }}>
+          <p className="text-lg md:text-4xl mb-1 font-bold -ml-2 tracking-tight" style={{ color: '#f74a00' }}>
             {current.author}
+          </p>
+          <p className="text-sm md:text-xl mb-4 -ml-2 tracking-tight" style={{ color: '#fff' }}>
+            {current.role}
           </p>
           <p className="text-xs md:text-lg leading-relaxed -ml-2" style={{ color: '#fff' }}>
             {current.quote}

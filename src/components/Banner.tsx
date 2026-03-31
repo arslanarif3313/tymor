@@ -17,7 +17,7 @@ const PROJECTS = [
   {
     client: "Holobox Discovery Meeting",
     sep: "●",
-    bg: "#E91E8C",
+    bg: "#ff4fa3",
     href: "#",
     mDur: 4,
     desc: "Tymor aligns every dimension of your MetaHuman \u2014 appearance, voice, tone, personality, and knowledge \u2014 with your company\u2019s identity, brand standards, and messaging framework. Built deliberately. All consistent. Owned entirely by your identity.",
@@ -25,7 +25,7 @@ const PROJECTS = [
   {
     client: "Design Your Meta Human",
     sep: "►",
-    bg: "#FFD600",
+    bg: "#ff4fa3",
     href: "#",
     mDur: 4,
     desc: "Every MetaHuman is built from scratch. We start with you. Your brand brief, your audience, your tone, your world.",
@@ -33,7 +33,7 @@ const PROJECTS = [
   {
     client: "Voice & Speech Production",
     sep: "৹",
-    bg: "#E91E8C",
+    bg: "#ff4fa3",
     href: "#",
     mDur: 4,
     desc: "The voice your MetaHuman delivers through the Holobox is the first impression, the trust signal, and the brand moment \u2014 all in one. Our voice engineers build with that responsibility in every session, across every language, for each deployment.",
@@ -41,7 +41,7 @@ const PROJECTS = [
   {
     client: "Facial Expressions & Movement",
     sep: "৹",
-    bg: "#FFD600",
+    bg: "#ff4fa3",
     href: "#",
     mDur: 4,
     desc: "Your MetaHuman doesn\u2019t just talk. It reacts. Tymor programs all 56 facial action units \u2014 every emotion, every lip sync shape, every gesture \u2014 so every conversation through the Holobox feels genuinely alive.",
@@ -49,7 +49,7 @@ const PROJECTS = [
   {
     client: "AI Brain & Integration",
     sep: "▲",
-    bg: "#E91E8C",
+    bg: "#ff4fa3",
     href: "#",
     mDur: 4,
     desc: "What your MetaHuman knows, how it speaks, when it escalates, and where it draws the line. That is not a configuration setting. That is Tymor\u2019s craft.",
@@ -57,7 +57,6 @@ const PROJECTS = [
 ];
 
 const N = PROJECTS.length;
-const INTRO_WORDS = ["PR\u2460CESS\u25BA", "\u2580 IS \u25AB\u2198", "EVERYTHING"];
 const CARDS_START = 0.15;
 
 function getActiveIndex(p: number): number {
@@ -82,23 +81,61 @@ function getActiveIndex(p: number): number {
 */
 type Slot = { left: string; top: string; w: string; h: string; z: number };
 
-const S_CENTER: Slot = { left: "22vw", top: "10vh", w: "56vw", h: "74vh", z: 10 };
-const S_LT: Slot = { left: "2.5vw", top: "10vh", w: "17.5vw", h: "35vh", z: 5 };
-const S_LB: Slot = { left: "2.5vw", top: "50vh", w: "17.5vw", h: "35vh", z: 4 };
-const S_RT: Slot = { left: "80vw", top: "10vh", w: "17.5vw", h: "35vh", z: 5 };
-const S_RB: Slot = { left: "80vw", top: "50vh", w: "17.5vw", h: "35vh", z: 4 };
-const S_HL: Slot = { left: "-22vw", top: "30vh", w: "17.5vw", h: "35vh", z: 1 };
-const S_HR: Slot = { left: "102vw", top: "30vh", w: "17.5vw", h: "35vh", z: 1 };
+type SlotSet = {
+  center: Slot;
+  leftTop: Slot;
+  leftBottom: Slot;
+  rightTop: Slot;
+  rightBottom: Slot;
+  hiddenLeft: Slot;
+  hiddenRight: Slot;
+};
 
-function getSlot(offset: number, cardIndex: number): Slot {
-  if (offset === 0) return S_CENTER;
+function getSlotSet(viewportWidth: number): SlotSet {
+  if (viewportWidth <= 768) {
+    return {
+      center: { left: "11vw", top: "20vh", w: "78vw", h: "50vh", z: 10 },
+      leftTop: { left: "-2vw", top: "12vh", w: "33vw", h: "24vh", z: 5 },
+      leftBottom: { left: "-2vw", top: "62vh", w: "33vw", h: "24vh", z: 4 },
+      rightTop: { left: "76vw", top: "16vh", w: "22vw", h: "20vh", z: 5 },
+      rightBottom: { left: "76vw", top: "62vh", w: "22vw", h: "20vh", z: 4 },
+      hiddenLeft: { left: "-40vw", top: "35vh", w: "33vw", h: "24vh", z: 1 },
+      hiddenRight: { left: "110vw", top: "35vh", w: "22vw", h: "20vh", z: 1 },
+    };
+  }
+
+  if (viewportWidth <= 1200) {
+    return {
+      center: { left: "18vw", top: "15vh", w: "62vw", h: "62vh", z: 10 },
+      leftTop: { left: "1vw", top: "11vh", w: "27vw", h: "31vh", z: 5 },
+      leftBottom: { left: "1vw", top: "55vh", w: "27vw", h: "31vh", z: 4 },
+      rightTop: { left: "79vw", top: "14vh", w: "16vw", h: "26vh", z: 5 },
+      rightBottom: { left: "79vw", top: "55vh", w: "16vw", h: "26vh", z: 4 },
+      hiddenLeft: { left: "-31vw", top: "33vh", w: "27vw", h: "31vh", z: 1 },
+      hiddenRight: { left: "106vw", top: "33vh", w: "16vw", h: "26vh", z: 1 },
+    };
+  }
+
+  return {
+    center: { left: "30vw", top: "18vh", w: "46vw", h: "58vh", z: 10 },
+    leftTop: { left: "2vw", top: "10vh", w: "25vw", h: "38vh", z: 5 },
+    leftBottom: { left: "2vw", top: "52vh", w: "25vw", h: "38vh", z: 4 },
+    rightTop: { left: "81vw", top: "13vh", w: "13vw", h: "31vh", z: 5 },
+    rightBottom: { left: "81vw", top: "52vh", w: "13vw", h: "31vh", z: 4 },
+    hiddenLeft: { left: "-28vw", top: "32vh", w: "25vw", h: "38vh", z: 1 },
+    hiddenRight: { left: "105vw", top: "32vh", w: "13vw", h: "31vh", z: 1 },
+  };
+}
+
+function getSlot(offset: number, cardIndex: number, slotSet: SlotSet): Slot {
+  if (offset === 0) return slotSet.center;
   if (offset === 1 || offset === 2) {
-    return cardIndex % 2 === 0 ? S_RB : S_RT;
+    return cardIndex % 2 === 0 ? slotSet.rightBottom : slotSet.rightTop;
   }
   if (offset === -1 || offset === -2) {
-    return cardIndex % 2 === 0 ? S_LT : S_LB;
+    return cardIndex % 2 === 0 ? slotSet.leftTop : slotSet.leftBottom;
   }
-  return offset < 0 ? S_HL : S_HR;
+  return offset < 0 ? slotSet.hiddenLeft : slotSet.hiddenRight;
 }
 
 function MarqueeStrip({
@@ -208,48 +245,26 @@ export default function Banner() {
 
   const [activeIdx, setActiveIdx] = useState(0);
   const [deckVisible, setDeckVisible] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState(1600);
+
+  useEffect(() => {
+    const updateViewport = () => setViewportWidth(window.innerWidth);
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
+  }, []);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     setActiveIdx(Math.round(getActiveIndex(v)));
     setDeckVisible(v > 0.10);
   });
 
-  const introOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.1, 0.15],
-    [1, 1, 0],
-  );
-  const introY = useTransform(scrollYProgress, [0, 0.15], [0, -80]);
-  const w0Y = useTransform(scrollYProgress, [0, 0.12], [0, -120]);
-  const w1Y = useTransform(scrollYProgress, [0, 0.12], [0, 0]);
-  const w2Y = useTransform(scrollYProgress, [0, 0.12], [0, 120]);
-  const wordYs = [w0Y, w1Y, w2Y];
-  const sceneOpacity = useTransform(scrollYProgress, [0.08, 0.16], [0, 1]);
+  const sceneOpacity = useTransform(scrollYProgress, [0.16, 0.22], [0, 1]);
+  const slotSet = getSlotSet(viewportWidth);
 
   return (
     <section ref={ref} className="bdr-section" id="process">
       <div className="bdr-sticky">
-        <motion.div
-          className="bdr-intro"
-          style={{ opacity: introOpacity, y: introY }}
-          aria-hidden="true"
-        >
-          {INTRO_WORDS.map((word, i) => (
-            <motion.div
-              key={i}
-              className="bdr-intro-word-wrap"
-              style={{ y: wordYs[i] }}
-            >
-              <div
-                className="bdr-intro-word"
-                style={{ animationDelay: `${0.1 + i * 0.15}s` }}
-              >
-                {word}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
         <motion.div
           className="bdr-scene"
           style={{ opacity: sceneOpacity }}
@@ -273,7 +288,7 @@ export default function Banner() {
               <ProjectCard
                 key={project.client}
                 project={project}
-                slot={getSlot(offset, i)}
+                slot={getSlot(offset, i, slotSet)}
                 isCenter={offset === 0}
                 isVisible={deckVisible}
               />
