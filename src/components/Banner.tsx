@@ -17,46 +17,48 @@ const PROJECTS = [
   {
     client: "Holobox Discovery Meeting",
     sep: "●",
-    bg: "#ff4fa3",
+    bg: "#d4001c",
     href: "#",
-    mDur: 4,
+    mDur: 100,
     desc: "Tymor aligns every dimension of your MetaHuman \u2014 appearance, voice, tone, personality, and knowledge \u2014 with your company\u2019s identity, brand standards, and messaging framework. Built deliberately. All consistent. Owned entirely by your identity.",
   },
   {
     client: "Design Your Meta Human",
     sep: "►",
-    bg: "#ff4fa3",
+    bg: "#ff4a1f",
     href: "#",
-    mDur: 4,
+    mDur: 100,
     desc: "Every MetaHuman is built from scratch. We start with you. Your brand brief, your audience, your tone, your world.",
   },
   {
     client: "Voice & Speech Production",
     sep: "৹",
-    bg: "#ff4fa3",
+    bg: "#d4001c",
     href: "#",
-    mDur: 4,
+    mDur: 100,
     desc: "The voice your MetaHuman delivers through the Holobox is the first impression, the trust signal, and the brand moment \u2014 all in one. Our voice engineers build with that responsibility in every session, across every language, for each deployment.",
   },
   {
     client: "Facial Expressions & Movement",
     sep: "৹",
-    bg: "#ff4fa3",
+    bg: "#ff4a1f",
     href: "#",
-    mDur: 4,
+    mDur: 100,
     desc: "Your MetaHuman doesn\u2019t just talk. It reacts. Tymor programs all 56 facial action units \u2014 every emotion, every lip sync shape, every gesture \u2014 so every conversation through the Holobox feels genuinely alive.",
   },
   {
     client: "AI Brain & Integration",
     sep: "▲",
-    bg: "#ff4fa3",
+    bg: "#d4001c",
     href: "#",
-    mDur: 4,
+    mDur: 100,
     desc: "What your MetaHuman knows, how it speaks, when it escalates, and where it draws the line. That is not a configuration setting. That is Tymor\u2019s craft.",
   },
 ];
 
 const N = PROJECTS.length;
+/** Opening typography on the black field (Archive-style Unicode lockup) */
+const INTRO_WORDS = ["PR\u2460CESS\u25BA", "\u2580 IS \u25AB\u2198", "EVERYTHING"];
 const CARDS_START = 0.15;
 
 function getActiveIndex(p: number): number {
@@ -67,18 +69,6 @@ function getActiveIndex(p: number): number {
   );
 }
 
-/*
-  Slot positions (all in vw / vh from the sticky container).
-  Matches the 3-column grid visually:
-    left col (2 stacked) | center (hero) | right col (2 stacked)
-
-  offset  0  → CENTER
-  offset -1  → LEFT BOTTOM  (card that just left center)
-  offset -2  → LEFT TOP     (card before that)
-  offset +1  → RIGHT TOP    (next card to enter center)
-  offset +2  → RIGHT BOTTOM (card after that)
-  else       → off-screen hidden
-*/
 type Slot = { left: string; top: string; w: string; h: string; z: number };
 
 type SlotSet = {
@@ -117,11 +107,11 @@ function getSlotSet(viewportWidth: number): SlotSet {
   }
 
   return {
-    center: { left: "30vw", top: "18vh", w: "46vw", h: "58vh", z: 10 },
-    leftTop: { left: "2vw", top: "10vh", w: "25vw", h: "38vh", z: 5 },
-    leftBottom: { left: "2vw", top: "52vh", w: "25vw", h: "38vh", z: 4 },
-    rightTop: { left: "81vw", top: "13vh", w: "13vw", h: "31vh", z: 5 },
-    rightBottom: { left: "81vw", top: "52vh", w: "13vw", h: "31vh", z: 4 },
+    center: { left: "28vw", top: "16vh", w: "48vw", h: "52vh", z: 10 },
+    leftTop: { left: "2vw", top: "12vh", w: "22vw", h: "32vh", z: 5 },
+    leftBottom: { left: "2vw", top: "54vh", w: "22vw", h: "32vh", z: 4 },
+    rightTop: { left: "82vw", top: "14vh", w: "14vw", h: "28vh", z: 5 },
+    rightBottom: { left: "82vw", top: "54vh", w: "14vw", h: "28vh", z: 4 },
     hiddenLeft: { left: "-28vw", top: "32vh", w: "25vw", h: "38vh", z: 1 },
     hiddenRight: { left: "105vw", top: "32vh", w: "13vw", h: "31vh", z: 1 },
   };
@@ -207,8 +197,8 @@ function ProjectCard({
         zIndex: slot.z,
         opacity: isVisible && !isHidden ? 1 : 0,
         clipPath: isVisible
-          ? "inset(0% 0% round 16px)"
-          : "inset(48% 0% round 999px)",
+          ? "inset(0% 0% round 0px)"
+          : "inset(48% 0% round 0px)",
       }}
     >
       <a
@@ -229,7 +219,7 @@ function ProjectCard({
               duration={project.mDur}
             />
           </div>
-          <p className="bdr-card-desc">{project.desc}</p>
+          {isCenter ? <p className="bdr-card-desc">{project.desc}</p> : null}
         </div>
       </a>
     </div>
@@ -259,12 +249,44 @@ export default function Banner() {
     setDeckVisible(v > 0.10);
   });
 
-  const sceneOpacity = useTransform(scrollYProgress, [0.16, 0.22], [0, 1]);
+  const introOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.1, 0.15],
+    [1, 1, 0],
+  );
+  const introY = useTransform(scrollYProgress, [0, 0.15], [0, -80]);
+  const w0Y = useTransform(scrollYProgress, [0, 0.12], [0, -120]);
+  const w1Y = useTransform(scrollYProgress, [0, 0.12], [0, 0]);
+  const w2Y = useTransform(scrollYProgress, [0, 0.12], [0, 120]);
+  const wordYs = [w0Y, w1Y, w2Y];
+  const sceneOpacity = useTransform(scrollYProgress, [0.08, 0.16], [0, 1]);
+
   const slotSet = getSlotSet(viewportWidth);
 
   return (
     <section ref={ref} className="bdr-section" id="process">
       <div className="bdr-sticky">
+        <motion.div
+          className="bdr-intro"
+          style={{ opacity: introOpacity, y: introY }}
+          aria-hidden="true"
+        >
+          {INTRO_WORDS.map((word, i) => (
+            <motion.div
+              key={i}
+              className="bdr-intro-word-wrap"
+              style={{ y: wordYs[i] }}
+            >
+              <div
+                className="bdr-intro-word"
+                style={{ animationDelay: `${0.1 + i * 0.15}s` }}
+              >
+                {word}
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
         <motion.div
           className="bdr-scene"
           style={{ opacity: sceneOpacity }}
@@ -279,7 +301,7 @@ export default function Banner() {
           </div>
         </motion.div>
 
-        <h2 className="sr-only">COMPLEX MADE COMPELLING</h2>
+        <h2 className="sr-only">Process is everything</h2>
 
         <div className="bdr-deck">
           {PROJECTS.map((project, i) => {

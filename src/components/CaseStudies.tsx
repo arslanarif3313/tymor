@@ -45,12 +45,16 @@ const industriesRow2 = [
   },
 ];
 
-const IndustryCard = ({ industry }: { industry: typeof industriesRow1[0] }) => {
+const IndustryCard = ({
+  industry,
+}: {
+  industry: (typeof industriesRow1)[0];
+}) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
-      className="industry-marquee-card position-relative overflow-hidden cursor-pointer"
+      className="industry-marquee-card position-relative overflow-hidden cursor-pointer rounded-0"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -67,11 +71,12 @@ const IndustryCard = ({ industry }: { industry: typeof industriesRow1[0] }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="position-absolute top-0 left-0 w-100 h-100 d-flex flex-column justify-content-end p-4"
+            className="position-absolute top-0 left-0 w-100 h-100 d-flex flex-column justify-content-end p-3 p-md-4"
             style={{
-              background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%)",
+              background:
+                "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%)",
               backdropFilter: "blur(4px)",
-              zIndex: 10
+              zIndex: 10,
             }}
           >
             <motion.h4
@@ -80,7 +85,10 @@ const IndustryCard = ({ industry }: { industry: typeof industriesRow1[0] }) => {
             >
               {industry.name}
             </motion.h4>
-            <motion.p className="small text-white-50 m-0" style={{ lineHeight: "1.4" }}>
+            <motion.p
+              className="small text-white-50 m-0"
+              style={{ lineHeight: "1.4" }}
+            >
               {industry.desc}
             </motion.p>
           </motion.div>
@@ -94,23 +102,27 @@ export default function CaseStudies() {
   const videoUrl = "https://html.aqlova.com/videos/pixora/banner-4-1.mp4";
 
   return (
-    <section className="case-studies text-white py-5 overflow-hidden">
-      <div className="container text-center mb-5">
-        <h2 className="display-5 fw-bold text-uppercase anton-font">CASE STUDIES</h2>
+    <section className="case-studies py-4 py-md-5 overflow-hidden">
+      <div className="container text-center mb-4 mb-md-5">
+        <h2 className="display-5 fw-bold text-uppercase anton-font mb-0 case-studies-heading">
+        IMPACT HIGHLIGHTS
+        </h2>
       </div>
 
-      {/* ROW 1 (RIGHT) */}
       <div className="marquee marquee-right">
         <div className="marquee-inner">
-          {industriesRow1.map((item) => <IndustryCard key={item.id} industry={item} />)}
-          <div className="marquee-video">
+          {industriesRow1.map((item) => (
+            <IndustryCard key={item.id} industry={item} />
+          ))}
+          <div className="marquee-video rounded-0">
             <video loop muted autoPlay playsInline className="w-100 h-100 object-fit-cover">
               <source src={videoUrl} type="video/mp4" />
             </video>
           </div>
-          {/* Repeat for seamless loop */}
-          {industriesRow1.map((item) => <IndustryCard key={`${item.id}-dup`} industry={item} />)}
-          <div className="marquee-video">
+          {industriesRow1.map((item) => (
+            <IndustryCard key={`${item.id}-dup`} industry={item} />
+          ))}
+          <div className="marquee-video rounded-0">
             <video loop muted autoPlay playsInline className="w-100 h-100 object-fit-cover">
               <source src={videoUrl} type="video/mp4" />
             </video>
@@ -118,22 +130,24 @@ export default function CaseStudies() {
         </div>
       </div>
 
-      {/* ROW 2 (LEFT) */}
-      <div className="marquee marquee-left mt-4">
+      <div className="marquee marquee-left mt-3 mt-md-4">
         <div className="marquee-inner">
-          <div className="marquee-video">
+          <div className="marquee-video rounded-0">
             <video loop muted autoPlay playsInline className="w-100 h-100 object-fit-cover">
               <source src={videoUrl} type="video/mp4" />
             </video>
           </div>
-          {industriesRow2.map((item) => <IndustryCard key={item.id} industry={item} />)}
-          {/* Repeat */}
-          <div className="marquee-video">
+          {industriesRow2.map((item) => (
+            <IndustryCard key={item.id} industry={item} />
+          ))}
+          <div className="marquee-video rounded-0">
             <video loop muted autoPlay playsInline className="w-100 h-100 object-fit-cover">
               <source src={videoUrl} type="video/mp4" />
             </video>
           </div>
-          {industriesRow2.map((item) => <IndustryCard key={`${item.id}-dup`} industry={item} />)}
+          {industriesRow2.map((item) => (
+            <IndustryCard key={`${item.id}-dup`} industry={item} />
+          ))}
         </div>
       </div>
     </section>

@@ -334,19 +334,6 @@ const StepSection = () => {
           </p>
         </motion.div>
 
-        {/* Progress dots */}
-        <div className="absolute bottom-8 md:bottom-12 flex gap-2" style={{ zIndex: 30 }}>
-          {testimonials.map((_, i) => (
-            <div
-              key={i}
-              className="h-1 rounded-full transition-all duration-700"
-              style={{
-                width: i === activeIndex ? 32 : 8,
-                backgroundColor: i === activeIndex ? '#fff' : 'rgba(255,255,255,0.15)',
-              }}
-            />
-          ))}
-        </div>
       </motion.div>
     </div>
   );

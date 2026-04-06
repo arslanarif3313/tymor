@@ -1,6 +1,12 @@
 "use client";
 
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
 import { useRef } from "react";
 
 export default function CreativeHero() {
@@ -50,7 +56,7 @@ export default function CreativeHero() {
   };
 
   // Row 1: get the [VIDEO] left-size
-  // Now using ["start start", "end end"] offset. 
+  // Now using ["start start", "end end"] offset.
   // 1.0 = bottom of hero at bottom of screen.
   // 0.8 = finish well before next section enters.
   // Reduced travel distance as requested by user.
@@ -72,7 +78,6 @@ export default function CreativeHero() {
         onMouseLeave={handleMouseLeave}
       >
         <div className="hero-content-inner xl:!mt-10">
-
           <div className="hero-row hero-row-1">
             <motion.span style={{ x: xLeft1 }} className="hero-text">
               unlock
@@ -92,7 +97,10 @@ export default function CreativeHero() {
               intelligence
             </motion.span>
             <div className="hero-img-box main-img-box">
-              <img src="/Tymore%20Ai%20with%20Holobox/Hero-Banner.jpg" alt="Creative Experience" />
+              <img
+                src="/Tymore%20Ai%20with%20Holobox/Hero-Banner.jpg"
+                alt="Creative Experiences"
+              />
             </div>
             <motion.span style={{ x: xRight2 }} className="hero-text">
               that
@@ -104,10 +112,13 @@ export default function CreativeHero() {
               defines
             </motion.span>
             <div className="hero-img-box sub-img-box">
-              <img src="/Tymore%20Ai%20with%20Holobox/2.1-—-Holobox-AI-Presence.jpg" alt="Shaping Tomorrow" />
+              <img
+                src="/Tymore%20Ai%20with%20Holobox/2.1-—-Holobox-AI-Presence.jpg"
+                alt="Shaping Tomorrow"
+              />
             </div>
             <motion.span style={{ x: xRight3 }} className="hero-text">
-              experience
+              experience<span style={{ display: "inline" }}>s</span>
             </motion.span>
           </div>
 
@@ -119,14 +130,15 @@ export default function CreativeHero() {
               className="about-btn-circle"
               style={{ x: springX, y: springY }}
             >
-              About<br />Us
+              About
+              <br />
+              Us
             </motion.a>
             <div className="strategic-expertise">
               <div className="strategic-line"></div>
               <p>GET THE STRATEGIC EXPERTISE YOU NEED</p>
             </div>
           </div>
-
         </div>
       </div>
     </section>

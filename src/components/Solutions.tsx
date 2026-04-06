@@ -93,10 +93,10 @@ export default function Solutions() {
   const xValues = [isMobile ? "0%" : "0vw"];
   for (let i = 0; i < solutions.length; i++) {
     xStops.push((i + 0.5) / solutions.length);
-    xValues.push(isMobile ? "0%" : `-${i * 50}vw`);
+    xValues.push(isMobile ? "0%" : `-${i * 56}vw`);
   }
   xStops.push(1);
-  xValues.push(isMobile ? "0%" : `-${(solutions.length - 1) * 50}vw`);
+  xValues.push(isMobile ? "0%" : `-${(solutions.length - 1) * 56}vw`);
   const x = useTransform(scrollYProgress, xStops, xValues);
 
   // LIVE SCROLL COUNTER: Non-linear mapping for centering without initial/terminal gaps
@@ -156,15 +156,15 @@ export default function Solutions() {
                 <AnimatePresence mode="popLayout">
                   <motion.h2
                     key={activeIndex}
-                    initial={{ y: 0, opacity: 0, filter: 'blur(2px)' }}
-                    animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-                    exit={{ y: 0, opacity: 0, filter: 'blur(2px)' }}
+                    initial={{ y: 8, opacity: 0, filter: 'blur(2px)', scale: 0.82 }}
+                    animate={{ y: 0, opacity: 1, filter: 'blur(0px)', scale: 1 }}
+                    exit={{ y: -8, opacity: 0, filter: 'blur(2px)', scale: 0.92 }}
                     transition={{
-                      duration: 0.5,
+                      duration: 0.55,
                       ease: [0.23, 1, 0.32, 1] // Snappy premium ease-out
                     }}
                     className="solutions-dynamic-heading"
-                    style={{ position: 'relative' }}
+                    style={{ position: 'relative', transformOrigin: 'left center' }}
                   >
                     {solutions[activeIndex].heading.split('\n').map((line, i) => (
                       <span key={i}>{line}<br /></span>

@@ -17,12 +17,8 @@ export default function MeetTheTeam() {
   return (
     <section className="meet-team py-5 overflow-hidden bg-white">
       <div className="container text-center mb-5">
-        <h2 className="display-2 fw-bold text-uppercase anton-font" style={{ color: "var(--accent)" }}>WHO WE ARE</h2>
-        <div className="d-flex align-items-center justify-content-center gap-3">
-          <div style={{ height: "1px", width: "40px", backgroundColor: "rgba(0,0,0,0.1)" }}></div>
-          <p className="text-secondary text-uppercase tracking-[0.3em] font-mono small m-0">Leadership & Innovation</p>
-          <div style={{ height: "1px", width: "40px", backgroundColor: "rgba(0,0,0,0.1)" }}></div>
-        </div>
+        <h2 className="display-2 fw-bold text-uppercase anton-font" style={{ color: "#111" }}>WHO WE ARE</h2>
+        <p className="text-secondary text-uppercase tracking-[0.3em] font-mono small m-0 mt-2">Leadership & Innovation</p>
       </div>
 
       <div className="marquee marquee-left">
@@ -47,7 +43,7 @@ function TeamCard({ member }: { member: any }) {
         <img src={member.src} alt={member.name} className="w-100 h-100 object-fit-cover" style={{ filter: "grayscale(20%)" }} />
         <div className="position-absolute bottom-0 start-0 w-100 p-4" style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.9))" }}>
           <h4 className="text-white fw-bold mb-1">{member.name}</h4>
-          <p className="text-primary font-mono small m-0 text-uppercase tracking-wider" style={{ fontSize: "10px" }}>{member.role}</p>
+          <p className="font-mono small m-0 text-uppercase tracking-wider text-white-50" style={{ fontSize: "10px" }}>{member.role}</p>
         </div>
       </div>
     );
@@ -57,7 +53,7 @@ function TeamCard({ member }: { member: any }) {
     <div className="team-card-text d-flex flex-column justify-content-center align-items-center p-5 text-center">
       <div className="mb-4" style={{ height: "1px", width: "60px", background: "var(--accent)" }}></div>
       <h2 className="anton-font text-uppercase" style={{ color: "#000", fontSize: "3.5rem", lineHeight: "1" }}>{member.name}</h2>
-      <p className="text-primary text-uppercase font-mono small mt-3" style={{ fontSize: "11px", letterSpacing: "0.2em" }}>{member.role}</p>
+      <p className="text-uppercase font-mono small mt-3 text-secondary" style={{ fontSize: "11px", letterSpacing: "0.2em" }}>{member.role}</p>
       <div className="mt-4" style={{ height: "1px", width: "60px", background: "var(--accent)" }}></div>
     </div>
   );

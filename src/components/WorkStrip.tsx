@@ -3,6 +3,23 @@ import { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
+function TitleLeadSquare({ color = '#FFFF00' }: { color?: string }) {
+  return (
+    <span
+      aria-hidden
+      style={{
+        display: 'inline-block',
+        width: '0.5em',
+        height: '0.5em',
+        backgroundColor: color,
+        marginRight: '0.4em',
+        verticalAlign: 'middle',
+        transform: 'translateY(-0.05em)',
+      }}
+    />
+  );
+}
+
 const features = [
   {
     id: "01",
@@ -173,7 +190,8 @@ function MobileWorkStrip() {
                 margin: '0 0 10px 0',
               }}
             >
-              {'// '}{feature.title}
+              <TitleLeadSquare />
+              {feature.title}
             </h3>
             <p
               style={{
@@ -291,7 +309,8 @@ export default function WorkStrip() {
                         margin: '0 0 20px 0',
                       }}
                     >
-                      {'// '}{feature.title}
+                      <TitleLeadSquare />
+                      {feature.title}
                     </h3>
 
                     <p
@@ -367,26 +386,27 @@ export default function WorkStrip() {
                   position: 'absolute',
                   right: '100%',
                   bottom: '20px',
-                  marginRight: '150px',
+                  marginRight: '220px',
                 }}
               >
                 <p
                   style={{
                     fontFamily: 'var(--font-manrope), Manrope, sans-serif',
-                    fontSize: 'clamp(80px, 3.2vw, 90px)',
+                    fontSize: 'clamp(72px, 3vw, 84px)',
                     fontWeight: 600,
                     letterSpacing: '-0.03em',
                     color: '#FFFF00',
-                    lineHeight: 1,
-                    textAlign: 'right',
+                    lineHeight: 1.08,
+                    textAlign: 'left',
                     textTransform: 'uppercase',
-                    whiteSpace: 'nowrap',
+                    width: '600px',
                     transform: 'rotate(40deg)',
                     transformOrigin: '100% 100%',
                     margin: 0,
                   }}
                 >
-                  Limits Are For Others
+                  <span style={{ display: 'block', marginLeft: '-90px', whiteSpace: 'nowrap' }}>Limits Are</span>
+                  <span style={{ display: 'block', marginLeft: '235px', marginTop: '2px', whiteSpace: 'nowrap' }}>For Others</span>
                 </p>
               </motion.div>
 

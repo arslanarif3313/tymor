@@ -1,8 +1,9 @@
-/* ── BDR Banner ── */
+/* Banner: black field + opening typography; deck/cards unchanged from your build */
+
 .bdr-section {
   position: relative;
   height: 1100vh;
-  background: linear-gradient(180deg, #fff1f8 0%, #ffe7f3 55%, #ffd9eb 100%);
+  background: #000000;
 }
 
 .bdr-sticky {
@@ -13,13 +14,7 @@
   overflow: hidden;
 }
 
-.bdr-deck {
-  position: absolute;
-  inset: 0;
-  z-index: 15;
-  pointer-events: none;
-}
-
+/* ── text on black (added); sits under the deck until cards appear ── */
 .bdr-intro {
   position: absolute;
   inset: 0;
@@ -58,40 +53,44 @@
   100% { clip-path: inset(0 0 0 0); transform: none; opacity: 1; }
 }
 
-/* ── scene corner labels ── */
 .bdr-scene {
   position: absolute;
   inset: 0;
-  z-index: 12;
+  z-index: 11;
   pointer-events: none;
 }
 
 .bdr-scene-tl,
 .bdr-scene-tr {
   position: absolute;
-  top: clamp(8px, 3vh, 28px);
+  top: clamp(16px, 3.5vh, 40px);
   font-family: var(--font-anton), "Anton", sans-serif;
-  font-size: clamp(2.2rem, 5.6vw, 5.1rem);
-  color: #111;
+  font-size: clamp(1.6rem, 4.2vw, 3.6rem);
+  color: #fff;
   text-transform: uppercase;
   letter-spacing: -0.01em;
   line-height: 1;
 }
 
-.bdr-scene-tl { left: 48%; transform: translateX(-100%); }
-.bdr-scene-tr { left: 64%; transform: translateX(0); }
+.bdr-scene-tl {
+  left: clamp(16px, 4vw, 56px);
+}
+
+.bdr-scene-tr {
+  right: clamp(16px, 4vw, 56px);
+}
 
 .bdr-scene-bc {
   position: absolute;
-  bottom: clamp(2px, 1vh, 12px);
+  bottom: clamp(16px, 4vh, 44px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: clamp(14px, 2.2vw, 34px);
+  gap: clamp(10px, 1.4vw, 20px);
   font-family: var(--font-anton), "Anton", sans-serif;
-  font-size: clamp(2.6rem, 6.5vw, 6rem);
-  color: #111;
+  font-size: clamp(1.6rem, 4.2vw, 3.6rem);
+  color: #fff;
   text-transform: uppercase;
   letter-spacing: -0.01em;
   line-height: 1;
@@ -99,19 +98,25 @@
 }
 
 .bdr-scene-arrow {
-  font-size: 0.9em;
-  opacity: 0.9;
-  font-weight: 700;
+  font-size: 0.55em;
+  opacity: 0.5;
 }
 
-/* ── center hero + left/right stacks — absolute-positioned with CSS transitions ── */
+/* ── cards (your setup: square, responsive slots, red/orange) ── */
+.bdr-deck {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+}
+
 .bdr-card {
   position: absolute;
   overflow: hidden;
   pointer-events: auto;
-  border-radius: 6px;
-  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
-  clip-path: inset(0% 0% round 6px);
+  border-radius: 0;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+  clip-path: inset(0% 0% round 0px);
   transition:
     left 2.1s cubic-bezier(0.22, 1, 0.36, 1),
     top 2.1s cubic-bezier(0.22, 1, 0.36, 1),
@@ -119,12 +124,11 @@
     height 1.1s cubic-bezier(0.22, 1, 0.36, 1),
     opacity 0.7s ease,
     clip-path 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-    border-radius 0.6s ease,
     box-shadow 0.6s ease;
 }
 
 .bdr-card--active {
-  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.45);
 }
 
 .bdr-card-link {
@@ -134,8 +138,8 @@
   position: relative;
   overflow: hidden;
   text-decoration: none;
-  color: #121212;
-  border-radius: 6px;
+  color: #ffffff;
+  border-radius: 0;
 }
 
 .bdr-card-bg {
@@ -146,7 +150,6 @@
   border-radius: inherit;
 }
 
-/* ── content layer (marquee + description) ── */
 .bdr-card-content-layer {
   position: absolute;
   inset: 0;
@@ -168,30 +171,33 @@
   transition: none;
 }
 
-/* ── marquee ── */
 .bdr-card-marquee-layer {
   width: auto;
   overflow: hidden;
   flex-shrink: 0;
-  margin-top: clamp(14px, 3vh, 30px);
-  margin-left: clamp(14px, 2vw, 30px);
-  margin-right: clamp(14px, 2vw, 30px);
-  background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  border-radius: 4px;
-  padding: clamp(14px, 2.2vh, 22px) 0;
+  margin-top: clamp(10px, 2vh, 22px);
+  margin-left: clamp(10px, 1.5vw, 20px);
+  margin-right: clamp(10px, 1.5vw, 20px);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: clamp(8px, 1.2vh, 14px) 0;
 }
 
-/* ── description ── */
+.bdr-card--side .bdr-card-marquee-layer {
+  margin-top: clamp(6px, 1.2vh, 12px);
+  padding: clamp(4px, 0.8vh, 8px) 0;
+}
+
 .bdr-card-desc {
   font-family: var(--font-dm-sans), "PPNeueMontreal", sans-serif;
   font-weight: 400;
   font-style: normal;
-  font-size: clamp(16px, 1.6vw, 28px);
-  line-height: 1.35;
-  color: rgba(14, 14, 14, 0.9);
+  font-size: clamp(14px, 1.35vw, 22px);
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.92);
   margin: 0;
-  padding: clamp(20px, 3vh, 40px) clamp(24px, 3vw, 48px);
+  padding: clamp(16px, 2.5vh, 32px) clamp(18px, 2.5vw, 36px);
   pointer-events: auto;
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -204,68 +210,41 @@
 
 .bdr-marquee-track {
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: max-content;
   white-space: nowrap;
   animation: bdr-marquee-scroll linear infinite;
   will-change: transform;
 }
 
 .bdr-marquee-track span {
+  flex: 0 0 auto;
   font-family: var(--font-dm-sans), "PPNeueMontreal", sans-serif;
-  font-weight: 500;
+  font-weight: 600;
   font-style: normal;
-  font-size: clamp(36px, 4.3vw, 72px);
-  line-height: 1;
-  color: rgba(14, 14, 14, 0.9);
+  font-size: clamp(28px, 3.2vw, 56px);
+  line-height: 1.05;
+  color: #ffffff;
   text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.bdr-card--side .bdr-marquee-track span {
+  font-size: clamp(16px, 1.5vw, 26px);
   letter-spacing: 0.04em;
 }
 
 @keyframes bdr-marquee-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
 }
 
-/* ── responsive ── */
 @media (max-width: 768px) {
   .bdr-section { height: 500vh; }
-  .bdr-card-info { padding-bottom: 28px; }
-  .bdr-scene-tl,
-  .bdr-scene-tr {
-    top: clamp(18px, 5vh, 40px);
-    font-size: clamp(1.3rem, 8vw, 2.2rem);
-  }
-  .bdr-scene-tl { left: 48%; }
-  .bdr-scene-tr { left: 62%; }
-  .bdr-scene-bc {
-    bottom: clamp(14px, 3vh, 28px);
-    font-size: clamp(2rem, 10vw, 3rem);
-    gap: 10px;
-  }
-  .bdr-card-marquee-layer {
-    width: auto;
-    margin-top: 10px;
-    margin-left: 10px;
-    margin-right: 10px;
-  }
+  .bdr-scene-tl, .bdr-scene-tr { font-size: clamp(1.2rem, 5vw, 2rem); }
+  .bdr-scene-bc { font-size: clamp(1.2rem, 5vw, 2rem); }
   .bdr-marquee-track span {
-    font-size: clamp(26px, 8vw, 46px);
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1200px) {
-  .bdr-scene-tl,
-  .bdr-scene-tr {
-    top: clamp(22px, 6vh, 56px);
-    font-size: clamp(1.8rem, 5.4vw, 3.4rem);
-  }
-  .bdr-scene-tl { left: 48%; }
-  .bdr-scene-tr { left: 63%; }
-  .bdr-scene-bc {
-    font-size: clamp(2.1rem, 6vw, 4.1rem);
-    gap: clamp(10px, 1.8vw, 20px);
-  }
-  .bdr-card-marquee-layer {
-    width: auto;
-    margin-right: clamp(12px, 1.8vw, 24px);
+    font-size: clamp(18px, 5vw, 32px);
   }
 }

@@ -48,17 +48,17 @@ export default function ImpactSection() {
   const isMobile = typeof window !== 'undefined' ? window.innerWidth < 992 : false;
   const isSmallMobile = typeof window !== 'undefined' ? window.innerWidth < 576 : false;
 
-  const textContainerHeight = isSmallMobile ? '80px' : isMobile ? '100px' : '120px';
+  const textContainerHeight = isSmallMobile ? '60px' : isMobile ? '78px' : '96px';
 
   return (
     <div className="impact-wrapper" ref={wrapperRef}>
       <section className="impact-section">
         <div className="container">
-          <div className="row align-items-center text-white">
+          <div className="row align-items-center impact-section-row">
             {/* LEFT */}
             <div className="col-lg-3 mb-5 mb-lg-0 text-center text-lg-start">
               <div className="impact-small">01.04</div>
-              <h2 className="impact-title">IMPACT HIGHLIGHT</h2>
+              <h2 className="impact-title">IMPACT HIGHLIGHTS</h2>
             </div>
 
             {/* CENTER NUMBER REEL */}
