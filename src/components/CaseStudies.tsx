@@ -6,21 +6,21 @@ import { useState } from "react";
 const industriesRow1 = [
   {
     id: "r1-1",
-    name: "Real Estate",
-    desc: "Revolutionizing property showcasing with interactive 3D holograms and virtual tours.",
-    image: "/Tymore%20Ai%20with%20Holobox/3.1-—-Real-Estate.jpg",
-  },
-  {
-    id: "r1-2",
     name: "Hospitality",
-    desc: "Elevating guest experiences with 24/7 holographic concierge and personalized services.",
+    desc: "Redefined Guest Engagement using our AI-Powered HoloBox Concierge.",
     image: "/Tymore%20Ai%20with%20Holobox/3.2-—-Hospitality.jpg",
   },
   {
+    id: "r1-2",
+    name: "Retail",
+    desc: "AI Holobox Product Specialist Transforms the In-Store Experience for Retail.",
+    image: "/Tymore%20Ai%20with%20Holobox/3.8-—-Corporate.jpg",
+  },
+  {
     id: "r1-3",
-    name: "Education",
-    desc: "Bringing complex concepts to life through immersive virtual instructors and interactive learning.",
-    image: "/Tymore%20Ai%20with%20Holobox/3.3-—-Education.jpg",
+    name: "Real Estate",
+    desc: "Realty Group Introduces AI Holobox Advisors to Elevate the Property Buying Experience Leveraging Real-Time Buyer Insights.",
+    image: "/Tymore%20Ai%20with%20Holobox/3.1-—-Real-Estate.jpg",
   },
 ];
 
@@ -28,20 +28,14 @@ const industriesRow2 = [
   {
     id: "r2-1",
     name: "Healthcare",
-    desc: "Empowering patient education and medical training with advanced visual AI and safe interaction.",
+    desc: "Live-Streamed Physician Model Improves Clinical Patient Care Delivery in Hospital Settings.",
     image: "/Tymore%20Ai%20with%20Holobox/3.5-—-Healthcare.jpg",
   },
   {
     id: "r2-2",
-    name: "Government",
-    desc: "Enhancing public communication with reliable, 24/7 accessible digital meta-humans.",
+    name: "Marketing",
+    desc: "HoloBox AI Brand Ambassador Drives Audience Engagement at Marketing Events and Shows.",
     image: "/Tymore%20Ai%20with%20Holobox/3.7-—-Government.jpg",
-  },
-  {
-    id: "r2-3",
-    name: "Corporate",
-    desc: "Future-proofing office interaction, internal communication, and executive presence.",
-    image: "/Tymore%20Ai%20with%20Holobox/3.8-—-Corporate.jpg",
   },
 ];
 

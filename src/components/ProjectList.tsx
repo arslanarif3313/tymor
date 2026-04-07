@@ -17,7 +17,7 @@ const projects: ProjectItem[] = [
     id: "01",
     company: "Hospitality",
     description:
-      "Holographic concierge and front-desk presence that answers guests in your brand voice, 24/7.",
+      "Redefined Guest Engagement using our AI-Powered HoloBox Concierge.",
     image: "/images/solution/Real Estate.jpg",
     width: "col-lg-4",
     aspect: "1:1",
@@ -26,7 +26,7 @@ const projects: ProjectItem[] = [
     id: "02",
     company: "Retail & Flagship",
     description:
-      "Life-size product experts on the Holobox that guide, upsell, and stay on message in every store.",
+      "AI Holobox Product Specialist Transforms the In-Store Experience for Retail.",
     image: "/images/solution/hospitality.avif",
     width: "col-lg-8",
     aspect: "16/9",
@@ -35,7 +35,7 @@ const projects: ProjectItem[] = [
     id: "03",
     company: "Healthcare",
     description:
-      "Empathetic MetaHuman assistants for wayfinding, education, and compliant patient communication.",
+      "Realty Group Introduces AI Holobox Advisors to Elevate the Property Buying Experience Leveraging Real-Time Buyer Insights.",
     image: "/images/solution/retail.jpg",
     width: "col-lg-5",
     aspect: "16/10",
@@ -44,7 +44,7 @@ const projects: ProjectItem[] = [
     id: "04",
     company: "Education",
     description:
-      "Virtual instructors and campus ambassadors that scale expertise without losing the human touch.",
+      "Live-Streamed Physician Model Improves Clinical Patient Care Delivery in Hospital Settings.",
     image: "/images/solution/education.avif",
     width: "col-lg-7",
     aspect: "1:1",
@@ -53,7 +53,7 @@ const projects: ProjectItem[] = [
     id: "05",
     company: "Corporate HQ",
     description:
-      "Executive presence, internal comms, and visitor experiences that feel premium and always on-brand.",
+      "HoloBox AI Brand Ambassador Drives Audience Engagement at Marketing Events and Shows--Marketing.",
     image: "/images/solution/Healthcare.avif",
     width: "col-lg-6",
     aspect: "16/10",

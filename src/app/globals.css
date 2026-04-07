@@ -1814,7 +1814,8 @@ body {
 
 .footer-cursor-follow-btn--yellow:hover {
   color: #fff !important;
-  background: rgba(245, 224, 0, 0.12) !important;
+  background: #f5e000 !important;
+  border-color: #f5e000;
   box-shadow: 0 0 0 1px rgba(245, 224, 0, 0.35) !important;
 }
 
@@ -1825,7 +1826,8 @@ body {
 
 .footer-cursor-follow-btn--red:hover {
   color: #fff !important;
-  background: rgba(227, 38, 54, 0.12) !important;
+  background: #e32636 !important;
+  border-color: #e32636;
   box-shadow: 0 0 0 1px rgba(227, 38, 54, 0.35) !important;
 }
 

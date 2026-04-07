@@ -12,7 +12,7 @@ import WorkStrip from "@/components/WorkStrip";
 import Team from "@/components/Team";
 import Footer from "@/components/Footer";
 import Banner from "@/components/Banner";
-import MeetTheTeam from "@/components/MeetTheTeam";
+// import MeetTheTeam from "@/components/MeetTheTeam";
 
 const marqueeItems = [
   { text: "INFOGRAPHIC AND OTHER" },
@@ -34,7 +34,7 @@ export default function Home() {
       <Banner />
       <WorkStrip />
       <CaseStudies />
-      <MeetTheTeam />
+      {/* <MeetTheTeam /> */}
       <StepSection />
       <ImpactSection />
       {/* <Team /> */}

@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from "react";
-import { createPortal } from "react-dom";
 
 type RailGeom = {
   y: number;
@@ -23,14 +22,16 @@ type CursorAnchor = { x: number; y: number };
 function FooterCursorFollowCta({
   variant,
   anchor,
+  stageRef,
 }: {
   variant: "yellow" | "red";
   anchor: CursorAnchor;
+  stageRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const x = useMotionValue(anchor.x);
   const y = useMotionValue(anchor.y);
-  const sx = useSpring(x, { stiffness: 260, damping: 30, mass: 0.35 });
-  const sy = useSpring(y, { stiffness: 260, damping: 30, mass: 0.35 });
+  const sx = useSpring(x, { stiffness: 240, damping: 28, mass: 0.45 });
+  const sy = useSpring(y, { stiffness: 240, damping: 28, mass: 0.45 });
 
   useEffect(() => {
     x.set(anchor.x);
@@ -38,26 +39,36 @@ function FooterCursorFollowCta({
   }, [anchor.x, anchor.y, x, y]);
 
   useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
     const onMove = (e: MouseEvent) => {
-      x.set(e.clientX);
-      y.set(e.clientY);
+      const r = stage.getBoundingClientRect();
+      // Keep cursor slightly above center so hover remains usable.
+      x.set(e.clientX - r.left);
+      y.set(e.clientY - r.top - 8);
     };
-    window.addEventListener("mousemove", onMove, { passive: true });
-    return () => window.removeEventListener("mousemove", onMove);
-  }, [x, y]);
+    const onLeave = () => {
+      x.set(anchor.x);
+      y.set(anchor.y);
+    };
+    stage.addEventListener("mousemove", onMove, { passive: true });
+    stage.addEventListener("mouseleave", onLeave, { passive: true });
+    return () => {
+      stage.removeEventListener("mousemove", onMove);
+      stage.removeEventListener("mouseleave", onLeave);
+    };
+  }, [anchor.x, anchor.y, stageRef, x, y]);
 
-  if (typeof document === "undefined") return null;
-
-  return createPortal(
+  return (
     <motion.div
       className="footer-cursor-follow-wrap"
       style={{
-        position: "fixed",
+        position: "absolute",
         left: sx,
         top: sy,
         x: "-50%",
         y: "-50%",
-        zIndex: 2147483646,
+        zIndex: 9,
       }}
     >
       <Link
@@ -69,8 +80,7 @@ function FooterCursorFollowCta({
         <br />
         Game Over
       </Link>
-    </motion.div>,
-    document.body,
+    </motion.div>
   );
 }
 
@@ -88,8 +98,7 @@ function LadderRollingBall({
   pathDone: boolean;
   onPathComplete: (anchor: CursorAnchor) => void;
 }) {
-  const dur = 15;
-  const linkRef = useRef<HTMLAnchorElement>(null);
+  const dur = 13.5;
   const pathCompleteFired = useRef(false);
 
   if (pathDone) return null;
@@ -122,10 +131,10 @@ function LadderRollingBall({
     r3.xLeft,
     r3.xLeft,
     r3.xRight,
-    r3.xRight + (land.x - r3.xRight) * 0.48,
-    land.x,
-    land.x,
-    land.x,
+    r3.xRight,
+    r3.xRight,
+    r3.xRight,
+    r3.xRight,
   ];
 
   const topSeq = [
@@ -142,16 +151,21 @@ function LadderRollingBall({
     r3.y + skim,
     r3.y,
     r3.y,
-    r3.y + (land.y - r3.y) * 0.38,
-    land.y + 6,
-    land.y,
-    land.y,
+    r3.y + fall * 0.36,
+    r3.y + fall * 0.9,
+    r3.y + fall * 1.45,
+    r3.y + fall * 1.9,
   ];
 
   const times = [
-    0, 0.05, 0.1, 0.135, 0.17, 0.21, 0.27, 0.33, 0.38, 0.43, 0.48, 0.54, 0.6, 0.68, 0.78, 0.9, 1,
+    0, 0.05, 0.1, 0.135, 0.17, 0.21, 0.27, 0.33, 0.38, 0.43, 0.48, 0.54, 0.6, 0.7, 0.82, 0.92, 1,
   ] as const;
-  const rotateKf = leftSeq.map((_, i) => Math.round(i * 48 + (i > 3 ? 22 : 0) + (i > 8 ? 35 : 0)));
+  let cumulativeX = 0;
+  const rotateKf = leftSeq.map((xPos, i) => {
+    if (i > 0) cumulativeX += Math.abs(xPos - leftSeq[i - 1]);
+    const turns = cumulativeX / (2 * Math.PI * Math.max(rollR, 1));
+    return turns * 360;
+  });
 
   const leftStr = leftSeq.map((px) => `${px}px`);
   const topStr = topSeq.map((px) => `${px}px`);
@@ -176,7 +190,7 @@ function LadderRollingBall({
     return 1;
   });
   const opacityKF = leftSeq.map((_, i) =>
-    i === 0 ? 0 : i === 1 ? 0.4 : 1,
+    i === 0 ? 0 : i === 1 ? 0.45 : i === leftSeq.length - 1 ? 0.15 : 1,
   );
 
   return (
@@ -218,18 +232,12 @@ function LadderRollingBall({
         transition={{
           duration: dur,
           times: [...times],
-          ease: "easeInOut",
+          ease: "linear",
         }}
         onAnimationComplete={() => {
           if (pathCompleteFired.current) return;
           pathCompleteFired.current = true;
-          const el = linkRef.current;
-          const r = el?.getBoundingClientRect();
-          onPathComplete(
-            r
-              ? { x: r.left + r.width / 2, y: r.top + r.height / 2 }
-              : { x: window.innerWidth / 2, y: window.innerHeight / 2 },
-          );
+          onPathComplete({ x: land.x, y: land.y });
         }}
       >
         <motion.div
@@ -247,7 +255,6 @@ function LadderRollingBall({
           }}
         />
         <Link
-          ref={linkRef}
           href="/contact"
           className={`${roundClass} footer-roll-sphere`}
           aria-label="One Demo Game Over — book a demo"
@@ -291,10 +298,13 @@ function FooterCreativeCta({
   const [stairML, setStairML] = useState<[number, number, number]>([0, 0, 0]);
   const [pathDone, setPathDone] = useState(false);
   const [followAnchor, setFollowAnchor] = useState<CursorAnchor | null>(null);
+  const [followVisible, setFollowVisible] = useState(false);
 
   const handlePathComplete = useCallback((anchor: CursorAnchor) => {
     setFollowAnchor(anchor);
     setPathDone(true);
+    // Hide rolling ball first, then reveal follow CTA.
+    window.setTimeout(() => setFollowVisible(true), 420);
   }, []);
 
   const measure = useCallback(() => {
@@ -363,10 +373,15 @@ function FooterCreativeCta({
     if (!changesLine) return;
     const ch = changesLine.getBoundingClientRect();
     const chR = ch.right - sr.left;
+    const chCenterY = ch.top - sr.top + ch.height / 2;
     const r2g = rails[1];
     const landX = Math.min(
       sr.width - rollR - 6,
       Math.max(r2g.xRight + rollR + 8, chR + rollR + 12),
+    );
+    const landY = Math.max(
+      10 + rollR,
+      Math.min(sr.height - rollR - 10, chCenterY),
     );
 
     setGeom({
@@ -375,7 +390,7 @@ function FooterCreativeCta({
       rail: [rails[0], rails[1], rails[2]],
       land: {
         x: landX,
-        y: r2g.y,
+        y: landY,
       },
     });
     setReady(true);
@@ -505,10 +520,14 @@ function FooterCreativeCta({
           pathDone={pathDone}
           onPathComplete={handlePathComplete}
         />
+        {pathDone && followVisible && followAnchor ? (
+          <FooterCursorFollowCta
+            variant={variant}
+            anchor={followAnchor}
+            stageRef={stageRef}
+          />
+        ) : null}
       </div>
-      {pathDone && followAnchor ? (
-        <FooterCursorFollowCta variant={variant} anchor={followAnchor} />
-      ) : null}
     </div>
   );
 }

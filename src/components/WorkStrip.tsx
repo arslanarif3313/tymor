@@ -9,9 +9,11 @@ function TitleLeadSquare({ color = '#FFFF00' }: { color?: string }) {
       aria-hidden
       style={{
         display: 'inline-block',
-        width: '0.5em',
-        height: '0.5em',
-        backgroundColor: color,
+        width: '0.56em',
+        height: '0.56em',
+        backgroundColor: 'transparent',
+        border: `2px solid ${color}`,
+        boxSizing: 'border-box',
         marginRight: '0.4em',
         verticalAlign: 'middle',
         transform: 'translateY(-0.05em)',
