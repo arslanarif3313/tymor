@@ -12,6 +12,7 @@ import WorkStrip from "@/components/WorkStrip";
 import Team from "@/components/Team";
 import Footer from "@/components/Footer";
 import Banner from "@/components/Banner";
+import ProjectBannerTwo from "@/components/ProjectBannerTwo";
 // import MeetTheTeam from "@/components/MeetTheTeam";
 
 const marqueeItems = [
@@ -30,6 +31,7 @@ export default function Home() {
       {/* <MarqueeSection items={marqueeItems} /> */}
       <Solutions />
       <ProjectBanner />
+      {/* <ProjectBannerTwo /> */}
       <ProjectList />
       <Banner />
       <WorkStrip />

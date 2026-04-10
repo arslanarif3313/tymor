@@ -3,7 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useMotionValue, useSpring } from "framer-motion";
-import React, { useRef, useLayoutEffect, useState, useCallback, useEffect } from "react";
+import React, {
+  useRef,
+  useLayoutEffect,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 
 type RailGeom = {
   y: number;
@@ -84,7 +90,7 @@ function FooterCursorFollowCta({
   );
 }
 
-/** Rolling CTA: three shelves, drops, ends right of “Changes”; then hands off to cursor CTA. */
+/** Rolling CTA: shelf roll + projectile drops, then handoff CTA. */
 function LadderRollingBall({
   variant,
   geom,
@@ -98,7 +104,7 @@ function LadderRollingBall({
   pathDone: boolean;
   onPathComplete: (anchor: CursorAnchor) => void;
 }) {
-  const dur = 13.5;
+  const dur = 16;
   const pathCompleteFired = useRef(false);
 
   if (pathDone) return null;
@@ -109,6 +115,32 @@ function LadderRollingBall({
   const rollR = geom.ballD / 2;
   const fall = Math.max(30, Math.min(58, rollR * 0.75));
   const skim = Math.max(10, rollR * 0.28);
+  // Launch every drop only after fully clearing each word edge.
+  const clearPad = Math.max(120, rollR * 1.5);
+  // Keep launch points to the right of words but still before next shelf start,
+  // so motion stays forward (no backward snap before drops).
+  const drop1X = Math.min(
+    Math.max(r1.xRight + clearPad, r1.xRight + 8),
+    r2.xLeft - Math.max(10, rollR * 0.35),
+  );
+  const drop2X = Math.min(
+    Math.max(r2.xRight + clearPad, r2.xRight + 8),
+    r3.xLeft - Math.max(10, rollR * 0.35),
+  );
+  // Guarantee strictly forward X progression before each drop.
+  const drop1Forward = Math.max(r1.xRight + 8, drop1X);
+  const drop2Forward = Math.max(r2.xRight + 8, drop2X);
+  // Projectile arc: launch from right edge of "everything", curve right-and-down.
+  // Land well to the right of the word so it never cuts through text.
+  const arcWidth = Math.max(180, geom.w * 0.42);
+  const arcLaunchX = r3.xRight + rollR * 0.5; // just past word right edge
+  const drop3X = Math.min(geom.w - rollR - 4, arcLaunchX + arcWidth * 0.32); // mid-arc
+  const drop3XMid = Math.min(geom.w - rollR - 4, arcLaunchX + arcWidth * 0.6);
+  const drop3XFar = Math.min(geom.w - rollR - 4, arcLaunchX + arcWidth * 0.82);
+  const drop3XLand = Math.min(geom.w - rollR - 4, arcLaunchX + arcWidth);
+
+  const toR2Mid = drop1Forward + (r2.xLeft - drop1Forward) * 0.58;
+  const toR3Mid = drop2Forward + (r3.xLeft - drop2Forward) * 0.6;
 
   const roundClass =
     variant === "yellow"
@@ -117,48 +149,51 @@ function LadderRollingBall({
 
   const enterL = r1.xLeft - Math.max(28, Math.min(72, geom.w * 0.08));
 
+  // Final drop: X moves rightward (projectile), Y falls with gravity acceleration.
   const leftSeq = [
     enterL,
     r1.xLeft,
     r1.xRight,
-    r1.xRight,
-    r1.xRight + (r2.xLeft - r1.xRight) * 0.5,
+    drop1Forward,
+    toR2Mid,
     r2.xLeft,
     r2.xLeft,
     r2.xRight,
-    r2.xRight,
-    r2.xRight + (r3.xLeft - r2.xRight) * 0.5,
+    drop2Forward,
+    toR3Mid,
     r3.xLeft,
     r3.xLeft,
-    r3.xRight,
-    r3.xRight,
-    r3.xRight,
-    r3.xRight,
-    r3.xRight,
+    r3.xRight, // launch point — right edge of "everything"
+    drop3X, // arc: moves right AND down
+    drop3XMid,
+    drop3XFar,
+    drop3XLand,
   ];
 
+  // Y arc: slight loft then gravity-accelerated fall (parabolic).
   const topSeq = [
     r1.y,
     r1.y,
     r1.y,
-    r1.y + fall * 0.42,
-    r1.y + fall,
-    r2.y + skim,
+    r1.y - fall * 0.42,
+    r1.y + fall * 0.28,
     r2.y,
     r2.y,
-    r2.y + fall * 0.48,
-    r2.y + fall,
-    r3.y + skim,
+    r2.y,
+    r2.y - fall * 0.4,
+    r2.y + fall * 0.3,
     r3.y,
     r3.y,
-    r3.y + fall * 0.36,
-    r3.y + fall * 0.9,
-    r3.y + fall * 1.45,
-    r3.y + fall * 1.9,
+    r3.y, // launch — on the shelf
+    r3.y + fall * 0.02, // slight loft / early fall
+    r3.y + fall * 0.72, // falling faster
+    r3.y + fall * 1.52, // accelerating
+    r3.y + fall * 2.6, // landed (off screen below)
   ];
 
   const times = [
-    0, 0.05, 0.1, 0.135, 0.17, 0.21, 0.27, 0.33, 0.38, 0.43, 0.48, 0.54, 0.6, 0.7, 0.82, 0.92, 1,
+    0, 0.06, 0.14, 0.18, 0.23, 0.28, 0.36, 0.46, 0.52, 0.58, 0.64, 0.7, 0.78,
+    0.88, 0.94, 0.98, 1,
   ] as const;
   let cumulativeX = 0;
   const rotateKf = leftSeq.map((xPos, i) => {
@@ -171,22 +206,24 @@ function LadderRollingBall({
   const topStr = topSeq.map((px) => `${px}px`);
 
   const shadowOp = [
-    0, 0.22, 0.4, 0.52, 0.46, 0.4, 0.38, 0.4, 0.48, 0.44, 0.38, 0.4, 0.38, 0.46, 0.36, 0.38, 0.38,
+    0, 0.22, 0.4, 0.52, 0.46, 0.4, 0.38, 0.4, 0.48, 0.44, 0.38, 0.4, 0.38, 0.46,
+    0.36, 0.38, 0.38,
   ];
   const shadowSx = [
-    0.34, 0.52, 0.78, 0.92, 0.86, 0.72, 0.76, 0.8, 0.88, 0.84, 0.74, 0.78, 0.76, 0.72, 0.66, 0.74, 0.76,
+    0.34, 0.52, 0.78, 0.92, 0.86, 0.72, 0.76, 0.8, 0.88, 0.84, 0.74, 0.78, 0.76,
+    0.72, 0.66, 0.74, 0.76,
   ];
 
   const scaleXKF = leftSeq.map((_, i) => {
     if (i === 0) return 0.92;
     if (i === 1) return 0.98;
-    if (i === 4 || i === 9 || i === 13) return 1.04;
+    if (i === 4 || i === 9) return 1.06;
     return 1;
   });
   const scaleYKF = leftSeq.map((_, i) => {
     if (i === 0) return 0.92;
     if (i === 1) return 0.98;
-    if (i === 4 || i === 9 || i === 13) return 0.96;
+    if (i === 4 || i === 9) return 0.94;
     return 1;
   });
   const opacityKF = leftSeq.map((_, i) =>
@@ -341,27 +378,15 @@ function FooterCreativeCta({
       if (h > 0) minSlot = Math.min(minSlot, h);
     }
     const slotBudget = Number.isFinite(minSlot) ? minSlot : 72;
-    const rollD = Math.max(
-      30,
-      Math.min(86, w * 0.185, slotBudget - 10),
-    );
+    const rollD = Math.max(30, Math.min(86, w * 0.185, slotBudget - 10));
     const rollR = rollD / 2;
 
     const rails: RailGeom[] = [];
     for (const row of rowRects) {
       const { rr, lrLine, pad } = row;
-      const slotTop = rr.bottom - sr.top;
-      const slotBottom = lrLine.top - sr.top;
       const lineTop = lrLine.top - sr.top;
-      let yCenter: number;
-      if (slotBottom > slotTop + rollD + 6) {
-        const yMin = slotTop + rollR + 2;
-        const yMax = slotBottom - rollR - 8;
-        const mid = (slotTop + slotBottom) / 2;
-        yCenter = Math.max(yMin, Math.min(yMax, mid));
-      } else {
-        yCenter = Math.max(8, lineTop - rollR - 14);
-      }
+      // Keep the sphere near each line instead of floating unrealistically high.
+      const yCenter = Math.max(8, lineTop - rollR - 8);
       rails.push({
         y: yCenter,
         xLeft: rr.left - sr.left + pad,
@@ -643,7 +668,9 @@ export default function Footer() {
           variants={containerVariants}
         >
           <motion.div className="col-lg-4 col-md-6" variants={itemVariants}>
-            <h6 className="footer-title-sm text-uppercase mb-4">Our Newsletter</h6>
+            <h6 className="footer-title-sm text-uppercase mb-4">
+              Our Newsletter
+            </h6>
             <div className="newsletter-box-refined">
               <input type="email" placeholder="Your email address" />
               <button type="submit">

@@ -48,6 +48,8 @@ const solutions = [
   },
 ];
 
+const ACTIVE_SOLUTION_COLOR = "#fa6400";
+
 export default function Solutions() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -129,7 +131,10 @@ export default function Solutions() {
                       key={item.id}
                       onClick={() => handleTabClick(index)}
                       className={`solution-list-item ${index === activeIndex ? "active" : ""}`}
-                      style={{ cursor: "pointer" }}
+                      style={{
+                        cursor: "pointer",
+                        color: index === activeIndex ? ACTIVE_SOLUTION_COLOR : undefined,
+                      }}
                     >
                       {item.title}
                     </div>

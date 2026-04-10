@@ -11,78 +11,112 @@ import {
 } from "framer-motion";
 import { GeistSans } from "geist/font/sans";
 
+/**
+ * Layout (percentages of container):
+ *
+ *  ┌─────────────────────┬──────────┬──────────┐
+ *  │                     │  IMG-3   │          │
+ *  │       IMG-1         │ (inner)  │  IMG-4   │
+ *  │    (top-left)       ├──────────┤ (outer,  │
+ *  │                     │          │  tall)   │
+ *  ├─────────────────────┤  IMG-5   │          │
+ *  │       IMG-2         │ (inner)  ├──────────┤
+ *  │   (bottom-left)     ├──────────┤  IMG-6   │
+ *  │                     │  (gap)   │ (outer)  │
+ *  └─────────────────────┴──────────┴──────────┘
+ *
+ * All images animate FROM their off-screen startX/startY TO (0%, 0%)
+ * which is their natural CSS-anchored position.
+ */
+
+const GAP = 1.2;
+
 const SOLUTION_IMAGES = [
   {
     id: 1,
     src: "/Tymore%20Ai%20with%20Holobox/3.1-—-Real-Estate.jpg",
     alt: "Real Estate",
-    label: "Real Estate",
-    positionClass: "top-0 left-0",
-    startX: -384, startY: -384,
-    endX: 308, endY: 123,
-    hidesBehind: false,
+    label: "REAL ESTATE",
+    pos: {
+      top: `${GAP}%`,
+      left: `${GAP}%`,
+      width: `${62 - GAP * 2}%`,
+      height: `${64 - GAP}%`,
+    },
+    startX: 220,
+    startY: 100,
   },
   {
     id: 2,
     src: "/Tymore%20Ai%20with%20Holobox/3.2-—-Hospitality.jpg",
     alt: "Hospitality",
-    label: "Hospitality",
-    positionClass: "top-0 left-0",
-    startX: -384, startY: 0,
-    endX: 308, endY: 123,
-    hidesBehind: true,
+    label: "HOSPITALITY",
+    pos: {
+      bottom: `${GAP}%`,
+      left: `${GAP}%`,
+      width: `${62 - GAP * 2}%`,
+      height: `${35 - GAP}%`,
+    },
+    startX: 220,
+    startY: -80,
   },
   {
     id: 3,
-    src: "/Tymore%20Ai%20with%20Holobox/3.3-—-Education.jpg",
-    alt: "Education",
-    label: "Education",
-    positionClass: "bottom-0 left-0",
-    startX: -384, startY: 384,
-    endX: 308, endY: -108,
-    hidesBehind: false,
-  },
-  {
-    id: 6,
-    src: "/Tymore%20Ai%20with%20Holobox/2.2-—-Conversational-AI.jpg",
-    alt: "Retail",
-    label: "Retail",
-    positionClass: "top-0 right-0",
-    startX: 308, startY: -462,
-    endX: -284, endY: 123,
-    hidesBehind: false,
+    src: "/Tymore%20Ai%20with%20Holobox/2.1-—-Holobox-AI-Presence.jpg",
+    alt: "Holobox",
+    label: "HOLOBOX",
+    pos: {
+      top: `${GAP}%`,
+      left: `${62 + GAP}%`,
+      width: `${19 - GAP * 2}%`,
+      height: `${48 - GAP}%`,
+    },
+    startX: -215,
+    startY: 100,
   },
   {
     id: 4,
     src: "/Tymore%20Ai%20with%20Holobox/3.5-—-Healthcare.jpg",
     alt: "Healthcare",
-    label: "Healthcare",
-    positionClass: "top-0 right-0",
-    startX: 0, startY: -384,
-    endX: -284, endY: 123,
-    hidesBehind: true,
-  },
-  {
-    id: 7,
-    src: "/Tymore%20Ai%20with%20Holobox/3.6-—-Marketing.jpg",
-    alt: "Marketing",
-    label: "Marketing",
-    positionClass: "bottom-0 right-0",
-    startX: 308, startY: 462,
-    endX: -289, endY: -108,
-    hidesBehind: false,
+    label: "HEALTHCARE",
+    pos: {
+      top: `${GAP}%`,
+      right: `${GAP}%`,
+      width: `${19 - GAP * 2}%`,
+      height: `${64 - GAP}%`,
+    },
+    startX: -215,
+    startY: -100,
   },
   {
     id: 5,
+    src: "/Tymore%20Ai%20with%20Holobox/3.6-—-Marketing.jpg",
+    alt: "Marketing",
+    label: "MARKETING",
+    pos: {
+      bottom: `${GAP}%`,
+      left: `${62 + GAP}%`,
+      width: `${19 - GAP * 2}%`,
+      height: `${50 - GAP}%`,
+    },
+    startX: 0,
+    startY: 250,
+  },
+  {
+    id: 6,
     src: "/Tymore%20Ai%20with%20Holobox/3.8-—-Corporate.jpg",
     alt: "Corporate",
-    label: "Corporate",
-    positionClass: "bottom-0 right-0",
-    startX: 0, startY: 384,
-    endX: -289, endY: -108,
-    hidesBehind: true,
+    label: "CORPORATE",
+    pos: {
+      bottom: `${GAP}%`,
+      right: `${GAP}%`,
+      width: `${19 - GAP * 2}%`,
+      height: `${35 - GAP}%`,
+    },
+    startX: -215,
+    startY: -80,
   },
-];
+] as const;
 
 const ANIM_START = 0.15;
 const ANIM_END = 0.95;
@@ -102,8 +136,9 @@ function SolutionImagesLayer({ scrollProgress }: { scrollProgress: MotionValue<n
       const el = refs.current[i];
       if (!el) continue;
       const cfg = SOLUTION_IMAGES[i];
-      const dx = cfg.endX - cfg.startX;
-      const dy = cfg.endY - cfg.startY;
+      // Each image starts at (startX%, startY%) and ends at (0%, 0%) — its natural CSS position
+      const dx = 0 - cfg.startX;
+      const dy = 0 - cfg.startY;
       el.style.transform = `translate3d(${cfg.startX + t * dx}%, ${cfg.startY + t * dy}%, 0px)`;
     }
   }, [scrollProgress]);
@@ -115,44 +150,46 @@ function SolutionImagesLayer({ scrollProgress }: { scrollProgress: MotionValue<n
   }, [apply]);
 
   return (
-    <>
-      {SOLUTION_IMAGES.map((img, i) => (
-        <div
-          key={img.id}
-          ref={(el) => {
-            refs.current[i] = el;
-          }}
-          className={`group absolute ${img.positionClass} w-full max-w-44 xl:max-w-52 2xl:max-w-64 overflow-hidden`}
-          style={{
-            willChange: "transform",
-            backfaceVisibility: "hidden",
-            zIndex: img.hidesBehind ? 1 : 2,
-          }}
-        >
-          <img
-            src={img.src}
-            alt={img.alt}
-            decoding="async"
-            fetchPriority={i === 0 ? "high" : "auto"}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent px-3 py-2.5 sm:px-4 sm:py-3">
-            <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-white drop-shadow-md sm:text-[11px]">
-              {img.label}
-            </span>
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="relative w-[min(85vw,56rem)] h-[min(70vh,34rem)]">
+        {SOLUTION_IMAGES.map((img, i) => (
+          <div
+            key={img.id}
+            ref={(el) => {
+              refs.current[i] = el;
+            }}
+            className="group absolute overflow-hidden rounded-sm shadow-lg"
+            style={{
+              ...img.pos,
+              willChange: "transform",
+              backfaceVisibility: "hidden",
+            }}
+          >
+            <img
+              src={img.src}
+              alt={img.alt}
+              decoding="async"
+              fetchPriority={i === 0 ? "high" : "auto"}
+              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent px-3 py-2.5 sm:px-4 sm:py-3">
+              <span className="text-[9px] font-bold tracking-[0.12em] text-white drop-shadow-md sm:text-[11px]">
+                {img.label}
+              </span>
+            </div>
           </div>
-        </div>
-      ))}
-    </>
+        ))}
+      </div>
+    </div>
   );
 }
 
-function MobileProjectBanner() {
+function MobileProjectBannerTwo() {
   return (
     <section className="bg-white py-20 px-4">
       <div className="text-center mb-12">
         <h2
-          className={`text-xl font-semibold leading-tight mb-6 tracking-tighter ${GeistSans.className}`}
+          className={`text-3xl font-semibold leading-tight mb-6 tracking-tighter ${GeistSans.className}`}
           style={{ color: "rgb(228, 41, 15)", fontWeight: 600 }}
         >
           YOUR INDUSTRY,
@@ -178,18 +215,18 @@ function MobileProjectBanner() {
           </button>
         </div>
       </div>
-      <div className="mx-auto grid max-w-lg grid-cols-2 gap-4">
+      <div className="mx-auto grid max-w-lg grid-cols-2 gap-3">
         {SOLUTION_IMAGES.map((img) => (
           <div
             key={img.id}
-            className="group relative aspect-3/4 overflow-hidden rounded-none"
+            className="group relative aspect-[3/4] overflow-hidden rounded-none shadow-md"
           >
             <img
               src={img.src}
               alt={img.alt}
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 to-transparent p-3">
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3">
               <span className="text-[10px] font-bold uppercase tracking-wider text-white">
                 {img.label}
               </span>
@@ -201,11 +238,11 @@ function MobileProjectBanner() {
   );
 }
 
-export default function ProjectBanner() {
+export default function ProjectBannerTwo() {
   const isMobile = useSyncExternalStore(
     (cb) => {
       if (typeof window === "undefined") return () => {};
-      const mq = window.matchMedia("(max-width: 990px)");
+      const mq = window.matchMedia("(max-width: 1990px)");
       mq.addEventListener("change", cb);
       return () => mq.removeEventListener("change", cb);
     },
@@ -228,12 +265,12 @@ export default function ProjectBanner() {
   const titleFontSizePx = useTransform(
     scrollYProgress,
     [0, ANIM_START, ANIM_END, 1],
-    [86, 86, 56, 56],
+    [120, 120, 56, 56],
   );
   const titleLineHeightPx = useTransform(
     scrollYProgress,
     [0, ANIM_START, ANIM_END, 1],
-    [96, 96, 62, 62],
+    [132, 132, 62, 62],
   );
   const titleFontSize = useMotionTemplate`${titleFontSizePx}px`;
   const titleLineHeight = useMotionTemplate`${titleLineHeightPx}px`;
@@ -246,17 +283,17 @@ export default function ProjectBanner() {
   const buttonY = useTransform(scrollYProgress, [0.1, 0.18], [30, 0]);
 
   if (isMobile) {
-    return <MobileProjectBanner />;
+    return <MobileProjectBannerTwo />;
   }
 
   return (
     <section style={{ overflow: "clip", width: "100%", zIndex: 1100, position: "relative" }}>
-      <div ref={containerRef} className="relative" style={{ height: "1300vh" }}>
+      <div ref={containerRef} className="relative" style={{ height: "500vh" }}>
         <div className="sticky top-0 h-svh w-full bg-white">
           <div className="relative h-full w-full">
             <motion.div
               style={{ opacity: titleOpacity, willChange: "opacity" }}
-              className="pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center px-4 text-center"
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-center"
             >
               <motion.h2
                 className={`mb-8 max-w-[min(100%,22ch)] font-semibold normal-case tracking-[-0.12rem] ${GeistSans.className}`}
@@ -284,7 +321,7 @@ export default function ProjectBanner() {
                   }}
                   whileHover={{ scale: 1.05, backgroundColor: "#d60707" }}
                   whileTap={{ scale: 0.95 }}
-                  className="mt-2 cursor-pointer px-5 py-2 text-sm font-bold text-white"
+                  className="mt-2 cursor-pointer px-7 py-2.5 text-md font-bold text-white"
                 >
                   Explore Our Holobox Further
                 </motion.button>
@@ -306,7 +343,9 @@ export default function ProjectBanner() {
               </div>
             </motion.div>
 
-            <SolutionImagesLayer scrollProgress={scrollYProgress} />
+            <div className="absolute inset-0 z-0">
+              <SolutionImagesLayer scrollProgress={scrollYProgress} />
+            </div>
           </div>
         </div>
       </div>
