@@ -39,7 +39,7 @@ const SOLUTION_IMAGES = [
     label: "Education",
     positionClass: "bottom-0 left-0",
     startX: -384, startY: 384,
-    endX: 308, endY: -108,
+    endX: 308, endY: -98,
     hidesBehind: false,
   },
   {
@@ -69,7 +69,7 @@ const SOLUTION_IMAGES = [
     label: "Marketing",
     positionClass: "bottom-0 right-0",
     startX: 308, startY: 462,
-    endX: -289, endY: -108,
+    endX: -289, endY: -98,
     hidesBehind: false,
   },
   {
@@ -79,7 +79,7 @@ const SOLUTION_IMAGES = [
     label: "Corporate",
     positionClass: "bottom-0 right-0",
     startX: 0, startY: 384,
-    endX: -289, endY: -108,
+    endX: -289, endY: -98,
     hidesBehind: true,
   },
 ];
@@ -122,7 +122,7 @@ function SolutionImagesLayer({ scrollProgress }: { scrollProgress: MotionValue<n
           ref={(el) => {
             refs.current[i] = el;
           }}
-          className={`group absolute ${img.positionClass} w-full max-w-44 xl:max-w-52 2xl:max-w-64 overflow-hidden`}
+          className={`group absolute ${img.positionClass} w-full max-w-44 xl:max-w-52 2xl:max-w-64 overflow-hidden h-[calc(42%+1px)]`}
           style={{
             willChange: "transform",
             backfaceVisibility: "hidden",
@@ -263,13 +263,13 @@ export default function ProjectBanner() {
                 style={{
                   fontSize: titleFontSize,
                   lineHeight: titleLineHeight,
-                  fontWeight: 600,
+                  fontWeight: 700,
                   fontStyle: "normal",
-                  color: "rgb(228, 41, 15)",
+                  color: "rgb(250, 100, 0)",
                   willChange: "font-size, line-height",
                 }}
               >
-                YOUR INDUSTRY, <br /> POWERED BY <br />
+                your INDUSTRY, <br /> POWERED BY <br />
                 HOLOBOX
               </motion.h2>
               <div className="flex flex-row flex-wrap items-center justify-center gap-2.5">
@@ -278,13 +278,13 @@ export default function ProjectBanner() {
                   style={{
                     opacity: buttonOpacity,
                     y: buttonY,
-                    backgroundColor: "#fc0808",
+                    backgroundColor: "#fa6400",
                     border: "none",
                     borderRadius: "100px",
                   }}
-                  whileHover={{ scale: 1.05, backgroundColor: "#d60707" }}
+                  whileHover={{ scale: 1.05, backgroundColor: "#fa6400" }}
                   whileTap={{ scale: 0.95 }}
-                  className="mt-2 cursor-pointer px-5 py-2 text-sm font-bold text-white"
+                  className="mt-2 cursor-pointer px-3 py-2 text-sm font-bold text-white"
                 >
                   Explore Our Holobox Further
                 </motion.button>
@@ -293,7 +293,7 @@ export default function ProjectBanner() {
                   style={{
                     opacity: buttonOpacity,
                     y: buttonY,
-                    backgroundColor: "#fc0808",
+                    backgroundColor: "#fa6400",
                     border: "none",
                     borderRadius: "100px",
                   }}

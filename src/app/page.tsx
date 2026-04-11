@@ -38,7 +38,7 @@ export default function Home() {
       <CaseStudies />
       {/* <MeetTheTeam /> */}
       <StepSection />
-      <ImpactSection />
+      {/* <ImpactSection /> */}
       {/* <Team /> */}
       <Footer />
     </main>

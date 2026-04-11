@@ -37,7 +37,7 @@ const testimonials = [
     quote: "Planning a Holobox deployment inside a complex enterprise environment is not easy. Tymor made it feel that way. Their guidance never wavered and their technical depth never ran out.",
     author: "Catherine Laurent",
     role: "Operations Head",
-    image: "/images/clients/client-1.png",
+    image: "/images/clients/client-6.png",
   },
 ];
 
@@ -51,19 +51,19 @@ const cubeFaceTransform = (i: number, size: number): string => {
     case 1: return `rotateY(90deg) translateZ(${half}px)`;
     case 2: return `rotateY(180deg) translateZ(${half}px)`;
     case 3: return `rotateY(-90deg) translateZ(${half}px)`;
-    case 4: return `rotateX(90deg) rotateZ(90deg) translateZ(${half}px)`;
-    case 5: return `rotateX(-90deg) rotateZ(90deg) translateZ(${half}px)`;
+    case 4: return `rotateX(90deg) translateZ(${half}px)`;
+    case 5: return `rotateX(-90deg) translateZ(${half}px)`;
     default: return '';
   }
 };
 
 const rotationTargets = [
+  { x: 90, y: 0 },
   { x: 0, y: 0 },
   { x: 0, y: 90 },
   { x: 0, y: 180 },
   { x: 0, y: 270 },
-  { x: 90, y: 270 },   // Simple downward flip from prev
-  { x: -90, y: 90 },
+  { x: -90, y: 0 },
 ];
 
 const ZONE_START = 0.22;
@@ -71,11 +71,11 @@ const ZONE_END = 0.95;
 const ZONE_SIZE = ZONE_END - ZONE_START;
 const SEG = ZONE_SIZE / 6;
 
-const entranceStops = [0.12, 0.131, 0.142, 0.153, 0.164, 0.175, 0.186, 0.197, 0.208, 0.219, 1];
-const entranceScale = [0.338, 0.389, 0.445, 0.562, 0.630, 0.690, 0.762, 0.820, 0.911, 0.987, 1.0];
-const entranceRotX = [-29.1, -20.0, -9.9, 11.2, 23.3, 34.2, 47.1, 57.6, 73.9, 87.7, 0];
-const entranceRotY = [59.6, 55.0, 49.9, 39.4, 33.3, 27.9, 21.5, 16.2, 8.0, 1.2, 0];
-const entranceTransX = [-54, -62, -71, -70, -59, -50, -38, -29, -14, -2, 0];
+const entranceStops  = [0.120, 0.127, 0.134, 0.141, 0.149, 0.156, 0.163, 0.170, 0.177, 0.184, 0.191, 0.199, 0.206, 0.213, 0.220];
+const entranceScale  = [0.254, 0.362, 0.412, 0.455, 0.494, 0.509, 0.593, 0.620, 0.668, 0.719, 0.783, 0.848, 0.902, 0.970, 1.0];
+const entranceRotX   = [-44.3, -24.8, -15.9, -8.0,  -1.0,  1.6,   16.7,  21.6,  30.2,  39.4,  50.9,  62.7,  72.4,  84.7,  90.0];
+const entranceRotY   = [67.2,  57.4,  53.0,  49.0,  45.5,  44.2,  36.6,  34.2,  29.9,  25.3,  19.6,  13.6,  8.8,   2.7,   0.0];
+const entranceTransX = [-41,   -58,   -66,   -73,   -79,   -79,   -65,   -61,   -53,   -45,   -35,   -24,   -16,   -5,    0];
 
 const StepSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -117,7 +117,7 @@ const StepSection = () => {
   const entranceRotXTransform = useTransform(smoothProgress, entranceStops, entranceRotX);
   const entranceRotYTransform = useTransform(smoothProgress, entranceStops, entranceRotY);
 
-  const postRotXStops: number[] = [0.22];
+  const postRotXStops: number[] = [90];
   const postRotYStops: number[] = [0];
   const postProgressStops: number[] = [0.22];
 
@@ -171,12 +171,35 @@ const StepSection = () => {
     if (v < ZONE_START || v > ZONE_END) return 1500;
     const pos = (v - ZONE_START) / SEG;
     const segFrac = pos - Math.floor(pos);
-    const sweepEnd = 0.55;
     const vw = typeof window !== 'undefined' ? window.innerWidth : 1400;
 
-    if (segFrac <= sweepEnd) {
-      const t = segFrac / sweepEnd;
-      return vw * (1 - t * 2);
+    const sweepInEnd = 0.18;
+    const holdEnd = 0.40;
+    const sweepOutEnd = 0.55;
+    const cubeRight = vw / 2 + 165;
+    const cubeLeft = vw / 2 - 165;
+    const tw = vw < 1024 ? 240 : 340;
+    const idx = Math.floor(pos);
+    const restPositions = [
+      vw / 2 + 85,             // person 1: overlaps image from right
+      cubeRight + 100,          // person 2: small gap right of image
+      cubeLeft - tw - 85,       // person 3: left side, small gap
+      cubeLeft - tw + 105,       // person 4: left side, overlaps cube a bit
+      vw / 2 + 400,            // person 5
+      vw / 2 - 750,            // person 6
+    ];
+    const restX = restPositions[Math.min(idx, 5)];
+
+    if (segFrac <= sweepInEnd) {
+      const t = segFrac / sweepInEnd;
+      return vw + (restX - vw) * t;
+    }
+    if (segFrac <= holdEnd) {
+      return restX;
+    }
+    if (segFrac <= sweepOutEnd) {
+      const t = (segFrac - holdEnd) / (sweepOutEnd - holdEnd);
+      return restX + (-vw * 1.5 - restX) * t;
     }
     return -vw * 1.5;
   });
@@ -186,8 +209,8 @@ const StepSection = () => {
     const pos = (v - ZONE_START) / SEG;
     const segFrac = pos - Math.floor(pos);
     if (segFrac < 0.03) return segFrac / 0.03;
-    if (segFrac < 0.50) return 1;
-    if (segFrac < 0.55) return 1 - (segFrac - 0.50) / 0.05;
+    if (segFrac < 0.48) return 1;
+    if (segFrac < 0.55) return 1 - (segFrac - 0.48) / 0.07;
     return 0;
   });
 
@@ -202,7 +225,7 @@ const StepSection = () => {
   const current = testimonials[activeIndex];
 
   return (
-    <div ref={containerRef} style={{ height: '800vh', position: 'relative' }}>
+    <div ref={containerRef} style={{ height: '2400vh', position: 'relative' }}>
       <motion.div
         className="sticky top-0 w-full h-screen flex items-center justify-center overflow-hidden font-sans antialiased"
         style={{ backgroundColor: bgColor }}
@@ -281,12 +304,13 @@ const StepSection = () => {
           </div>
         </motion.div>
 
-        {/* Testimonial Active Text Layer */}
+        {/* Crystal blend layer — number + author name */}
         <motion.div
           className="absolute"
           style={{
             x: textX,
             opacity: textOpacity,
+            left: 0,
             top: '50%',
             translateY: '-50%',
             width: isMobile ? 240 : 340,
@@ -296,36 +320,36 @@ const StepSection = () => {
           }}
         >
           <p
-            className="text-5xl font-black leading-none tracking-tighter !-mt-26 -ml-2"
+            className="text-5xl font-black leading-none tracking-tighter mb-4 -ml-2"
             style={{ color: '#fff' }}
-          >
-            {String(activeIndex + 1).padStart(2, '0')}
-          </p>
-          <p className="text-lg md:text-2xl font-bold mb-1 tracking-tight" style={{ visibility: 'hidden' }}>{current.author}</p>
-          <p className="text-sm md:text-lg mb-3 tracking-tight" style={{ visibility: 'hidden' }}>{current.role}</p>
-          <p className="text-xs md:text-sm leading-relaxed" style={{ visibility: 'hidden' }}>{current.quote}</p>
-        </motion.div>
-
-        <motion.div
-          className="absolute"
-          style={{
-            x: textX,
-            opacity: textOpacity,
-            top: '50%',
-            translateY: '-50%',
-            width: isMobile ? 240 : 340,
-            zIndex: 21,
-          }}
-        >
-          <p
-            className="text-5xl md:text-7xl font-black leading-none tracking-tighter mb-4"
-            style={{ color: '#fff', visibility: 'hidden' }}
           >
             {String(activeIndex + 1).padStart(2, '0')}
           </p>
           <p className="text-lg md:text-4xl mb-1 font-bold -ml-2 tracking-tight" style={{ color: '#f74a00' }}>
             {current.author}
           </p>
+          <p className="text-sm md:text-xl mb-4 -ml-2 tracking-tight" style={{ visibility: 'hidden' }}>{current.role}</p>
+          <p className="text-xs md:text-lg leading-relaxed -ml-2" style={{ visibility: 'hidden' }}>{current.quote}</p>
+        </motion.div>
+
+        {/* Normal layer — role + quote (no blend, no blur) */}
+        <motion.div
+          className="absolute"
+          style={{
+            x: textX,
+            opacity: textOpacity,
+            left: 0,
+            top: '50%',
+            translateY: '-50%',
+            width: isMobile ? 240 : 340,
+            zIndex: 21,
+            pointerEvents: 'none',
+          }}
+        >
+          <p className="text-5xl font-black leading-none tracking-tighter mb-4 -ml-2" style={{ visibility: 'hidden' }}>
+            {String(activeIndex + 1).padStart(2, '0')}
+          </p>
+          <p className="text-lg md:text-4xl mb-1 font-bold -ml-2 tracking-tight" style={{ visibility: 'hidden' }}>{current.author}</p>
           <p className="text-sm md:text-xl mb-4 -ml-2 tracking-tight" style={{ color: '#fff' }}>
             {current.role}
           </p>

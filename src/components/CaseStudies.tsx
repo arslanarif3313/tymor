@@ -1,7 +1,76 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const IMPACT_STATS = [
+  { count: "40", text: "Years of Technology Leadership" },
+  { count: "100,000+", text: "Systems Managed Across Industries" },
+  { count: "99.9%", text: "Operational Reliability" },
+  { count: "7+", text: "Industries Served Across Diverse Environments" },
+];
+
+const AnimatedCard = ({ startIndex = 0 }: { startIndex?: number }) => {
+  const [current, setCurrent] = useState(startIndex % IMPACT_STATS.length);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % IMPACT_STATS.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const isYellow = current % 2 === 0;
+  const stat = IMPACT_STATS[current];
+
+  return (
+    <div
+      className="marquee-video rounded-0 d-flex flex-column justify-content-center align-items-start px-3 px-md-4"
+      style={{
+        background: isYellow ? "#f5c518" : "#e0e0e0",
+        transition: "background 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+        overflow: "hidden",
+      }}
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current}
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -14 }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--font-anton), 'Anton', sans-serif",
+              fontWeight: 400,
+              fontSize: "clamp(32px, 4vw, 56px)",
+              lineHeight: 1,
+              color: "#0a0a0a",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {stat.count}
+          </div>
+          <div
+            style={{
+              marginTop: "6px",
+              fontFamily: "var(--font-dm-sans), sans-serif",
+              fontWeight: 400,
+              fontSize: "clamp(11px, 1.2vw, 16px)",
+              lineHeight: 1.3,
+              color: "#333",
+              textTransform: "uppercase",
+              letterSpacing: "0.03em",
+            }}
+          >
+            {stat.text}
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+};
 
 const industriesRow1 = [
   {
@@ -93,8 +162,6 @@ const IndustryCard = ({
 };
 
 export default function CaseStudies() {
-  const videoUrl = "https://html.aqlova.com/videos/pixora/banner-4-1.mp4";
-
   return (
     <section className="case-studies py-4 py-md-5 overflow-hidden">
       <div className="container text-center mb-4 mb-md-5">
@@ -105,42 +172,34 @@ export default function CaseStudies() {
 
       <div className="marquee marquee-right">
         <div className="marquee-inner">
-          {industriesRow1.map((item) => (
-            <IndustryCard key={item.id} industry={item} />
+          {[0, 1].map((copy) => (
+            <div key={copy} className="d-flex" style={{ gap: 0 }}>
+              {industriesRow1.map((item) => (
+                <IndustryCard key={`${item.id}-c${copy}-a`} industry={item} />
+              ))}
+              <AnimatedCard startIndex={0} />
+              {industriesRow1.map((item) => (
+                <IndustryCard key={`${item.id}-c${copy}-b`} industry={item} />
+              ))}
+              <AnimatedCard startIndex={0} />
+            </div>
           ))}
-          <div className="marquee-video rounded-0">
-            <video loop muted autoPlay playsInline className="w-100 h-100 object-fit-cover">
-              <source src={videoUrl} type="video/mp4" />
-            </video>
-          </div>
-          {industriesRow1.map((item) => (
-            <IndustryCard key={`${item.id}-dup`} industry={item} />
-          ))}
-          <div className="marquee-video rounded-0">
-            <video loop muted autoPlay playsInline className="w-100 h-100 object-fit-cover">
-              <source src={videoUrl} type="video/mp4" />
-            </video>
-          </div>
         </div>
       </div>
 
       <div className="marquee marquee-left mt-3 mt-md-4">
         <div className="marquee-inner">
-          <div className="marquee-video rounded-0">
-            <video loop muted autoPlay playsInline className="w-100 h-100 object-fit-cover">
-              <source src={videoUrl} type="video/mp4" />
-            </video>
-          </div>
-          {industriesRow2.map((item) => (
-            <IndustryCard key={item.id} industry={item} />
-          ))}
-          <div className="marquee-video rounded-0">
-            <video loop muted autoPlay playsInline className="w-100 h-100 object-fit-cover">
-              <source src={videoUrl} type="video/mp4" />
-            </video>
-          </div>
-          {industriesRow2.map((item) => (
-            <IndustryCard key={`${item.id}-dup`} industry={item} />
+          {[0, 1].map((copy) => (
+            <div key={copy} className="d-flex" style={{ gap: 0 }}>
+              <AnimatedCard startIndex={2} />
+              {industriesRow2.map((item) => (
+                <IndustryCard key={`${item.id}-c${copy}`} industry={item} />
+              ))}
+              <AnimatedCard startIndex={2} />
+              {industriesRow2.map((item) => (
+                <IndustryCard key={`${item.id}-c${copy}-dup`} industry={item} />
+              ))}
+            </div>
           ))}
         </div>
       </div>

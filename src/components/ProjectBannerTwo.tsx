@@ -202,7 +202,7 @@ function MobileProjectBannerTwo() {
           <button
             type="button"
             className="px-5 py-2 text-xs font-bold text-white shadow-lg rounded-full w-full sm:w-auto max-w-xs"
-            style={{ backgroundColor: "#fc0808", border: "none" }}
+            style={{ backgroundColor: "#fa6400", border: "none" }}
           >
             Explore Our Holobox Further
           </button>
@@ -319,7 +319,7 @@ export default function ProjectBannerTwo() {
                     border: "none",
                     borderRadius: "100px",
                   }}
-                  whileHover={{ scale: 1.05, backgroundColor: "#d60707" }}
+                  whileHover={{ scale: 1.05, backgroundColor: "#fa6400" }}
                   whileTap={{ scale: 0.95 }}
                   className="mt-2 cursor-pointer px-7 py-2.5 text-md font-bold text-white"
                 >

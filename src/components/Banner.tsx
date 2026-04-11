@@ -62,7 +62,7 @@ const PROJECTS = [
 ];
 
 const N = PROJECTS.length;
-const INTRO_WORDS = ["PROCESS\u25BA", "\u2580 IS \u25AB\u2198", "EVERYTHING"];
+const INTRO_WORDS = ["PROCESS\u25BA", "\u25A0 IS \u25AB\u2198", "EVERYTHING"];
 const CARDS_START = 0.15;
 
 function getActiveIndex(p: number): number {
@@ -88,34 +88,34 @@ type NumSlotSet = {
 function getNumSlotSet(vw: number): NumSlotSet {
   if (vw <= 768) {
     return {
-      center:      { left: 11,   top: 20, w: 78, h: 50, z: 10 },
-      leftTop:     { left: -2,   top: 12, w: 33, h: 16, z: 5 },
-      leftBottom:  { left: -4,   top: 62, w: 32, h: 18, z: 4 },
-      rightTop:    { left: 76,   top: 16, w: 24, h: 15, z: 5 },
-      rightBottom: { left: 76,   top: 62, w: 22, h: 15, z: 4 },
-      hiddenLeft:  { left: -40,  top: 35, w: 33, h: 24, z: 1 },
-      hiddenRight: { left: 110,  top: 35, w: 22, h: 20, z: 1 },
+      center:      { left: 11,   top: 25, w: 78, h: 50, z: 10 },
+      leftTop:     { left: -2,   top: 17, w: 33, h: 16, z: 5 },
+      leftBottom:  { left: 2,    top: 66, w: 30, h: 18, z: 4 },
+      rightTop:    { left: 76,   top: 21, w: 30, h: 18, z: 4 },
+      rightBottom: { left: 76,   top: 66, w: 22, h: 15, z: 4 },
+      hiddenLeft:  { left: -40,  top: 40, w: 33, h: 24, z: 1 },
+      hiddenRight: { left: 110,  top: 40, w: 22, h: 20, z: 1 },
     };
   }
   if (vw <= 1200) {
     return {
-      center:      { left: 18,   top: 15, w: 62, h: 62, z: 10 },
-      leftTop:     { left: 1,    top: 11, w: 27, h: 20, z: 5 },
-      leftBottom:  { left: 0,    top: 55, w: 26, h: 22, z: 4 },
-      rightTop:    { left: 78,   top: 14, w: 18, h: 18, z: 5 },
-      rightBottom: { left: 79,   top: 55, w: 16, h: 18, z: 4 },
-      hiddenLeft:  { left: -31,  top: 33, w: 27, h: 31, z: 1 },
-      hiddenRight: { left: 106,  top: 33, w: 16, h: 26, z: 1 },
+      center:      { left: 18,   top: 20, w: 62, h: 58, z: 10 },
+      leftTop:     { left: 1,    top: 16, w: 27, h: 20, z: 5 },
+      leftBottom:  { left: 2,    top: 60, w: 26, h: 22, z: 4 },
+      rightTop:    { left: 78,   top: 19, w: 26, h: 22, z: 5 },
+      rightBottom: { left: 79,   top: 60, w: 16, h: 18, z: 4 },
+      hiddenLeft:  { left: -31,  top: 38, w: 27, h: 31, z: 1 },
+      hiddenRight: { left: 106,  top: 38, w: 16, h: 26, z: 1 },
     };
   }
   return {
-    center:      { left: 28,   top: 16, w: 48, h: 52, z: 10 },
-    leftTop:     { left: 2,    top: 12, w: 22, h: 20, z: 5 },
-    leftBottom:  { left: 0,    top: 54, w: 24, h: 22, z: 4 },
-    rightTop:    { left: 80,   top: 14, w: 18, h: 20, z: 5 },
-    rightBottom: { left: 82,   top: 54, w: 14, h: 20, z: 4 },
-    hiddenLeft:  { left: -28,  top: 32, w: 25, h: 38, z: 1 },
-    hiddenRight: { left: 105,  top: 32, w: 13, h: 31, z: 1 },
+    center:      { left: 27,   top: 20, w: 48, h: 65, z: 10 },
+    leftTop:     { left: 5,    top: 25, w: 16, h: 20, z: 5 },
+    leftBottom:  { left: 3,    top: 55, w: 20, h: 22, z: 4 },
+    rightTop:    { left: 78,   top: 25, w: 20, h: 22, z: 5 },
+    rightBottom: { left: 82,   top: 55, w: 14, h: 20, z: 4 },
+    hiddenLeft:  { left: -28,  top: 38, w: 25, h: 38, z: 1 },
+    hiddenRight: { left: 105,  top: 38, w: 13, h: 31, z: 1 },
   };
 }
 
@@ -205,15 +205,24 @@ export default function Banner() {
 
   const apply = useCallback(() => {
     const v = scrollYProgress.get();
-    const activeIndex = getActiveIndex(v);
+    const rawActive = getActiveIndex(v);
     const slotSet = slotSetRef.current;
+
+    const baseIdx = Math.floor(rawActive);
+    const frac = rawActive - baseIdx;
+    const HOLD = 0.6;
+    const moveFrac = frac <= HOLD ? 0 : (frac - HOLD) / (1 - HOLD);
+    const posActive = clamp(0, N - 1, baseIdx + moveFrac);
+
     for (let i = 0; i < N; i++) {
       const el = cardRefs.current[i];
       if (!el) continue;
 
-      const rawOffset = i - activeIndex;
+      const rawOffset = i - rawActive;
       const abs = Math.abs(rawOffset);
-      const slot = getInterpolatedSlot(rawOffset, i, slotSet);
+
+      const posOffset = i - posActive;
+      const slot = getInterpolatedSlot(posOffset, i, slotSet);
 
       const staggerDelay = abs * 0.07;
       const fadeStart = 0.08 + staggerDelay;
@@ -221,8 +230,17 @@ export default function Banner() {
       const deckFade = v <= fadeStart ? 0 : v >= fadeEnd ? 1 : (v - fadeStart) / (fadeEnd - fadeStart);
 
       const posAlpha = abs <= 2.5 ? 1 : abs >= 3.5 ? 0 : 1 - (abs - 2.5);
-      const opacity = deckFade * posAlpha;
-      const clipInset = clamp(0, 48, (1 - clamp(0, 1, deckFade) * posAlpha) * 48);
+
+      let sideReveal = 1;
+      if (frac > 0 && abs > 2) {
+        const isTopSlot = i % 2 !== 0;
+        const rStart = isTopSlot ? 0.0 : 0.25;
+        const rEnd   = isTopSlot ? 0.3 : 0.55;
+        sideReveal = frac <= rStart ? 0 : frac >= rEnd ? 1 : (frac - rStart) / (rEnd - rStart);
+      }
+
+      const opacity = deckFade * posAlpha * sideReveal;
+      const clipInset = clamp(0, 48, (1 - clamp(0, 1, deckFade) * posAlpha * sideReveal) * 48);
 
       el.style.left   = `${slot.left}vw`;
       el.style.top    = `${slot.top}vh`;
@@ -232,7 +250,8 @@ export default function Banner() {
       el.style.opacity = String(opacity);
       el.style.clipPath = `inset(${clipInset}% 0% ${clipInset}% 0%)`;
 
-      const isNearCenter = abs < 0.4;
+      const posAbs = Math.abs(posOffset);
+      const isNearCenter = posAbs < 0.4;
       el.classList.toggle("bdr-card--center", isNearCenter);
 
       const titleEl = titleRefs.current[i];
@@ -244,7 +263,7 @@ export default function Banner() {
 
       const desc = descRefs.current[i];
       if (desc) {
-        desc.style.opacity = String(clamp(0, 1, 1 - abs * 2.5));
+        desc.style.opacity = String(clamp(0, 1, 1 - posAbs * 2.5));
       }
     }
   }, [scrollYProgress]);

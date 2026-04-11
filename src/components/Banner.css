@@ -2,7 +2,7 @@
 
 .bdr-section {
   position: relative;
-  height: 1100vh;
+  height: 1800vh;
   background: #000000;
 }
 
@@ -34,10 +34,10 @@
   font-family: var(--font-dm-sans), "PPNeueMontreal", sans-serif;
   font-weight: 400;
   font-style: normal;
-  font-size: 28px;
+  font-size: clamp(48px, 7vw, 96px);
   color: rgb(249, 248, 246);
   text-transform: uppercase;
-  line-height: 27px;
+  line-height: 1.05;
   letter-spacing: 0.04em;
   animation: bdr-glitch-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -67,12 +67,12 @@
   position: absolute;
   top: clamp(16px, 5.5vh, 56px);
   left: 28vw;
-  right: 24vw;
+  right: 26vw;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-family: var(--font-anton), "Anton", sans-serif;
-  font-size: clamp(0.85rem, 1.8vw, 1.5rem);
+  font-size: clamp(1.1rem, 2.8vw, 2.4rem);
   font-weight: 400;
   color: #fff;
   text-transform: uppercase;
@@ -83,14 +83,14 @@
 
 .bdr-scene-bc {
   position: absolute;
-  bottom: clamp(16px, 4vh, 44px);
+  bottom: clamp(16px, 6vh, 56px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: clamp(8px, 1vw, 16px);
   font-family: var(--font-anton), "Anton", sans-serif;
-  font-size: clamp(0.85rem, 1.8vw, 1.5rem);
+  font-size: clamp(1.1rem, 2.8vw, 2.4rem);
   font-weight: 400;
   color: #fff;
   text-transform: uppercase;
@@ -100,8 +100,11 @@
 }
 
 .bdr-scene-arrow {
-  font-size: 0.55em;
-  opacity: 0.5;
+  font-size: 1em;
+  opacity: 1;
+  /* color: #d4001c; */
+  font-weight: 500;
+  bottom: 100px;
 }
 
 /* ── card deck (scroll-driven, no CSS transitions) ── */
@@ -234,7 +237,7 @@
   font-family: var(--font-dm-sans), "PPNeueMontreal", sans-serif;
   font-weight: 600;
   font-style: normal;
-  font-size: clamp(28px, 3.2vw, 56px);
+  font-size: clamp(40px, 5.0vw, 76px);
   line-height: 1.05;
   color: #ffffff;
   text-transform: uppercase;
@@ -252,7 +255,7 @@
 }
 
 @media (max-width: 768px) {
-  .bdr-section { height: 500vh; }
+  .bdr-section { height: 900vh; }
   .bdr-scene-tc { font-size: clamp(0.75rem, 3vw, 1.1rem); }
   .bdr-scene-bc { font-size: clamp(0.75rem, 3vw, 1.1rem); }
   .bdr-marquee-track span {

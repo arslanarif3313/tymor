@@ -3,7 +3,7 @@ import { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
-function TitleLeadSquare({ color = '#FFFF00' }: { color?: string }) {
+function TitleLeadSquare({ color = '#fa6400' }: { color?: string }) {
   return (
     <span
       aria-hidden
@@ -307,11 +307,11 @@ export default function WorkStrip() {
                         fontWeight: 700,
                         lineHeight: 1.1,
                         letterSpacing: '-0.03em',
-                        color: '#FFFF00',
+                        color: '#fa6400',
                         margin: '0 0 20px 0',
                       }}
                     >
-                      <TitleLeadSquare />
+                      {/* <TitleLeadSquare /> */}
                       {feature.title}
                     </h3>
 
@@ -397,7 +397,7 @@ export default function WorkStrip() {
                     fontSize: 'clamp(72px, 3vw, 84px)',
                     fontWeight: 600,
                     letterSpacing: '-0.03em',
-                    color: '#FFFF00',
+                    color: '#fa6400',
                     lineHeight: 1.08,
                     textAlign: 'left',
                     textTransform: 'uppercase',
