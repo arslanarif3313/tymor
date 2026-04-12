@@ -104,7 +104,7 @@ function LadderRollingBall({
   pathDone: boolean;
   onPathComplete: (anchor: CursorAnchor) => void;
 }) {
-  const dur = 16;
+  const dur = 12;
   const pathCompleteFired = useRef(false);
 
   if (pathDone) return null;
@@ -113,34 +113,18 @@ function LadderRollingBall({
   const [r1, r2, r3] = geom.rail;
   const { land } = geom;
   const rollR = geom.ballD / 2;
-  const fall = Math.max(30, Math.min(58, rollR * 0.75));
-  const skim = Math.max(10, rollR * 0.28);
-  // Launch every drop only after fully clearing each word edge.
-  const clearPad = Math.max(120, rollR * 1.5);
-  // Keep launch points to the right of words but still before next shelf start,
-  // so motion stays forward (no backward snap before drops).
-  const drop1X = Math.min(
-    Math.max(r1.xRight + clearPad, r1.xRight + 8),
-    r2.xLeft - Math.max(10, rollR * 0.35),
-  );
-  const drop2X = Math.min(
-    Math.max(r2.xRight + clearPad, r2.xRight + 8),
-    r3.xLeft - Math.max(10, rollR * 0.35),
-  );
-  // Guarantee strictly forward X progression before each drop.
-  const drop1Forward = Math.max(r1.xRight + 8, drop1X);
-  const drop2Forward = Math.max(r2.xRight + 8, drop2X);
-  // Projectile arc: launch from right edge of "everything", curve right-and-down.
-  // Land well to the right of the word so it never cuts through text.
+  const finalFall = Math.max(200, rollR * 3.5);
+  const momentum = Math.max(80, rollR * 1.8);
+
+  const land1X = Math.max(r2.xLeft, r1.xRight + momentum);
+  const land2X = Math.max(r3.xLeft, r2.xRight + momentum);
+
   const arcWidth = Math.max(180, geom.w * 0.42);
-  const arcLaunchX = r3.xRight + rollR * 0.5; // just past word right edge
-  const drop3X = Math.min(geom.w - rollR - 4, arcLaunchX + arcWidth * 0.32); // mid-arc
+  const arcLaunchX = r3.xRight + rollR * 0.5;
+  const drop3X = Math.min(geom.w - rollR - 4, arcLaunchX + arcWidth * 0.32);
   const drop3XMid = Math.min(geom.w - rollR - 4, arcLaunchX + arcWidth * 0.6);
   const drop3XFar = Math.min(geom.w - rollR - 4, arcLaunchX + arcWidth * 0.82);
   const drop3XLand = Math.min(geom.w - rollR - 4, arcLaunchX + arcWidth);
-
-  const toR2Mid = drop1Forward + (r2.xLeft - drop1Forward) * 0.58;
-  const toR3Mid = drop2Forward + (r3.xLeft - drop2Forward) * 0.6;
 
   const roundClass =
     variant === "yellow"
@@ -149,86 +133,80 @@ function LadderRollingBall({
 
   const enterL = r1.xLeft - Math.max(28, Math.min(72, geom.w * 0.08));
 
-  // Final drop: X moves rightward (projectile), Y falls with gravity acceleration.
-  const leftSeq = [
-    enterL,
-    r1.xLeft,
-    r1.xRight,
-    drop1Forward,
-    toR2Mid,
-    r2.xLeft,
-    r2.xLeft,
-    r2.xRight,
-    drop2Forward,
-    toR3Mid,
-    r3.xLeft,
-    r3.xLeft,
-    r3.xRight, // launch point — right edge of "everything"
-    drop3X, // arc: moves right AND down
-    drop3XMid,
-    drop3XFar,
-    drop3XLand,
+  const xSeq = [
+    enterL - rollR,
+    r1.xLeft - rollR,
+    r1.xRight - rollR,
+    land1X - rollR,
+    r2.xRight - rollR,
+    land2X - rollR,
+    r3.xRight - rollR,
+    drop3X - rollR,
+    drop3XMid - rollR,
+    drop3XFar - rollR,
+    drop3XLand - rollR,
   ];
 
-  // Y arc: slight loft then gravity-accelerated fall (parabolic).
-  const topSeq = [
-    r1.y,
-    r1.y,
-    r1.y,
-    r1.y - fall * 0.42,
-    r1.y + fall * 0.28,
-    r2.y,
-    r2.y,
-    r2.y,
-    r2.y - fall * 0.4,
-    r2.y + fall * 0.3,
-    r3.y,
-    r3.y,
-    r3.y, // launch — on the shelf
-    r3.y + fall * 0.02, // slight loft / early fall
-    r3.y + fall * 0.72, // falling faster
-    r3.y + fall * 1.52, // accelerating
-    r3.y + fall * 2.6, // landed (off screen below)
+  const ySeq = [
+    r1.y - rollR,
+    r1.y - rollR,
+    r1.y - rollR,
+    r2.y - rollR,
+    r2.y - rollR,
+    r3.y - rollR,
+    r3.y - rollR,
+    r3.y + finalFall * 0.10 - rollR,
+    r3.y + finalFall * 0.38 - rollR,
+    r3.y + finalFall * 0.72 - rollR,
+    r3.y + finalFall - rollR,
   ];
 
   const times = [
-    0, 0.06, 0.14, 0.18, 0.23, 0.28, 0.36, 0.46, 0.52, 0.58, 0.64, 0.7, 0.78,
-    0.88, 0.94, 0.98, 1,
+    0, 0.06, 0.18, 0.34, 0.52, 0.68, 0.78, 0.86, 0.92, 0.97, 1,
   ] as const;
+
+  type CubicBezier = [number, number, number, number];
+  type EasingDef = CubicBezier | "linear";
+  const gravity: CubicBezier = [0.32, 0, 0.67, 1];
+  const arrive: CubicBezier = [0.25, 1, 0.5, 1];
+  const drop: CubicBezier = [0.42, 0, 1, 1];
+
+  const easePerSegment: EasingDef[] = [
+    arrive,    // 0→1:  enter → arrive on shelf 1
+    "linear",  // 1→2:  roll across "Bring"
+    drop,      // 2→3:  single smooth drop to "Holobox"
+    "linear",  // 3→4:  roll across "Holobox"
+    drop,      // 4→5:  single smooth drop to "to Life"
+    "linear",  // 5→6:  roll across "to Life"
+    "linear",  // 6→7:  leave edge, start final arc
+    gravity,   // 7→8:  falling
+    gravity,   // 8→9:  falling faster
+    gravity,   // 9→10: final
+  ];
+
+  const leftSeq = xSeq.map((v) => v + rollR);
   let cumulativeX = 0;
   const rotateKf = leftSeq.map((xPos, i) => {
     if (i > 0) cumulativeX += Math.abs(xPos - leftSeq[i - 1]);
-    const turns = cumulativeX / (2 * Math.PI * Math.max(rollR, 1));
-    return turns * 360;
+    return (cumulativeX / (2 * Math.PI * Math.max(rollR, 1))) * 360;
   });
-
-  const leftStr = leftSeq.map((px) => `${px}px`);
-  const topStr = topSeq.map((px) => `${px}px`);
 
   const shadowOp = [
-    0, 0.22, 0.4, 0.52, 0.46, 0.4, 0.38, 0.4, 0.48, 0.44, 0.38, 0.4, 0.38, 0.46,
-    0.36, 0.38, 0.38,
+    0, 0.22, 0.4, 0.4, 0.4, 0.4, 0.4, 0.25, 0.15, 0.08, 0.03,
   ];
   const shadowSx = [
-    0.34, 0.52, 0.78, 0.92, 0.86, 0.72, 0.76, 0.8, 0.88, 0.84, 0.74, 0.78, 0.76,
-    0.72, 0.66, 0.74, 0.76,
+    0.34, 0.52, 0.78, 0.76, 0.78, 0.76, 0.78, 0.55, 0.4, 0.3, 0.2,
   ];
 
-  const scaleXKF = leftSeq.map((_, i) => {
-    if (i === 0) return 0.92;
-    if (i === 1) return 0.98;
-    if (i === 4 || i === 9) return 1.06;
-    return 1;
-  });
-  const scaleYKF = leftSeq.map((_, i) => {
-    if (i === 0) return 0.92;
-    if (i === 1) return 0.98;
-    if (i === 4 || i === 9) return 0.94;
-    return 1;
-  });
-  const opacityKF = leftSeq.map((_, i) =>
-    i === 0 ? 0 : i === 1 ? 0.45 : i === leftSeq.length - 1 ? 0.15 : 1,
-  );
+  const scaleXKF = [
+    0.92, 0.98, 1, 1.06, 1, 1.06, 1, 0.97, 0.95, 0.95, 1,
+  ];
+  const scaleYKF = [
+    0.92, 0.98, 1, 0.94, 1, 0.94, 1, 1.04, 1.06, 1.06, 1,
+  ];
+  const opacityKF = [
+    0, 0.45, 1, 1, 1, 1, 1, 1, 1, 1, 0.15,
+  ];
 
   return (
     <motion.div
@@ -238,7 +216,6 @@ function LadderRollingBall({
         inset: 0,
         zIndex: 4,
         pointerEvents: "none",
-        transformStyle: "preserve-3d",
       }}
       initial={false}
     >
@@ -246,20 +223,21 @@ function LadderRollingBall({
         className="footer-ladder-ball-tracker-inner"
         style={{
           position: "absolute",
-          x: "-50%",
-          y: "-50%",
+          left: 0,
+          top: 0,
+          willChange: "transform",
         }}
         initial={{
-          left: leftStr[0],
-          top: topStr[0],
+          x: xSeq[0],
+          y: ySeq[0],
           opacity: 0,
           rotate: rotateKf[0],
           scaleX: 0.92,
           scaleY: 0.92,
         }}
         whileInView={{
-          left: leftStr,
-          top: topStr,
+          x: xSeq,
+          y: ySeq,
           rotate: rotateKf,
           scaleX: scaleXKF,
           scaleY: scaleYKF,
@@ -269,7 +247,7 @@ function LadderRollingBall({
         transition={{
           duration: dur,
           times: [...times],
-          ease: "linear",
+          ease: easePerSegment,
         }}
         onAnimationComplete={() => {
           if (pathCompleteFired.current) return;
@@ -372,13 +350,7 @@ function FooterCreativeCta({
       });
     }
 
-    let minSlot = Number.POSITIVE_INFINITY;
-    for (const row of rowRects) {
-      const h = row.lrLine.top - row.rr.bottom;
-      if (h > 0) minSlot = Math.min(minSlot, h);
-    }
-    const slotBudget = Number.isFinite(minSlot) ? minSlot : 72;
-    const rollD = Math.max(30, Math.min(86, w * 0.185, slotBudget - 10));
+    const rollD = Math.max(118, Math.min(168, w * 0.30));
     const rollR = rollD / 2;
 
     const rails: RailGeom[] = [];
@@ -475,7 +447,7 @@ function FooterCreativeCta({
                   className="footer-ladder-word footer-ladder-word--natural anton-font"
                   style={{ color: lineAccent }}
                 >
-                  One Demo
+                  Bring 
                 </span>
               </div>
             </div>
@@ -498,7 +470,7 @@ function FooterCreativeCta({
                   className="footer-ladder-word footer-ladder-word--natural anton-font"
                   style={{ color: "#ffffff" }}
                 >
-                  Changes
+                  Holobox
                 </span>
               </div>
             </div>
@@ -521,21 +493,12 @@ function FooterCreativeCta({
                   className="footer-ladder-word footer-ladder-word--natural footer-ladder-word--lower anton-font"
                   style={{ color: lineAccent }}
                 >
-                  everything
+                  To Life
                 </span>
               </div>
             </div>
           </div>
 
-          <motion.p
-            className="footer-ladder-sub mb-0 text-white text-uppercase"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.25, duration: 0.45 }}
-          >
-            Bring Holobox to Life
-          </motion.p>
         </div>
 
         <LadderRollingBall
@@ -652,12 +615,6 @@ export default function Footer() {
             <FooterCreativeCta lineAccent="#f5e000" variant="yellow" />
           </motion.div>
 
-          <motion.div
-            className="col-12 text-start px-2 px-md-3"
-            variants={itemVariants}
-          >
-            <FooterCreativeCta lineAccent="#e32636" variant="red" />
-          </motion.div>
         </motion.div>
 
         <motion.div

@@ -1685,8 +1685,11 @@ body {
   flex-direction: column;
   align-items: flex-start;
   /* Shelf lane: must exceed ball diameter so the sphere lives between rail and type */
-  gap: clamp(52px, 12vw, 104px);
+  gap: clamp(72px, 14vw, 130px);
   margin-bottom: clamp(2.25rem, 5.5vw, 4rem);
+}
+.footer-ladder-step:last-child {
+  margin-bottom: 0;
 }
 
 .footer-ladder-track {
@@ -1696,7 +1699,7 @@ body {
   max-width: 100%;
   align-items: stretch;
   /* Physical shelf between rail and headline — ball is positioned in this band */
-  gap: clamp(48px, 11vw, 96px);
+  gap: clamp(72px, 14vw, 130px);
 }
 
 /* Stair indent is set inline from measured word widths */
