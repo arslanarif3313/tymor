@@ -67,12 +67,12 @@
   position: absolute;
   top: clamp(16px, 5.5vh, 56px);
   left: 10vw;
-  right: 20vw;
+  right: 15vw;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: var(--font-anton), "Anton", sans-serif;
-  font-size: clamp(1.4rem, 3.6vw, 3.2rem);
+  font-family: var(--font-dm-sans), "DM Sans", sans-serif;
+  font-size: clamp(1.8rem, 4.5vw, 4rem);
   font-weight: 400;
   color: #fff;
   text-transform: uppercase;
@@ -89,8 +89,8 @@
   display: flex;
   align-items: center;
   gap: clamp(8px, 1vw, 16px);
-  font-family: var(--font-anton), "Anton", sans-serif;
-  font-size: clamp(1.4rem, 3.6vw, 3.2rem);
+  font-family: var(--font-dm-sans), "DM Sans", sans-serif;
+  font-size: clamp(1.8rem, 4.5vw, 4rem);
   font-weight: 400;
   color: #fff;
   text-transform: uppercase;
@@ -102,9 +102,9 @@
 .bdr-scene-arrow {
   font-size: 1em;
   opacity: 1;
-  /* color: #d4001c; */
-  font-weight: 500;
-  bottom: 100px;
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* ── card deck (scroll-driven, no CSS transitions) ── */
@@ -256,8 +256,8 @@
 
 @media (max-width: 768px) {
   .bdr-section { height: 900vh; }
-  .bdr-scene-tc { font-size: clamp(1.4rem, 3.6vw, 3.2rem); }
-  .bdr-scene-bc { font-size: clamp(1.4rem, 3.6vw, 3.2rem); }
+  .bdr-scene-tc { font-size: clamp(1.8rem, 4.5vw, 4rem); }
+  .bdr-scene-bc { font-size: clamp(1.8rem, 4.5vw, 4rem); }
   .bdr-marquee-track span {
     font-size: clamp(18px, 5vw, 32px);
   }
