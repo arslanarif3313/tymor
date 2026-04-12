@@ -66,17 +66,17 @@
 .bdr-scene-tc {
   position: absolute;
   top: clamp(16px, 5.5vh, 56px);
-  left: 28vw;
-  right: 26vw;
+  left: 10vw;
+  right: 20vw;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-family: var(--font-anton), "Anton", sans-serif;
-  font-size: clamp(1.1rem, 2.8vw, 2.4rem);
+  font-size: clamp(1.4rem, 3.6vw, 3.2rem);
   font-weight: 400;
   color: #fff;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.09em;
   line-height: 1;
   white-space: nowrap;
 }
@@ -90,7 +90,7 @@
   align-items: center;
   gap: clamp(8px, 1vw, 16px);
   font-family: var(--font-anton), "Anton", sans-serif;
-  font-size: clamp(1.1rem, 2.8vw, 2.4rem);
+  font-size: clamp(1.4rem, 3.6vw, 3.2rem);
   font-weight: 400;
   color: #fff;
   text-transform: uppercase;
@@ -256,8 +256,8 @@
 
 @media (max-width: 768px) {
   .bdr-section { height: 900vh; }
-  .bdr-scene-tc { font-size: clamp(0.75rem, 3vw, 1.1rem); }
-  .bdr-scene-bc { font-size: clamp(0.75rem, 3vw, 1.1rem); }
+  .bdr-scene-tc { font-size: clamp(1.4rem, 3.6vw, 3.2rem); }
+  .bdr-scene-bc { font-size: clamp(1.4rem, 3.6vw, 3.2rem); }
   .bdr-marquee-track span {
     font-size: clamp(18px, 5vw, 32px);
   }
