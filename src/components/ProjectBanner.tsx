@@ -228,7 +228,7 @@ export default function ProjectBanner() {
   const titleFontSizePx = useTransform(
     scrollYProgress,
     [0, ANIM_START, ANIM_END, 1],
-    [86, 86, 56, 56],
+    [90, 86, 56, 56],
   );
   const titleLineHeightPx = useTransform(
     scrollYProgress,
@@ -264,12 +264,13 @@ export default function ProjectBanner() {
                   fontSize: titleFontSize,
                   lineHeight: titleLineHeight,
                   fontWeight: 700,
-                  fontStyle: "normal",
+                  // fontStyle: "normal",
                   color: "rgb(250, 100, 0)",
                   willChange: "font-size, line-height",
+                
                 }}
               >
-                your INDUSTRY, <br /> POWERED BY <br />
+                your INDUSTRY, <br /> powered by <br />
                 HOLOBOX
               </motion.h2>
               <div className="flex flex-row flex-wrap items-center justify-center gap-2.5">

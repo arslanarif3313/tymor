@@ -306,7 +306,7 @@ export default function ProjectBannerTwo() {
                   willChange: "font-size, line-height",
                 }}
               >
-                YOUR INDUSTRY, <br /> POWERED BY <br />
+                YOUR INDUSTRY, <br /> POWERED BY 123 <br />
                 HOLOBOX
               </motion.h2>
               <div className="flex flex-row flex-wrap items-center justify-center gap-2.5">
