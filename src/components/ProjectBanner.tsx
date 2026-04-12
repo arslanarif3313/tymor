@@ -28,7 +28,7 @@ const SOLUTION_IMAGES = [
     alt: "Hospitality",
     label: "Hospitality",
     positionClass: "top-0 left-0",
-    startX: -384, startY: 0,
+    startX: -560, startY: 50,
     endX: 308, endY: 123,
     hidesBehind: true,
   },
