@@ -387,18 +387,18 @@ export default function WorkStrip() {
                   pointerEvents: 'none',
                   position: 'absolute',
                   right: '100%',
-                  bottom: '20px',
-                  marginRight: '220px',
+                  bottom: '87px',
+                  marginRight: '300px',
                 }}
               >
                 <p
                   style={{
                     fontFamily: 'var(--font-manrope), Manrope, sans-serif',
-                    fontSize: 'clamp(72px, 3vw, 84px)',
-                    fontWeight: 600,
+                    fontSize: 'clamp(142px, 3vw, 84px)',
+                    fontWeight: 700,
                     letterSpacing: '-0.03em',
                     color: '#fa6400',
-                    lineHeight: 1.08,
+                    lineHeight: 2,
                     textAlign: 'left',
                     textTransform: 'uppercase',
                     width: '600px',
@@ -407,8 +407,10 @@ export default function WorkStrip() {
                     margin: 0,
                   }}
                 >
-                  <span style={{ display: 'block', marginLeft: '-90px', whiteSpace: 'nowrap' }}>Limits Are</span>
-                  <span style={{ display: 'block', marginLeft: '235px', marginTop: '2px', whiteSpace: 'nowrap' }}>For Others</span>
+                  <span style={{ display: 'block', marginLeft: '-90px', whiteSpace: 'nowrap' }}>
+                    <span>WHY<span style={{ display: 'inline-block', width: '0.4em' }}></span>TYMOR</span>
+                    </span>
+                  {/* <span style={{ display: 'block', marginLeft: '235px', marginTop: '2px', whiteSpace: 'nowrap' }}></span> */}
                 </p>
               </motion.div>
 

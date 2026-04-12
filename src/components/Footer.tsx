@@ -612,7 +612,7 @@ export default function Footer() {
             className="col-12 text-start px-2 px-md-3"
             variants={itemVariants}
           >
-            <FooterCreativeCta lineAccent="#f5e000" variant="yellow" />
+            <FooterCreativeCta lineAccent="#ed3615" variant="yellow" />
           </motion.div>
 
         </motion.div>
