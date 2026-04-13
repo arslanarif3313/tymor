@@ -62,7 +62,16 @@ const PROJECTS = [
 ];
 
 const N = PROJECTS.length;
-const INTRO_WORDS = ["PROCESS\u25BA", "\u25A0 IS \u25AB\u2198", "EVERYTHING"];
+const INTRO_WORDS: React.ReactNode[] = [
+  "PROCESS\u25BA",
+  <span key="is">
+    {"\u25A0 IS"}
+    <span style={{ marginLeft: "0.05em", letterSpacing: "-0.02em" }}>
+      {"\u25AB\u2198"}
+    </span>
+  </span>,
+  "EVERYTHING"
+];
 const CARDS_START = 0.15;
 
 function getActiveIndex(p: number): number {
@@ -91,8 +100,8 @@ function getNumSlotSet(vw: number): NumSlotSet {
       center:      { left: 11,   top: 25, w: 78, h: 50, z: 10 },
       leftTop:     { left: -2,   top: 17, w: 33, h: 16, z: 5 },
       leftBottom:  { left: 2,    top: 66, w: 30, h: 18, z: 4 },
-      rightTop:    { left: 76,   top: 21, w: 30, h: 18, z: 4 },
-      rightBottom: { left: 76,   top: 66, w: 22, h: 15, z: 4 },
+      rightTop:    { left: 70,   top: 21, w: 30, h: 18, z: 4 },
+      rightBottom: { left: 70,   top: 66, w: 22, h: 15, z: 4 },
       hiddenLeft:  { left: -40,  top: 40, w: 33, h: 24, z: 1 },
       hiddenRight: { left: 110,  top: 40, w: 22, h: 20, z: 1 },
     };
@@ -102,8 +111,8 @@ function getNumSlotSet(vw: number): NumSlotSet {
       center:      { left: 18,   top: 20, w: 62, h: 58, z: 10 },
       leftTop:     { left: 1,    top: 16, w: 27, h: 20, z: 5 },
       leftBottom:  { left: 2,    top: 60, w: 26, h: 22, z: 4 },
-      rightTop:    { left: 78,   top: 19, w: 26, h: 22, z: 5 },
-      rightBottom: { left: 79,   top: 60, w: 16, h: 18, z: 4 },
+      rightTop:    { left: 73,   top: 19, w: 26, h: 22, z: 5 },
+      rightBottom: { left: 74,   top: 60, w: 16, h: 18, z: 4 },
       hiddenLeft:  { left: -31,  top: 38, w: 27, h: 31, z: 1 },
       hiddenRight: { left: 106,  top: 38, w: 16, h: 26, z: 1 },
     };
@@ -112,8 +121,8 @@ function getNumSlotSet(vw: number): NumSlotSet {
     center:      { left: 27,   top: 20, w: 48, h: 65, z: 10 },
     leftTop:     { left: 5,    top: 25, w: 16, h: 20, z: 5 },
     leftBottom:  { left: 3,    top: 55, w: 20, h: 22, z: 4 },
-    rightTop:    { left: 78,   top: 25, w: 20, h: 22, z: 5 },
-    rightBottom: { left: 82,   top: 55, w: 14, h: 20, z: 4 },
+    rightTop:    { left: 76,   top: 25, w: 20, h: 22, z: 5 },
+    rightBottom: { left: 78,   top: 55, w: 14, h: 20, z: 4 },
     hiddenLeft:  { left: -28,  top: 38, w: 25, h: 38, z: 1 },
     hiddenRight: { left: 105,  top: 38, w: 13, h: 31, z: 1 },
   };
@@ -347,6 +356,10 @@ export default function Banner() {
                   style={{ backgroundColor: project.bg }}
                 />
                 <div className="bdr-card-content-layer">
+                  {/* Number badge — top left */}
+                  <span className="bdr-card-number">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
                   <div className="bdr-card-marquee-layer">
                     <MarqueeStrip
                       client={project.client}

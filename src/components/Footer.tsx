@@ -40,11 +40,6 @@ function FooterCursorFollowCta({
   const sy = useSpring(y, { stiffness: 240, damping: 28, mass: 0.45 });
 
   useEffect(() => {
-    x.set(anchor.x);
-    y.set(anchor.y);
-  }, [anchor.x, anchor.y, x, y]);
-
-  useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
     const onMove = (e: MouseEvent) => {
@@ -133,6 +128,9 @@ function LadderRollingBall({
 
   const enterL = r1.xLeft - Math.max(28, Math.min(72, geom.w * 0.08));
 
+  const targetX = geom.land.x;
+  const dist = targetX - land2X;
+
   const xSeq = [
     enterL - rollR,
     r1.xLeft - rollR,
@@ -140,12 +138,14 @@ function LadderRollingBall({
     land1X - rollR,
     r2.xRight - rollR,
     land2X - rollR,
-    r3.xRight - rollR,
-    drop3X - rollR,
-    drop3XMid - rollR,
-    drop3XFar - rollR,
-    drop3XLand - rollR,
+    land2X + dist * 0.52 - rollR,
+    land2X + dist * 0.81 - rollR,
+    land2X + dist * 0.94 - rollR,
+    land2X + dist * 0.99 - rollR,
+    targetX - rollR,
   ];
+
+  const targetY = geom.land.y;
 
   const ySeq = [
     r1.y - rollR,
@@ -153,12 +153,12 @@ function LadderRollingBall({
     r1.y - rollR,
     r2.y - rollR,
     r2.y - rollR,
-    r3.y - rollR,
-    r3.y - rollR,
-    r3.y + finalFall * 0.10 - rollR,
-    r3.y + finalFall * 0.38 - rollR,
-    r3.y + finalFall * 0.72 - rollR,
-    r3.y + finalFall - rollR,
+    targetY - rollR,
+    targetY - rollR,
+    targetY - rollR,
+    targetY - rollR,
+    targetY - rollR,
+    targetY - rollR,
   ];
 
   const times = [
@@ -178,10 +178,10 @@ function LadderRollingBall({
     "linear",  // 3→4:  roll across "Holobox"
     drop,      // 4→5:  single smooth drop to "to Life"
     "linear",  // 5→6:  roll across "to Life"
-    "linear",  // 6→7:  leave edge, start final arc
-    gravity,   // 7→8:  falling
-    gravity,   // 8→9:  falling faster
-    gravity,   // 9→10: final
+    "linear",  // 6→7:  continue roll
+    "linear",  // 7→8:  continue roll
+    "linear",  // 8→9:  continue roll
+    "linear",  // 9→10: final smooth stop
   ];
 
   const leftSeq = xSeq.map((v) => v + rollR);
@@ -192,20 +192,20 @@ function LadderRollingBall({
   });
 
   const shadowOp = [
-    0, 0.22, 0.4, 0.4, 0.4, 0.4, 0.4, 0.25, 0.15, 0.08, 0.03,
+    0, 0.22, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4,
   ];
   const shadowSx = [
-    0.34, 0.52, 0.78, 0.76, 0.78, 0.76, 0.78, 0.55, 0.4, 0.3, 0.2,
+    0.34, 0.52, 0.78, 0.76, 0.78, 0.76, 0.78, 0.78, 0.78, 0.78, 0.78,
   ];
 
   const scaleXKF = [
-    0.92, 0.98, 1, 1.06, 1, 1.06, 1, 0.97, 0.95, 0.95, 1,
+    0.92, 0.98, 1, 1.06, 1, 1.06, 1, 1, 1, 1, 1,
   ];
   const scaleYKF = [
-    0.92, 0.98, 1, 0.94, 1, 0.94, 1, 1.04, 1.06, 1.06, 1,
+    0.92, 0.98, 1, 0.94, 1, 0.94, 1, 1, 1, 1, 1,
   ];
   const opacityKF = [
-    0, 0.45, 1, 1, 1, 1, 1, 1, 1, 1, 0.15,
+    0, 0.45, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   ];
 
   return (
@@ -318,8 +318,8 @@ function FooterCreativeCta({
   const handlePathComplete = useCallback((anchor: CursorAnchor) => {
     setFollowAnchor(anchor);
     setPathDone(true);
-    // Hide rolling ball first, then reveal follow CTA.
-    window.setTimeout(() => setFollowVisible(true), 420);
+    // Reveal follow CTA immediately to feel like a seamless transformation
+    setFollowVisible(true);
   }, []);
 
   const measure = useCallback(() => {
@@ -366,20 +366,14 @@ function FooterCreativeCta({
       });
     }
 
-    const changesLine = lineRefs.current[1];
-    if (!changesLine) return;
-    const ch = changesLine.getBoundingClientRect();
-    const chR = ch.right - sr.left;
-    const chCenterY = ch.top - sr.top + ch.height / 2;
-    const r2g = rails[1];
-    const landX = Math.min(
-      sr.width - rollR - 6,
-      Math.max(r2g.xRight + rollR + 8, chR + rollR + 12),
-    );
-    const landY = Math.max(
-      10 + rollR,
-      Math.min(sr.height - rollR - 10, chCenterY),
-    );
+    const word3 = wordRefs.current[2];
+    if (!word3) return;
+    const w3b = word3.getBoundingClientRect();
+    const w3R = w3b.right - sr.left;
+    const w3CenterY = w3b.top - sr.top + w3b.height / 2;
+    
+    const landX = w3R + rollD / 2 + 18;
+    const landY = w3CenterY;
 
     setGeom({
       w,

@@ -31,6 +31,7 @@ const SOLUTION_IMAGES = [
     startX: -560, startY: 50,
     endX: 308, endY: 123,
     hidesBehind: true,
+    objectPosition: "0% 50%", // Shift image to show the full device instead of center-cropping it
   },
   {
     id: 3,
@@ -134,6 +135,7 @@ function SolutionImagesLayer({ scrollProgress }: { scrollProgress: MotionValue<n
             alt={img.alt}
             decoding="async"
             fetchPriority={i === 0 ? "high" : "auto"}
+            style={{ objectPosition: (img as any).objectPosition || "center" }}
             className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent px-3 py-2.5 sm:px-4 sm:py-3">
@@ -187,6 +189,7 @@ function MobileProjectBanner() {
             <img
               src={img.src}
               alt={img.alt}
+              style={{ objectPosition: (img as any).objectPosition || "center" }}
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 to-transparent p-3">

@@ -145,6 +145,12 @@
   text-decoration: none;
   color: #ffffff;
   border-radius: 0;
+  transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ── Hover: zoom content inside fixed card boundary ── */
+.bdr-card:hover .bdr-card-link {
+  transform: scale(1.06);
 }
 
 .bdr-card-bg {
@@ -165,6 +171,33 @@
   justify-content: flex-start;
   align-items: stretch;
   overflow: hidden;
+  padding-top: clamp(110px, 20vh, 190px);
+}
+
+/* Side cards are much shorter — use a smaller top padding so marquee is visible */
+.bdr-card:not(.bdr-card--center) .bdr-card-content-layer {
+  padding-top: clamp(28px, 3.5vh, 50px);
+}
+
+
+/* ── Card number badge ── */
+.bdr-card-number {
+  position: absolute;
+  top: clamp(10px, 1.5vh, 20px);
+  right: clamp(14px, 2vw, 28px);
+  font-family: var(--font-anton), Anton, sans-serif;
+  font-weight: 400;
+  font-size: clamp(22px, 2.8vw, 48px);
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: -0.02em;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.bdr-card--center .bdr-card-number {
+  font-size: clamp(64px, 9vw, 140px);
+  color: rgba(255, 255, 255, 0.28);
 }
 
 .bdr-card-title {

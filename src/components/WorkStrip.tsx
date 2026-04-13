@@ -373,7 +373,12 @@ export default function WorkStrip() {
           </div>
 
           {/* Right — Isometric Stack */}
-          <div className="relative w-1/2 flex items-center justify-center overflow-visible px-4">
+          <motion.div 
+            className="relative w-1/2 flex items-center justify-center overflow-visible px-4"
+            initial={false}
+            animate={{ x: '0vw' }}
+            transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
+          >
             <div className="relative flex items-center justify-center">
               <motion.div
                 aria-hidden={activeIndex !== 0}
@@ -388,17 +393,17 @@ export default function WorkStrip() {
                   position: 'absolute',
                   right: '100%',
                   bottom: '87px',
-                  marginRight: '300px',
+                  marginRight: 'clamp(150px, 15vw, 400px)',
                 }}
               >
                 <p
                   style={{
                     fontFamily: 'var(--font-manrope), Manrope, sans-serif',
-                    fontSize: 'clamp(142px, 3vw, 84px)',
+                    fontSize: 'clamp(84px, 6vw, 120px)',
                     fontWeight: 700,
                     letterSpacing: '-0.03em',
                     color: '#fa6400',
-                    lineHeight: 2,
+                    lineHeight: 1.5,
                     textAlign: 'left',
                     textTransform: 'uppercase',
                     width: '600px',
@@ -415,10 +420,10 @@ export default function WorkStrip() {
               </motion.div>
 
               <div className="relative">
-              <IsometricStack activeIndex={activeIndex} tileSize={tileSize} />
+                <IsometricStack activeIndex={activeIndex} tileSize={tileSize} />
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
