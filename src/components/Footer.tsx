@@ -29,10 +29,12 @@ function FooterCursorFollowCta({
   variant,
   anchor,
   stageRef,
+  backgroundVariant,
 }: {
   variant: "yellow" | "red";
   anchor: CursorAnchor;
   stageRef: React.RefObject<HTMLDivElement | null>;
+  backgroundVariant?: "black" | "gradient";
 }) {
   const x = useMotionValue(anchor.x);
   const y = useMotionValue(anchor.y);
@@ -74,7 +76,7 @@ function FooterCursorFollowCta({
     >
       <Link
         href="/contact"
-        className={`footer-cursor-follow-btn footer-cursor-follow-btn--${variant}`}
+        className={`footer-cursor-follow-btn ${backgroundVariant === "gradient" ? "footer-cursor-follow-btn--teal" : `footer-cursor-follow-btn--${variant}`}`}
         aria-label="One Demo Game Over — book a demo"
       >
         One Demo
@@ -92,12 +94,14 @@ function LadderRollingBall({
   ready,
   pathDone,
   onPathComplete,
+  backgroundVariant,
 }: {
   variant: "yellow" | "red";
   geom: PathGeom | null;
   ready: boolean;
   pathDone: boolean;
   onPathComplete: (anchor: CursorAnchor) => void;
+  backgroundVariant: "black" | "gradient";
 }) {
   const dur = 12;
   const pathCompleteFired = useRef(false);
@@ -172,16 +176,16 @@ function LadderRollingBall({
   const drop: CubicBezier = [0.42, 0, 1, 1];
 
   const easePerSegment: EasingDef[] = [
-    arrive,    // 0→1:  enter → arrive on shelf 1
-    "linear",  // 1→2:  roll across "Bring"
-    drop,      // 2→3:  single smooth drop to "Holobox"
-    "linear",  // 3→4:  roll across "Holobox"
-    drop,      // 4→5:  single smooth drop to "to Life"
-    "linear",  // 5→6:  roll across "to Life"
-    "linear",  // 6→7:  continue roll
-    "linear",  // 7→8:  continue roll
-    "linear",  // 8→9:  continue roll
-    "linear",  // 9→10: final smooth stop
+    arrive, // 0→1:  enter → arrive on shelf 1
+    "linear", // 1→2:  roll across "Bring"
+    drop, // 2→3:  single smooth drop to "Holobox"
+    "linear", // 3→4:  roll across "Holobox"
+    drop, // 4→5:  single smooth drop to "to Life"
+    "linear", // 5→6:  roll across "to Life"
+    "linear", // 6→7:  continue roll
+    "linear", // 7→8:  continue roll
+    "linear", // 8→9:  continue roll
+    "linear", // 9→10: final smooth stop
   ];
 
   const leftSeq = xSeq.map((v) => v + rollR);
@@ -191,22 +195,46 @@ function LadderRollingBall({
     return (cumulativeX / (2 * Math.PI * Math.max(rollR, 1))) * 360;
   });
 
-  const shadowOp = [
-    0, 0.22, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4,
-  ];
+  const shadowOp = [0, 0.22, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4];
   const shadowSx = [
     0.34, 0.52, 0.78, 0.76, 0.78, 0.76, 0.78, 0.78, 0.78, 0.78, 0.78,
   ];
 
-  const scaleXKF = [
-    0.92, 0.98, 1, 1.06, 1, 1.06, 1, 1, 1, 1, 1,
+  const scaleXKF = [0.92, 0.98, 1, 1.06, 1, 1.06, 1, 1, 1, 1, 1];
+  const scaleYKF = [0.92, 0.98, 1, 0.94, 1, 0.94, 1, 1, 1, 1, 1];
+  const opacityKF = [0, 0.45, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+
+  const stdGradients = [
+    "radial-gradient(circle at 35% 35%, #bdffff 0%, #3EC0C0 40%, #154545 100%)",
+    "radial-gradient(circle at 35% 35%, #bdffff 0%, #3EC0C0 40%, #154545 100%)",
+    "radial-gradient(circle at 35% 35%, #dce6cc 0%, #848D72 40%, #303329 100%)",
+    "radial-gradient(circle at 35% 35%, #ffd4ad 0%, #A1764E 40%, #3b2a1a 100%)",
+    "radial-gradient(circle at 35% 35%, #ffd4ad 0%, #A1764E 40%, #3b2a1a 100%)",
+    "radial-gradient(circle at 35% 35%, #ffb696 0%, #CC5A2A 40%, #52230f 100%)",
+    "radial-gradient(circle at 35% 35%, #ffcba3 0%, #DD7228 40%, #572a0e 100%)",
+    "radial-gradient(circle at 35% 35%, #ffdca8 0%, #DB7B27 45%, #7a4211 100%)",
+    "radial-gradient(circle at 35% 35%, #ffdca8 0%, #DB7B27 45%, #7a4211 100%)",
+    "radial-gradient(circle at 35% 35%, #ffdca8 0%, #DB7B27 45%, #7a4211 100%)",
+    "radial-gradient(circle at 35% 35%, #ffdca8 0%, #DB7B27 45%, #7a4211 100%)",
   ];
-  const scaleYKF = [
-    0.92, 0.98, 1, 0.94, 1, 0.94, 1, 1, 1, 1, 1,
+
+  const stdBorders = [
+    "#3EC0C0",
+    "#3EC0C0",
+    "#848D72",
+    "#A1764E",
+    "#A1764E",
+    "#CC5A2A",
+    "#DD7228",
+    "#DB7B27",
+    "#DB7B27",
+    "#DB7B27",
+    "#DB7B27",
   ];
-  const opacityKF = [
-    0, 0.45, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  ];
+
+  const isGrad = backgroundVariant === "gradient";
+  const ballGradients = isGrad ? [...stdGradients].reverse() : stdGradients;
+  const ballBorders = isGrad ? [...stdBorders].reverse() : stdBorders;
 
   return (
     <motion.div
@@ -269,40 +297,58 @@ function LadderRollingBall({
             ease: [0.4, 0, 0.2, 1],
           }}
         />
-        <Link
-          href="/contact"
-          className={`${roundClass} footer-roll-sphere`}
-          aria-label="One Demo Game Over — book a demo"
-        >
-          <motion.span
-            className="footer-roll-gloss-sweep"
-            aria-hidden
-            animate={{ rotate: 360 }}
-            transition={{
-              duration: 28,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
+        <Link href="/contact" passHref legacyBehavior>
+          <motion.a
+            className={`${roundClass} footer-roll-sphere`}
+            aria-label="One Demo Game Over — book a demo"
+            style={{
+              boxShadow: backgroundVariant === "gradient" 
+                ? "inset -8px -8px 15px rgba(0, 0, 0, 0.4), inset 4px 4px 10px rgba(255, 255, 255, 0.2), 0 15px 45px rgba(0, 0, 0, 0.85), 0 0 0 2px rgba(255,255,255,0.15)" 
+                : "inset -8px -8px 15px rgba(0, 0, 0, 0.4), inset 4px 4px 10px rgba(255, 255, 255, 0.2), 0 15px 35px rgba(0, 0, 0, 0.5)",
+              border: "2px solid",
             }}
-          />
-          <span className="footer-cta-round-shade" aria-hidden />
-          <span className="footer-cta-round-highlight" aria-hidden />
-          <span className="footer-cta-round-label footer-cta-round-label--upright">
-            One Demo
-            <br />
-            Game Over
-          </span>
+            initial={{
+              background: ballGradients[0],
+              borderColor: ballBorders[0],
+            }}
+            whileInView={{
+              background: ballGradients,
+              borderColor: ballBorders,
+            }}
+            transition={{
+              duration: dur,
+              times: [...times],
+              ease: easePerSegment,
+            }}
+          >
+            <span
+              className="footer-cta-round-shade"
+              aria-hidden
+              style={{ opacity: 0 }}
+            />
+            <motion.span 
+              className="footer-cta-round-label footer-cta-round-label--upright"
+              style={{ color: "#ffffff", textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}
+            >
+              One Demo
+              <br />
+              Game Over
+            </motion.span>
+          </motion.a>
         </Link>
       </motion.div>
     </motion.div>
   );
 }
 
-function FooterCreativeCta({
+function FooterCreativeCtaBase({
   lineAccent,
   variant,
+  backgroundVariant,
 }: {
   lineAccent: string;
   variant: "yellow" | "red";
+  backgroundVariant: "black" | "gradient";
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const railRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -350,7 +396,7 @@ function FooterCreativeCta({
       });
     }
 
-    const rollD = Math.max(118, Math.min(168, w * 0.30));
+    const rollD = Math.max(118, Math.min(168, w * 0.3));
     const rollR = rollD / 2;
 
     const rails: RailGeom[] = [];
@@ -371,7 +417,7 @@ function FooterCreativeCta({
     const w3b = word3.getBoundingClientRect();
     const w3R = w3b.right - sr.left;
     const w3CenterY = w3b.top - sr.top + w3b.height / 2;
-    
+
     const landX = w3R + rollD / 2 + 18;
     const landY = w3CenterY;
 
@@ -411,7 +457,10 @@ function FooterCreativeCta({
   };
 
   return (
-    <div className="footer-cta-container position-relative py-4 py-xl-5 px-2">
+    <div
+      className={`footer-cta-container position-relative px-2 bg-variant-${backgroundVariant}`}
+      style={{ padding: "80px 0" }}
+    >
       <div
         ref={stageRef}
         className="footer-ladder-stage w-100 position-relative"
@@ -439,9 +488,12 @@ function FooterCreativeCta({
                 <span
                   ref={setWordRef(0)}
                   className="footer-ladder-word footer-ladder-word--natural anton-font"
-                  style={{ color: lineAccent }}
+                  style={{
+                    color:
+                      backgroundVariant === "gradient" ? "#DB7B27" : "#3EC0C0",
+                  }}
                 >
-                  Bring 
+                  Bring
                 </span>
               </div>
             </div>
@@ -485,14 +537,16 @@ function FooterCreativeCta({
                 <span
                   ref={setWordRef(2)}
                   className="footer-ladder-word footer-ladder-word--natural footer-ladder-word--lower anton-font"
-                  style={{ color: lineAccent }}
+                  style={{
+                    color:
+                      backgroundVariant === "gradient" ? "#3EC0C0" : "#DB7B27",
+                  }}
                 >
                   To Life
                 </span>
               </div>
             </div>
           </div>
-
         </div>
 
         <LadderRollingBall
@@ -501,16 +555,50 @@ function FooterCreativeCta({
           ready={ready}
           pathDone={pathDone}
           onPathComplete={handlePathComplete}
+          backgroundVariant={backgroundVariant}
         />
         {pathDone && followVisible && followAnchor ? (
           <FooterCursorFollowCta
             variant={variant}
             anchor={followAnchor}
             stageRef={stageRef}
+            backgroundVariant={backgroundVariant}
           />
         ) : null}
       </div>
     </div>
+  );
+}
+
+export function FooterCreativeCtaGradient({
+  lineAccent,
+  variant,
+}: {
+  lineAccent: string;
+  variant: "yellow" | "red";
+}) {
+  return (
+    <FooterCreativeCtaBase
+      backgroundVariant="gradient"
+      lineAccent={lineAccent}
+      variant={variant}
+    />
+  );
+}
+
+export function FooterCreativeCtaBlack({
+  lineAccent,
+  variant,
+}: {
+  lineAccent: string;
+  variant: "yellow" | "red";
+}) {
+  return (
+    <FooterCreativeCtaBase
+      backgroundVariant="black"
+      lineAccent={lineAccent}
+      variant={variant}
+    />
   );
 }
 
@@ -588,7 +676,7 @@ export default function Footer() {
           variants={containerVariants}
         >
           <motion.div
-            className="col-12 mb-4 text-center"
+            className="col-12 mb-2 text-center"
             variants={itemVariants}
           >
             <Link href="/" className="d-inline-block">
@@ -606,9 +694,19 @@ export default function Footer() {
             className="col-12 text-start px-2 px-md-3"
             variants={itemVariants}
           >
-            <FooterCreativeCta lineAccent="#ed3615" variant="yellow" />
-          </motion.div>
+            <div className="mb-5 pb-5 position-relative">
+              {/* <h4 className="text-center mb-4 text-white" style={{ opacity: 0.8, textTransform: "uppercase", letterSpacing: "2px", fontWeight: "bold" }}>Gradient Background Variant</h4> */}
+              <FooterCreativeCtaGradient
+                lineAccent="#f74a00"
+                variant="yellow"
+              />
+            </div>
 
+            <div className="mt-5 pt-5 position-relative">
+              {/* <h4 className="text-center mb-4 text-white" style={{ opacity: 0.8, textTransform: "uppercase", letterSpacing: "2px", fontWeight: "bold" }}>Black Background Variant</h4> */}
+              <FooterCreativeCtaBlack lineAccent="#f74a00" variant="yellow" />
+            </div>
+          </motion.div>
         </motion.div>
 
         <motion.div

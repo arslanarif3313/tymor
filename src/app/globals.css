@@ -1675,13 +1675,13 @@ body {
   max-width: 920px;
   margin: 0 auto;
   padding-bottom: clamp(0.75rem, 2.5vw, 1.5rem);
-  background-color: #000;
+  background-color: transparent;
 }
 
 .footer-ladder-flow {
   position: relative;
   text-align: left;
-  background-color: #000;
+  background-color: transparent;
 }
 
 .footer-ladder-step {
@@ -1754,8 +1754,8 @@ body {
   background:
     radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.12) 20%, transparent 45%),
     radial-gradient(circle at 70% 78%, rgba(80, 10, 0, 0.45) 0%, transparent 42%),
-    radial-gradient(circle at 35% 30%, #ffc8be 0%, #ed3615 42%, #6b1800 100%) !important;
-  border-color: #ff5a3a !important;
+    radial-gradient(circle at 35% 30%, #ffc8be 0%, #ed3615 42%, #6b1800 100%);
+  border-color: #ff5a3a;
   box-shadow:
     inset 0 -10px 18px rgba(0, 0, 0, 0.32),
     inset 0 8px 16px rgba(255, 255, 255, 0.1),
@@ -1795,9 +1795,9 @@ body {
   text-orientation: mixed;
   white-space: normal;
   font-size: clamp(
-    7px,
-    calc(var(--footer-ladder-ball, 78px) * 0.115),
-    11px
+    11px,
+    calc(var(--footer-ladder-ball, 78px) * 0.16),
+    16px
   );
   padding: 0 5px;
   line-height: 1.12;
@@ -1841,7 +1841,7 @@ body {
   text-decoration: none !important;
   text-transform: uppercase;
   font-weight: 800;
-  font-size: clamp(0.62rem, 1.75vw, 0.82rem);
+  font-size: clamp(0.85rem, 2.2vw, 1.1rem);
   line-height: 1.12;
   letter-spacing: 0.06em;
   text-align: center;
@@ -1858,15 +1858,36 @@ body {
 }
 
 .footer-cursor-follow-btn--yellow {
-  border-color: #ed3615;
-  color: #ed3615 !important;
+  background: radial-gradient(circle at 35% 35%, #ffdca8 0%, #DB7B27 45%, #7a4211 100%) !important;
+  border-color: #DB7B27 !important;
+  color: #fff !important;
+  box-shadow: 
+    inset -8px -8px 15px rgba(0, 0, 0, 0.4), 
+    inset 4px 4px 10px rgba(255, 255, 255, 0.2), 
+    0 15px 35px rgba(0, 0, 0, 0.5) !important;
+  border-width: 2px !important;
 }
 
 .footer-cursor-follow-btn--yellow:hover {
+  filter: brightness(1.1) saturate(1.1);
+  transform: scale(1.05);
+}
+
+.footer-cursor-follow-btn--teal {
+  background: radial-gradient(circle at 35% 35%, #bdffff 0%, #3EC0C0 40%, #154545 100%) !important;
+  border-color: #3EC0C0 !important;
   color: #fff !important;
-  background: #ed3615 !important;
-  border-color: #ed3615;
-  box-shadow: 0 0 0 1px rgba(237, 54, 21, 0.35) !important;
+  box-shadow: 
+    inset -8px -8px 15px rgba(0, 0, 0, 0.4), 
+    inset 4px 4px 10px rgba(255, 255, 255, 0.2), 
+    0 15px 45px rgba(0, 0, 0, 0.85), 
+    0 0 0 2px rgba(255,255,255,0.15) !important;
+  border-width: 2px !important;
+}
+
+.footer-cursor-follow-btn--teal:hover {
+  filter: brightness(1.1) saturate(1.1);
+  transform: scale(1.05);
 }
 
 .footer-cursor-follow-btn--red {
@@ -2119,8 +2140,8 @@ body {
 }
 
 .footer-cta-round--yellow:hover {
-  background: #ed3615 !important;
-  color: #fff !important;
+  background: #ed3615;
+  color: #fff;
   box-shadow: 0 20px 50px rgba(237, 54, 21, 0.5);
 }
 
@@ -2148,7 +2169,7 @@ body {
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  background-color: #000;
+  background-color: transparent;
 }
 
 .footer-big-title {
@@ -2158,6 +2179,29 @@ body {
   letter-spacing: -2px;
   color: #fff;
   transition: all 0.5s ease;
+}
+
+.bg-variant-black {
+  background: #000;
+  border-radius: 0;
+}
+
+.bg-variant-gradient {
+  background: transparent;
+  position: relative;
+}
+
+.bg-variant-gradient::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, #3EC0C0, #848D72, #A1764E, #CC5A2A, #DD7228, #DB7B27);
+  z-index: -1;
+  pointer-events: none;
 }
 
 @media (max-width: 991px) {
