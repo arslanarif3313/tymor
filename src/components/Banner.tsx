@@ -262,17 +262,26 @@ export default function Banner() {
 
       const titleEl = titleRefs.current[i];
       if (titleEl) {
-        const titleReveal = clamp(0, 1, 1 - (posAbs - 0.45) / 0.5);
+        // Smoother reveal calculation with eased curve
+        const rawReveal = 1 - (posAbs - 0.35) / 0.55;
+        const clampedReveal = clamp(0, 1, rawReveal);
+        // Apply smoothstep easing for buttery animation
+        const titleReveal = clampedReveal * clampedReveal * (3 - 2 * clampedReveal);
+        const translateY = (1 - titleReveal) * 60; // Reduced from 110% for subtler motion
         titleEl.style.opacity = String(titleReveal);
-        titleEl.style.transform = `translateY(${(1 - titleReveal) * 110}%)`;
+        titleEl.style.transform = `translateY(${translateY}%)`;
       }
 
       const desc = descRefs.current[i];
       if (desc) {
-        desc.style.opacity = String(clamp(0, 1, 1 - posAbs * 2.5));
+        // Smooth eased opacity for description
+        const rawDescOpacity = 1 - posAbs * 2.2;
+        const clampedDesc = clamp(0, 1, rawDescOpacity);
+        const descOpacity = clampedDesc * clampedDesc * (3 - 2 * clampedDesc);
+        desc.style.opacity = String(descOpacity);
       }
     }
-  }, [scrollYProgress]);
+  }, [smoothProgress]);
 
   useMotionValueEvent(smoothProgress, "change", apply);
 
