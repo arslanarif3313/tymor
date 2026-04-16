@@ -5,6 +5,7 @@ import {
   motion,
   useScroll,
   useTransform,
+  useSpring,
   useMotionValueEvent,
 } from "framer-motion";
 import "./Banner.css";
@@ -18,7 +19,7 @@ const PROJECTS = [
     client: "Holobox Discovery Meeting",
     sep: "●",
     title: "Strategic Alignment",
-    bg: "#d4001c",
+    bg: "linear-gradient(to bottom right, #3EC0C0, #848D72, #A1764E, #CC5A2A, #DD7228, #DB7B27)",
     href: "#",
     mDur: 300,
     desc: "Tymor aligns every dimension of your MetaHuman \u2014 appearance, voice, tone, personality, and knowledge \u2014 with your company\u2019s identity, brand standards, and messaging framework. Built deliberately. All consistent. Owned entirely by your identity.",
@@ -27,7 +28,7 @@ const PROJECTS = [
     client: "Design Your Meta Human",
     sep: "►",
     title: "Built From Scratch",
-    bg: "#ff4a1f",
+    bg: "linear-gradient(to bottom right, #3EC0C0, #848D72, #A1764E, #CC5A2A, #DD7228, #DB7B27)",
     href: "#",
     mDur: 300,
     desc: "Every MetaHuman is built from scratch. We start with you. Your brand brief, your audience, your tone, your world.",
@@ -36,7 +37,7 @@ const PROJECTS = [
     client: "Voice & Speech Production",
     sep: "৹",
     title: "Voice Engineering",
-    bg: "#d4001c",
+    bg: "linear-gradient(to bottom right, #3EC0C0, #848D72, #A1764E, #CC5A2A, #DD7228, #DB7B27)",
     href: "#",
     mDur: 300,
     desc: "The voice your MetaHuman delivers through the Holobox is the first impression, the trust signal, and the brand moment \u2014 all in one. Our voice engineers build with that responsibility in every session, across every language, for each deployment.",
@@ -45,7 +46,7 @@ const PROJECTS = [
     client: "Facial Expressions & Movement",
     sep: "৹",
     title: "Living Expressions",
-    bg: "#ff4a1f",
+    bg: "linear-gradient(to bottom right, #3EC0C0, #848D72, #A1764E, #CC5A2A, #DD7228, #DB7B27)",
     href: "#",
     mDur: 300,
     desc: "Your MetaHuman doesn\u2019t just talk. It reacts. Tymor programs all 56 facial action units \u2014 every emotion, every lip sync shape, every gesture \u2014 so every conversation through the Holobox feels genuinely alive.",
@@ -54,7 +55,7 @@ const PROJECTS = [
     client: "AI Brain & Integration",
     sep: "▲",
     title: "Intelligent Core",
-    bg: "#d4001c",
+    bg: "linear-gradient(to bottom right, #3EC0C0, #848D72, #A1764E, #CC5A2A, #DD7228, #DB7B27)",
     href: "#",
     mDur: 300,
     desc: "What your MetaHuman knows, how it speaks, when it escalates, and where it draws the line. That is not a configuration setting. That is Tymor\u2019s craft.",
@@ -198,6 +199,12 @@ export default function Banner() {
     offset: ["start start", "end end"],
   });
 
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
+
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const descRefs = useRef<(HTMLParagraphElement | null)[]>([]);
   const titleRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -213,13 +220,13 @@ export default function Banner() {
   }, []);
 
   const apply = useCallback(() => {
-    const v = scrollYProgress.get();
+    const v = smoothProgress.get();
     const rawActive = getActiveIndex(v);
     const slotSet = slotSetRef.current;
 
     const baseIdx = Math.floor(rawActive);
     const frac = rawActive - baseIdx;
-    const HOLD = 0.6;
+    const HOLD = 0.15; // Reduced from 0.6 for smoother movement
     const moveFrac = frac <= HOLD ? 0 : (frac - HOLD) / (1 - HOLD);
     const posActive = clamp(0, N - 1, baseIdx + moveFrac);
 
@@ -238,18 +245,8 @@ export default function Banner() {
       const fadeEnd = 0.16 + staggerDelay;
       const deckFade = v <= fadeStart ? 0 : v >= fadeEnd ? 1 : (v - fadeStart) / (fadeEnd - fadeStart);
 
-      const posAlpha = abs <= 2.5 ? 1 : abs >= 3.5 ? 0 : 1 - (abs - 2.5);
-
-      let sideReveal = 1;
-      if (frac > 0 && abs > 2) {
-        const isTopSlot = i % 2 !== 0;
-        const rStart = isTopSlot ? 0.0 : 0.25;
-        const rEnd   = isTopSlot ? 0.3 : 0.55;
-        sideReveal = frac <= rStart ? 0 : frac >= rEnd ? 1 : (frac - rStart) / (rEnd - rStart);
-      }
-
-      const opacity = deckFade * posAlpha * sideReveal;
-      const clipInset = clamp(0, 48, (1 - clamp(0, 1, deckFade) * posAlpha * sideReveal) * 48);
+      const opacity = deckFade;
+      const clipInset = clamp(0, 48, (1 - clamp(0, 1, deckFade)) * 48);
 
       el.style.left   = `${slot.left}vw`;
       el.style.top    = `${slot.top}vh`;
@@ -265,7 +262,7 @@ export default function Banner() {
 
       const titleEl = titleRefs.current[i];
       if (titleEl) {
-        const titleReveal = clamp(0, 1, posAlpha);
+        const titleReveal = clamp(0, 1, 1 - (posAbs - 0.45) / 0.5);
         titleEl.style.opacity = String(titleReveal);
         titleEl.style.transform = `translateY(${(1 - titleReveal) * 110}%)`;
       }
@@ -277,23 +274,23 @@ export default function Banner() {
     }
   }, [scrollYProgress]);
 
-  useMotionValueEvent(scrollYProgress, "change", apply);
+  useMotionValueEvent(smoothProgress, "change", apply);
 
   useLayoutEffect(() => {
     apply();
   }, [apply]);
 
   const introOpacity = useTransform(
-    scrollYProgress,
+    smoothProgress,
     [0, 0.1, 0.15],
     [1, 1, 0],
   );
-  const introY = useTransform(scrollYProgress, [0, 0.15], [0, -80]);
-  const w0Y = useTransform(scrollYProgress, [0, 0.12], [0, -120]);
-  const w1Y = useTransform(scrollYProgress, [0, 0.12], [0, 0]);
-  const w2Y = useTransform(scrollYProgress, [0, 0.12], [0, 120]);
+  const introY = useTransform(smoothProgress, [0, 0.15], [0, -80]);
+  const w0Y = useTransform(smoothProgress, [0, 0.12], [0, -120]);
+  const w1Y = useTransform(smoothProgress, [0, 0.12], [0, 0]);
+  const w2Y = useTransform(smoothProgress, [0, 0.12], [0, 120]);
   const wordYs = [w0Y, w1Y, w2Y];
-  const sceneOpacity = useTransform(scrollYProgress, [0.08, 0.16], [0, 1]);
+  const sceneOpacity = useTransform(smoothProgress, [0.08, 0.16], [0, 1]);
 
   return (
     <section ref={sectionRef} className="bdr-section" id="process">
@@ -353,7 +350,7 @@ export default function Banner() {
               >
                 <div
                   className="bdr-card-bg"
-                  style={{ backgroundColor: project.bg }}
+                  style={{ background: project.bg }}
                 />
                 <div className="bdr-card-content-layer">
                   {/* Number badge — top left */}

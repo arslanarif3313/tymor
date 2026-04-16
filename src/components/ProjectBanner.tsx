@@ -1,6 +1,11 @@
 "use client";
 
-import { useRef, useLayoutEffect, useCallback, useSyncExternalStore } from "react";
+import {
+  useRef,
+  useLayoutEffect,
+  useCallback,
+  useSyncExternalStore,
+} from "react";
 import {
   motion,
   useScroll,
@@ -18,8 +23,10 @@ const SOLUTION_IMAGES = [
     alt: "Real Estate",
     label: "Real Estate",
     positionClass: "top-0 left-0",
-    startX: -384, startY: -384,
-    endX: 308, endY: 123,
+    startX: -384,
+    startY: -384,
+    endX: 250,
+    endY: 123,
     hidesBehind: false,
   },
   {
@@ -28,8 +35,10 @@ const SOLUTION_IMAGES = [
     alt: "Hospitality",
     label: "Hospitality",
     positionClass: "top-0 left-0",
-    startX: -560, startY: 50,
-    endX: 308, endY: 123,
+    startX: -560,
+    startY: 50,
+    endX: 250,
+    endY: 123,
     hidesBehind: true,
     objectPosition: "0% 50%", // Shift image to show the full device instead of center-cropping it
   },
@@ -39,8 +48,10 @@ const SOLUTION_IMAGES = [
     alt: "Education",
     label: "Education",
     positionClass: "bottom-0 left-0",
-    startX: -384, startY: 384,
-    endX: 308, endY: -98,
+    startX: -384,
+    startY: 384,
+    endX: 250,
+    endY: -98,
     hidesBehind: false,
   },
   {
@@ -49,8 +60,10 @@ const SOLUTION_IMAGES = [
     alt: "Retail",
     label: "Retail",
     positionClass: "top-0 right-0",
-    startX: 308, startY: -462,
-    endX: -284, endY: 123,
+    startX: 308,
+    startY: -462,
+    endX: -260,
+    endY: 123,
     hidesBehind: false,
   },
   {
@@ -59,8 +72,10 @@ const SOLUTION_IMAGES = [
     alt: "Healthcare",
     label: "Healthcare",
     positionClass: "top-0 right-0",
-    startX: 0, startY: -384,
-    endX: -284, endY: 123,
+    startX: 0,
+    startY: -384,
+    endX: -260,
+    endY: 123,
     hidesBehind: true,
   },
   {
@@ -69,8 +84,10 @@ const SOLUTION_IMAGES = [
     alt: "Marketing",
     label: "Marketing",
     positionClass: "bottom-0 right-0",
-    startX: 308, startY: 462,
-    endX: -289, endY: -98,
+    startX: 308,
+    startY: 462,
+    endX: -265,
+    endY: -98,
     hidesBehind: false,
   },
   {
@@ -79,8 +96,10 @@ const SOLUTION_IMAGES = [
     alt: "Corporate",
     label: "Corporate",
     positionClass: "bottom-0 right-0",
-    startX: 0, startY: 384,
-    endX: -289, endY: -98,
+    startX: 0,
+    startY: 384,
+    endX: -260,
+    endY: -98,
     hidesBehind: true,
   },
 ];
@@ -91,7 +110,11 @@ const ANIM_RANGE = ANIM_END - ANIM_START;
 const TEXT_FADE_START = ANIM_END - 0.14;
 const TEXT_FADE_END = ANIM_END - 0.02;
 
-function SolutionImagesLayer({ scrollProgress }: { scrollProgress: MotionValue<number> }) {
+function SolutionImagesLayer({
+  scrollProgress,
+}: {
+  scrollProgress: MotionValue<number>;
+}) {
   const refs = useRef<(HTMLDivElement | null)[]>([]);
 
   const apply = useCallback(() => {
@@ -189,7 +212,9 @@ function MobileProjectBanner() {
             <img
               src={img.src}
               alt={img.alt}
-              style={{ objectPosition: (img as any).objectPosition || "center" }}
+              style={{
+                objectPosition: (img as any).objectPosition || "center",
+              }}
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 to-transparent p-3">
@@ -212,7 +237,9 @@ export default function ProjectBanner() {
       mq.addEventListener("change", cb);
       return () => mq.removeEventListener("change", cb);
     },
-    () => typeof window !== "undefined" && window.matchMedia("(max-width: 990px)").matches,
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 990px)").matches,
     () => false,
   );
 
@@ -253,64 +280,75 @@ export default function ProjectBanner() {
   }
 
   return (
-    <section style={{ overflow: "clip", width: "100%", zIndex: 1100, position: "relative" }}>
+    <section
+      style={{
+        overflow: "clip",
+        width: "100%",
+        zIndex: 1100,
+        position: "relative",
+      }}
+    >
       <div ref={containerRef} className="relative" style={{ height: "1300vh" }}>
         <div className="sticky top-0 h-svh w-full bg-white">
-          <div className="relative h-full w-full">
-            <motion.div
-              style={{ opacity: titleOpacity, willChange: "opacity" }}
-              className="pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center px-4 text-center"
+          <div className="relative h-full w-full overflow-hidden">
+            <div
+              className="relative h-full mx-auto overflow-hidden"
+              style={{ maxWidth: "1400px" }}
             >
-              <motion.h2
-                className={`mb-8 max-w-[min(100%,22ch)] font-semibold normal-case tracking-[-0.12rem] ${GeistSans.className}`}
-                style={{
-                  fontSize: titleFontSize,
-                  lineHeight: titleLineHeight,
-                  fontWeight: 700,
-                  // fontStyle: "normal",
-                  color: "rgb(250, 100, 0)",
-                  willChange: "font-size, line-height",
-                
-                }}
+              <motion.div
+                style={{ opacity: titleOpacity, willChange: "opacity" }}
+                className="pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center px-4 text-center"
               >
-                your INDUSTRY, <br /> powered by <br />
-                HOLOBOX
-              </motion.h2>
-              <div className="flex flex-row flex-wrap items-center justify-center gap-2.5">
-                <motion.button
-                  type="button"
+                <motion.h2
+                  className={`mb-8 max-w-[min(100%,22ch)] font-semibold normal-case tracking-[-0.12rem] ${GeistSans.className}`}
                   style={{
-                    opacity: buttonOpacity,
-                    y: buttonY,
-                    backgroundColor: "#fa6400",
-                    border: "none",
-                    borderRadius: "100px",
+                    fontSize: titleFontSize,
+                    lineHeight: titleLineHeight,
+                    fontWeight: 700,
+                    // fontStyle: "normal",
+                    color: "#FA6400",
+                    willChange: "font-size, line-height",
                   }}
-                  whileHover={{ scale: 1.05, backgroundColor: "#fa6400" }}
-                  whileTap={{ scale: 0.95 }}
-                  className="mt-2 cursor-pointer px-3 py-2 text-sm font-bold text-white"
                 >
-                  Explore Our Holobox Further
-                </motion.button>
-                <motion.button
-                  type="button"
-                  style={{
-                    opacity: buttonOpacity,
-                    y: buttonY,
-                    backgroundColor: "#fa6400",
-                    border: "none",
-                    borderRadius: "100px",
-                  }}
-                  whileHover={{ scale: 1.05, backgroundColor: "#d60707" }}
-                  whileTap={{ scale: 0.95 }}
-                  className="mt-2 cursor-pointer px-7 py-2.5 text-sm font-semibold text-white shadow-lg"
-                >
-                  Get A Demo
-                </motion.button>
-              </div>
-            </motion.div>
+                  your INDUSTRY, <br /> powered by <br />
+                  HOLOBOX
+                </motion.h2>
+                <div className="flex flex-row flex-wrap items-center justify-center gap-2.5">
+                  <motion.button
+                    type="button"
+                    style={{
+                      opacity: buttonOpacity,
+                      y: buttonY,
+                      backgroundColor: "#fa6400",
+                      border: "none",
+                      borderRadius: "100px",
+                    }}
+                    whileHover={{ scale: 1.05, backgroundColor: "#fa6400" }}
+                    whileTap={{ scale: 0.95 }}
+                    className="mt-2 cursor-pointer px-3 py-2 text-sm font-bold text-white"
+                  >
+                    Explore Our Holobox Further
+                  </motion.button>
+                  <motion.button
+                    type="button"
+                    style={{
+                      opacity: buttonOpacity,
+                      y: buttonY,
+                      backgroundColor: "#fa6400",
+                      border: "none",
+                      borderRadius: "100px",
+                    }}
+                    whileHover={{ scale: 1.05, backgroundColor: "#d60707" }}
+                    whileTap={{ scale: 0.95 }}
+                    className="mt-2 cursor-pointer px-7 py-2.5 text-sm font-semibold text-white shadow-lg"
+                  >
+                    Get A Demo
+                  </motion.button>
+                </div>
+              </motion.div>
 
-            <SolutionImagesLayer scrollProgress={scrollYProgress} />
+              <SolutionImagesLayer scrollProgress={scrollYProgress} />
+            </div>
           </div>
         </div>
       </div>

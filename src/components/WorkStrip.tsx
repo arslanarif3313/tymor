@@ -1,22 +1,27 @@
 "use client";
-import { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight } from 'lucide-react';
+import { useRef, useEffect, useState } from "react";
+import {
+  motion,
+  useScroll,
+  useMotionValueEvent,
+  AnimatePresence,
+} from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
 
-function TitleLeadSquare({ color = '#fa6400' }: { color?: string }) {
+function TitleLeadSquare({ color = "#fa6400" }: { color?: string }) {
   return (
     <span
       aria-hidden
       style={{
-        display: 'inline-block',
-        width: '0.56em',
-        height: '0.56em',
-        backgroundColor: 'transparent',
+        display: "inline-block",
+        width: "0.56em",
+        height: "0.56em",
+        backgroundColor: "transparent",
         border: `2px solid ${color}`,
-        boxSizing: 'border-box',
-        marginRight: '0.4em',
-        verticalAlign: 'middle',
-        transform: 'translateY(-0.05em)',
+        boxSizing: "border-box",
+        marginRight: "0.4em",
+        verticalAlign: "middle",
+        transform: "translateY(-0.05em)",
       }}
     />
   );
@@ -74,10 +79,16 @@ const ICON_IMAGES = [
   "https://framerusercontent.com/images/fQfiEf6CGFwe4CIiIh6oLDj5g.png?scale-down-to=512",
   "https://framerusercontent.com/images/yqEZWmi7l26eErBmxmv7K3sUts.png?scale-down-to=512",
   "https://framerusercontent.com/images/mItFSA6DtA8zAdRwPPfpr4Dho2A.png?scale-down-to=512",
-  "https://framerusercontent.com/images/dfm8JnI7K7zBoES0pPSRYDn2S0.png?scale-down-to=512"
+  "https://framerusercontent.com/images/dfm8JnI7K7zBoES0pPSRYDn2S0.png?scale-down-to=512",
 ];
 
-function IsometricStack({ activeIndex, tileSize }: { activeIndex: number, tileSize: number }) {
+function IsometricStack({
+  activeIndex,
+  tileSize,
+}: {
+  activeIndex: number;
+  tileSize: number;
+}) {
   const xStep = tileSize / 2;
   const yStep = tileSize / 2;
 
@@ -109,36 +120,36 @@ function IsometricStack({ activeIndex, tileSize }: { activeIndex: number, tileSi
               y: isHighlighted ? -(tileSize * 0.35) : 0,
             }}
             transition={{
-              type: 'spring',
+              type: "spring",
               stiffness: 200,
               damping: 22,
               mass: 0.8,
             }}
             style={{
-              position: 'absolute',
+              position: "absolute",
               width: tileSize,
               height: tileSize,
               left: pos.x,
               top: pos.y,
               borderRadius: 14,
-              overflow: 'hidden',
+              overflow: "hidden",
               zIndex: isHighlighted ? 20 : i + 1,
-              willChange: 'transform',
+              willChange: "transform",
             }}
           >
             <motion.div
               animate={{
                 boxShadow: isHighlighted
-                  ? '0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(255,255,255,0.08)'
-                  : '0 8px 24px rgba(0,0,0,0.4)',
+                  ? "0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(255,255,255,0.08)"
+                  : "0 8px 24px rgba(0,0,0,0.4)",
                 opacity: isHighlighted ? 1 : highlightedTile === -1 ? 1 : 0.5,
               }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
               style={{
-                width: '100%',
-                height: '100%',
+                width: "100%",
+                height: "100%",
                 borderRadius: 14,
-                overflow: 'hidden',
+                overflow: "hidden",
               }}
             >
               <img
@@ -147,10 +158,10 @@ function IsometricStack({ activeIndex, tileSize }: { activeIndex: number, tileSi
                 decoding="async"
                 loading="lazy"
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
                 }}
               />
             </motion.div>
@@ -169,27 +180,27 @@ function MobileWorkStrip() {
           <div key={feature.id}>
             <span
               style={{
-                fontFamily: 'var(--font-manrope), Manrope, sans-serif',
-                fontSize: '14px',
+                fontFamily: "var(--font-manrope), Manrope, sans-serif",
+                fontSize: "14px",
                 fontWeight: 600,
                 lineHeight: 1,
-                letterSpacing: '-0.04em',
-                color: 'rgba(255,255,255,0.35)',
-                display: 'block',
-                marginBottom: '10px',
+                letterSpacing: "-0.04em",
+                color: "rgba(255,255,255,0.35)",
+                display: "block",
+                marginBottom: "10px",
               }}
             >
               {feature.id}
             </span>
             <h3
               style={{
-                fontFamily: 'var(--font-manrope), Manrope, sans-serif',
-                fontSize: '22px',
+                fontFamily: "var(--font-manrope), Manrope, sans-serif",
+                fontSize: "22px",
                 fontWeight: 600,
                 lineHeight: 1.2,
-                letterSpacing: '-0.02em',
-                color: '#fff',
-                margin: '0 0 10px 0',
+                letterSpacing: "-0.02em",
+                color: "#fff",
+                margin: "0 0 10px 0",
               }}
             >
               <TitleLeadSquare />
@@ -197,12 +208,12 @@ function MobileWorkStrip() {
             </h3>
             <p
               style={{
-                fontFamily: 'var(--font-dm-sans), system-ui, sans-serif',
-                fontSize: '14px',
+                fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+                fontSize: "14px",
                 fontWeight: 400,
                 lineHeight: 1.6,
-                color: 'rgba(255,255,255,0.55)',
-                margin: '0 0 16px 0',
+                color: "rgba(255,255,255,0.55)",
+                margin: "0 0 16px 0",
               }}
             >
               {feature.description}
@@ -210,14 +221,14 @@ function MobileWorkStrip() {
             <a
               href="#"
               style={{
-                fontFamily: 'var(--font-dm-sans), system-ui, sans-serif',
-                fontSize: '13px',
+                fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+                fontSize: "13px",
                 fontWeight: 500,
-                color: '#fff',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
+                color: "#fff",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
               }}
             >
               Get started <ArrowUpRight size={14} />
@@ -241,21 +252,21 @@ export default function WorkStrip() {
       setIs2xl(window.innerWidth >= 1536);
     };
     check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start start', 'end end'],
+    offset: ["start start", "end end"],
   });
 
   const totalSections = features.length + 1;
 
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
     const index = Math.min(
       totalSections - 1,
-      Math.floor(latest * totalSections)
+      Math.floor(latest * totalSections),
     );
     if (index !== activeIndex) setActiveIndex(index);
   });
@@ -275,7 +286,7 @@ export default function WorkStrip() {
         <div className="flex h-full w-full">
           {/* Left — text content */}
           <div className="w-1/2 flex items-center justify-center px-12 xl:px-24">
-            <div style={{ width: '100%', maxWidth: 540 }}>
+            <div style={{ width: "100%", maxWidth: 540 }}>
               <AnimatePresence mode="wait">
                 {feature ? (
                   <motion.div
@@ -287,14 +298,14 @@ export default function WorkStrip() {
                   >
                     <span
                       style={{
-                        fontFamily: 'var(--font-manrope), Manrope, sans-serif',
-                        fontSize: '30px',
+                        fontFamily: "var(--font-manrope), Manrope, sans-serif",
+                        fontSize: "30px",
                         fontWeight: 600,
                         lineHeight: 1,
-                        letterSpacing: '-0.04em',
-                        color: 'rgb(163, 163, 163)',
-                        display: 'block',
-                        marginBottom: '16px',
+                        letterSpacing: "-0.04em",
+                        color: "rgb(163, 163, 163)",
+                        display: "block",
+                        marginBottom: "16px",
                       }}
                     >
                       {feature.id}
@@ -302,13 +313,13 @@ export default function WorkStrip() {
 
                     <h3
                       style={{
-                        fontFamily: 'var(--font-manrope), Manrope, sans-serif',
-                        fontSize: '42px',
+                        fontFamily: "var(--font-manrope), Manrope, sans-serif",
+                        fontSize: "42px",
                         fontWeight: 700,
                         lineHeight: 1.1,
-                        letterSpacing: '-0.03em',
-                        color: '#fa6400',
-                        margin: '0 0 20px 0',
+                        letterSpacing: "-0.03em",
+                        color: "#fa6400",
+                        margin: "0 0 20px 0",
                       }}
                     >
                       {/* <TitleLeadSquare /> */}
@@ -317,12 +328,13 @@ export default function WorkStrip() {
 
                     <p
                       style={{
-                        fontFamily: 'var(--font-dm-sans), system-ui, sans-serif',
-                        fontSize: '18px',
+                        fontFamily:
+                          "var(--font-dm-sans), system-ui, sans-serif",
+                        fontSize: "18px",
                         fontWeight: 400,
                         lineHeight: 1.6,
-                        color: 'rgb(212, 212, 212)',
-                        margin: '0 0 32px 0',
+                        color: "rgb(212, 212, 212)",
+                        margin: "0 0 32px 0",
                         maxWidth: 480,
                       }}
                     >
@@ -333,14 +345,15 @@ export default function WorkStrip() {
                       href="#"
                       className="group"
                       style={{
-                        fontFamily: 'var(--font-dm-sans), system-ui, sans-serif',
-                        fontSize: '20px',
+                        fontFamily:
+                          "var(--font-dm-sans), system-ui, sans-serif",
+                        fontSize: "20px",
                         fontWeight: 600,
-                        color: '#ffffff',
-                        textDecoration: 'none',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '8px',
+                        color: "#ffffff",
+                        textDecoration: "none",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "8px",
                       }}
                     >
                       Get started
@@ -352,9 +365,9 @@ export default function WorkStrip() {
 
                     <div
                       style={{
-                        marginTop: '40px',
-                        height: '1px',
-                        background: 'rgba(255,255,255,0.08)',
+                        marginTop: "40px",
+                        height: "1px",
+                        background: "rgba(255,255,255,0.08)",
                         maxWidth: 400,
                       }}
                     />
@@ -373,10 +386,10 @@ export default function WorkStrip() {
           </div>
 
           {/* Right — Isometric Stack */}
-          <motion.div 
+          <motion.div
             className="relative w-1/2 flex items-center justify-center overflow-visible px-4"
             initial={false}
-            animate={{ x: '0vw' }}
+            animate={{ x: "0vw" }}
             transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
           >
             <div className="relative flex items-center justify-center">
@@ -385,37 +398,51 @@ export default function WorkStrip() {
                 initial={false}
                 animate={{
                   opacity: activeIndex === 0 ? 1 : 0,
-                  x: activeIndex === 0 ? 0 : -30
+                  x: activeIndex === 0 ? 0 : -30,
                 }}
                 transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
                 style={{
-                  pointerEvents: 'none',
-                  position: 'absolute',
-                  right: '100%',
-                  bottom: '87px',
-                  marginRight: 'clamp(150px, 15vw, 400px)',
+                  pointerEvents: "none",
+                  position: "absolute",
+                  right: "100%",
+                  bottom: "45px", // Lowered from 87px
+                  marginRight: "clamp(150px, 15vw, 400px)",
                 }}
               >
                 <p
                   style={{
-                    fontFamily: 'var(--font-manrope), Manrope, sans-serif',
-                    fontSize: 'clamp(84px, 6vw, 120px)',
-                    fontWeight: 700,
-                    letterSpacing: '-0.03em',
-                    color: '#fa6400',
-                    lineHeight: 1.5,
-                    textAlign: 'left',
-                    textTransform: 'uppercase',
-                    width: '600px',
-                    transform: 'rotate(40deg)',
-                    transformOrigin: '100% 100%',
-                    margin: 0,
+                    fontFamily: "var(--font-manrope), Manrope, sans-serif",
+                    fontSize: "clamp(100px, 8vw, 160px)",
+                    fontWeight: 500,
+                    letterSpacing: "-0.03em",
+                    color: "#fa6400",
+                    lineHeight: 1.1,
+                    textAlign: "left",
+                    textTransform: "uppercase",
+                    width: "600px",
+                    transform: "rotate(40deg)",
+                    transformOrigin: "100% 100%",
+                    margin: "220px 0 0 0", // Pushed even further down
                   }}
                 >
-                  <span style={{ display: 'block', marginLeft: '-90px', whiteSpace: 'nowrap' }}>
-                    <span>WHY<span style={{ display: 'inline-block', width: '0.4em' }}></span>TYMOR</span>
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      flexDirection: "column",
+                      marginLeft: "-90px",
+                    }}
+                  >
+                    <span style={{ whiteSpace: "nowrap" }}>WHY</span>
+                    <span
+                      style={{
+                        whiteSpace: "nowrap",
+                        marginLeft: "0.85em", // Indents 'T' smoothly under 'H' based on font size
+                        marginTop: "5px",
+                      }}
+                    >
+                      TYMOR
                     </span>
-                  {/* <span style={{ display: 'block', marginLeft: '235px', marginTop: '2px', whiteSpace: 'nowrap' }}></span> */}
+                  </span>
                 </p>
               </motion.div>
 

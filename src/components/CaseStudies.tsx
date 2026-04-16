@@ -20,14 +20,14 @@ const AnimatedCard = ({ startIndex = 0 }: { startIndex?: number }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const isYellow = current % 2 === 0;
+  const isOrange = current % 2 === 0;
   const stat = IMPACT_STATS[current];
 
   return (
     <div
       className="marquee-video rounded-0 d-flex flex-column justify-content-center align-items-start px-3 px-md-4"
       style={{
-        background: isYellow ? "#f5c518" : "#e0e0e0",
+        background: isOrange ? "#fa6400" : "#e0e0e0",
         transition: "background 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
         overflow: "hidden",
       }}
@@ -165,8 +165,11 @@ export default function CaseStudies() {
   return (
     <section className="case-studies py-4 py-md-5 overflow-hidden">
       <div className="container text-center mb-4 mb-md-5">
-        <h2 className="display-5 fw-bold text-uppercase anton-font mb-0 case-studies-heading">
-        IMPACT HIGHLIGHTS
+        <h2
+          className="display-5 fw-bold text-uppercase anton-font mb-0 case-studies-heading"
+          style={{ color: "#FA6400" }}
+        >
+          IMPACT HIGHLIGHTS
         </h2>
       </div>
 

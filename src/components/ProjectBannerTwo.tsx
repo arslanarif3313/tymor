@@ -190,7 +190,7 @@ function MobileProjectBannerTwo() {
       <div className="text-center mb-12">
         <h2
           className={`text-3xl font-semibold leading-tight mb-6 tracking-tighter ${GeistSans.className}`}
-          style={{ color: "rgb(228, 41, 15)", fontWeight: 600 }}
+          style={{ color: "#fa6400", fontWeight: 600 }}
         >
           YOUR INDUSTRY,
           <br />
