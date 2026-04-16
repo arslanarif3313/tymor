@@ -59,6 +59,7 @@ export default function RootLayout({
       </head>
       <body
         className={`${dmSans.variable} ${plusJakartaSans.variable} ${spaceGrotesk.variable} ${anton.variable} ${inter.variable} antialiased`}
+        suppressHydrationWarning
       >
         {children}
       </body>
