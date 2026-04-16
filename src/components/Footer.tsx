@@ -348,24 +348,24 @@ function LadderRollingBall({
 
   /** 18 keyframes: smooth projectile arcs with intermediate points for parabolic motion */
   const xSeq = [
-    enterL - rollR,           // 0: enter from left
-    xR1L,                     // 1: land on BRING rail
-    xAtG,                     // 2: roll to G
-    xAtG + (xOverG-xAtG)*0.3, // 3: jump up (ascending)
-    xOverG,                   // 4: apex over G
-    xOverG + (xShelf(0)-xOverG)*0.7, // 5: jump down (descending)
-    xShelf(0),                // 6: land on HOLOBOX shelf
-    xShelf(0.35),             // 7: roll shelf forward
-    xShelf(0.7),              // 8: roll shelf forward
-    xShelf(1),                // 9: shelf end - continuous into jump
-    takeoffLeft + (apexLeft-takeoffLeft)*0.4, // 10: big jump ascending
-    apexLeft,                 // 11: apex of big jump
-    apexLeft + (landLeft-apexLeft)*0.6, // 12: big jump descending
-    landLeft,                 // 13: land in space beside LIFE
-    landLeft,                 // 14: bounce up (stay at landing spot)
-    landLeft,                 // 15: bounce down (stay at landing spot)
-    landLeft,                 // 16: mini bounce (stay at landing spot)
-    landLeft,                 // 17: settle - final position in space next to LIFE
+    xR1L,                     // 0: start at B in BRING
+    xR1L + (xAtG-xR1L)*0.33,  // 1: rolling toward G
+    xR1L + (xAtG-xR1L)*0.66,  // 2: rolling toward G
+    xAtG + (xShelf(0)-xAtG)*0.3, // 3: jump from G
+    xOverG,                   // 4: apex over gap
+    xOverG + (xShelf(0)-xOverG)*0.7, // 5: landing on HOLOBOX
+    xShelf(0.25),             // 6: rolling on HOLOBOX
+    xShelf(0.5),              // 7: rolling on HOLOBOX
+    xShelf(0.75),             // 8: rolling on HOLOBOX
+    xShelf(1),                // 9: at X
+    takeoffLeft + (landLeft-takeoffLeft)*0.3, // 10: arc ascending
+    takeoffLeft + (landLeft-takeoffLeft)*0.6, // 11: arc mid
+    landLeft - 3,             // 12: landing
+    landLeft - 1,             // 13: settling
+    landLeft,                 // 14: final position
+    landLeft,                 // 15: final
+    landLeft,                 // 16: final
+    landLeft,                 // 17: final settle
   ];
 
   const bounceA = 95;    // EXTREME first bounce (higher for visibility)
@@ -377,47 +377,46 @@ function LadderRollingBall({
   const yApexBig = yGroundR2 - jumpBig;
 
   const ySeq = [
-    r1.y - 280 - rollR,        // 0: enter VERY high (dramatic drop)
-    yR1,                       // 1: drop to rail
-    yR1,                       // 2: roll on rail
-    yR1 - jumpOverG*0.6,       // 3: ascending over G (visible jump)
-    yOverG,                    // 4: apex over G
-    yR2 - jumpOverG*0.3,       // 5: descending to shelf
-    yR2,                       // 6: land shelf
-    yR2,                       // 7: roll
-    yR2,                       // 8: roll
-    yGroundR2,                 // 9: shelf end (continuous)
-    yGroundR2 - jumpBig*0.7,   // 10: ascending big jump
-    yApexBig,                  // 11: apex big jump
-    yGroundLife - jumpBig*0.4, // 12: descending
-    yGroundLife - 45,          // 13: land UP higher beside LIFE (elevated position)
-    yGroundLife - 45 - bounceA, // 14: BOUNCE UP from elevated position
-    yGroundLife - 45,          // 15: BOUNCE DOWN back to elevated position
-    yGroundLife - 45 - bounceC, // 16: mini bounce up
-    yGroundLife - 43,          // 17: settle - slightly lower than landing for natural squash
+    yR1,                       // 0: start at B in BRING
+    yR1 - 2,                   // 1: slight dip while rolling
+    yR1 - 1,                   // 2: slight rise while rolling
+    yR1 - jumpOverG*0.6,       // 3: jump from G ascending
+    yOverG,                    // 4: apex over gap
+    yR2 + 2,                   // 5: landing on HOLOBOX
+    yR2,                       // 6: roll on HOLOBOX
+    yR2 - 1,                   // 7: roll on HOLOBOX
+    yGroundR2 + 1,             // 8: roll to X
+    yGroundR2,                 // 9: at X
+    yGroundR2 - jumpBig*0.75,  // 10: arc ascending (70 deg)
+    yGroundR2 - jumpBig*1.2,   // 11: arc apex
+    yGroundLife - jumpBig*0.75, // 12: arc descending
+    yGroundLife - 25,          // 13: land beside LIFE
+    yGroundLife - 18,          // 14: bounce up
+    yGroundLife - 22,          // 15: bounce settle
+    yGroundLife - 20,          // 16: final settle
+    yGroundLife - 20,          // 17: final
   ];
 
-  // Smoother, more evenly distributed timing for fluid motion
-  // Bounce sequence expanded for proper visibility (was too compressed)
+  // Extended timing - ball stays at B longer, slower roll to G, delayed HOLOBOX arrival
   const times = [
-    0,      // 0: enter
-    0.06,   // 1: drop - slightly faster
-    0.12,   // 2: roll to G - smooth approach
-    0.20,   // 3: ascending jump - smooth takeoff
-    0.28,   // 4: apex over G - hang
-    0.36,   // 5: descending - smooth fall
-    0.44,   // 6: land shelf - gentle landing
-    0.52,   // 7: roll - constant
-    0.60,   // 8: roll - constant
-    0.68,   // 9: shelf end - continuous
-    0.76,   // 10: ascending big jump - smooth
-    0.84,   // 11: apex big jump - peak
-    0.90,   // 12: descending - smooth gravity
-    0.92,   // 13: land LIFE - soft landing
-    0.94,   // 14: bounce up (first bounce)
-    0.96,   // 15: bounce down
-    0.98,   // 16: mini bounce
-    1,      // 17: settle
+    0,      // 0: start at B
+    0.08,   // 1: rolling to G (slower)
+    0.16,   // 2: at G (slower approach)
+    0.28,   // 3: jump from G (delayed)
+    0.40,   // 4: apex (delayed)
+    0.55,   // 5: land HOLOBOX (much later - was 0.44)
+    0.62,   // 6: roll
+    0.68,   // 7: roll
+    0.74,   // 8: roll
+    0.80,   // 9: at X
+    0.86,   // 10: final jump
+    0.91,   // 11: apex
+    0.95,   // 12: land
+    0.97,   // 13: settle
+    0.98,   // 14: final
+    0.99,   // 15: final
+    1,      // 16: final
+    1,      // 17: final
   ] as const;
 
   type CubicBezier = [number, number, number, number];
@@ -476,17 +475,17 @@ function LadderRollingBall({
     0.3, 0.8, 0.82, 0.5, 0.36, 0.78, 0.82, 0.8, 0.8, 0.85, 0.36, 0.4, 0.74, 0.78, 0.76, 0.78, 0.76, 0.8,
   ];
 
-  // Ball opacity - stays hidden while flowing over BRING, appears after
+  // Ball opacity - stays COMPLETELY HIDDEN at start (indices 0-2 where ball is at B and rolling)
   const opacityKF = [
-    0,    // 0: hidden (enter high)
-    0,    // 1: hidden (drop to rail)
-    0,    // 2: hidden (roll to G)
-    0,    // 3: hidden (ascending jump over BRING)
-    0,    // 4: hidden (apex over G)
-    0.3,  // 5: start appearing (descending from G jump)
-    0.7,  // 6: fading in (land shelf)
-    1,    // 7: fully visible (roll on HOLOBOX)
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // rest fully visible
+    0,    // 0: COMPLETELY HIDDEN at B
+    0,    // 1: COMPLETELY HIDDEN rolling to G
+    0,    // 2: COMPLETELY HIDDEN at G
+    0,    // 3: hidden jumping from G
+    0,    // 4: hidden apex
+    0.3,  // 5: start appearing (land HOLOBOX)
+    0.7,  // 6: fading in
+    1,    // 7: fully visible
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   ];
 
   // Smooth color transition following the ball's heat (hidden at start, visible after index 5)
@@ -567,7 +566,6 @@ function LadderRollingBall({
         zIndex: 9,
         pointerEvents: "none",
       }}
-      initial={false}
     >
       <motion.div
         ref={trackerInnerRef}
@@ -577,10 +575,11 @@ function LadderRollingBall({
           left: 0,
           top: 0,
           willChange: "transform",
+          display: ready ? "block" : "none", // Hide until geometry ready
         }}
         initial={{
-          x: xSeq[0],
-          y: ySeq[0],
+          x: enterL - rollR, // Force start from left entry point
+          y: r1.y - 280 - rollR, // Force start from high above
           opacity: 0,
           borderColor: borderColorKF[0],
         }}
@@ -811,6 +810,7 @@ function FooterCreativeCtaBase({
   const [pathDone, setPathDone] = useState(false);
   const [followAnchor, setFollowAnchor] = useState<CursorAnchor | null>(null);
   const [followVisible, setFollowVisible] = useState(false);
+  const [animationStarted, setAnimationStarted] = useState(false);
 
   const handlePathComplete = useCallback((anchor: CursorAnchor) => {
     setFollowAnchor(anchor);
@@ -967,7 +967,7 @@ function FooterCreativeCtaBase({
 
   const reduceMo = useReducedMotion();
   const rollDur = reduceMo ? 3.5 : 12; // 12s total duration for good pacing
-  const isStageInView = useInView(stageRef, { once: true, amount: 0.22 });
+  const isStageInView = useInView(stageRef, { once: true, amount: 0.6 }); // Trigger later when more visible
 
   useBallLightProbe(stageRef, ballTrackerRef);
 
@@ -977,35 +977,25 @@ function FooterCreativeCtaBase({
       pathProgress.set(1);
       return;
     }
+    // Reset to start and animate fresh
+    pathProgress.set(0);
+    setAnimationStarted(false); // Reset animation state
     const ctrl = animate(pathProgress, 1, {
       duration: rollDur,
       ease: "linear",
-      delay: 2.5, // Delay ball start by 2.5 seconds after text appears
+      delay: 0.5,
+      onPlay: () => setAnimationStarted(true), // Mark started when animation plays
     });
     return () => ctrl.stop();
   }, [isStageInView, reduceMo, rollDur, pathProgress]);
+  // Text always visible immediately - no animation
   const ladderStepVariants = {
-    hidden: reduceMo
-      ? { opacity: 1, y: 0 }
-      : { opacity: 0, y: 30, filter: "blur(8px)" },
-    visible: {
-      opacity: 1,
-      y: 0,
-      filter: "blur(0px)",
-      transition: {
-        duration: reduceMo ? 0 : 0.8, // Faster reveal for clarity
-        ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
-      },
-    },
+    hidden: { opacity: 1, y: 0, filter: "blur(0px)" },
+    visible: { opacity: 1, y: 0, filter: "blur(0px)" },
   };
   const ladderFlowVariants = {
     hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: reduceMo ? 0 : 0.12, // Faster stagger
-        delayChildren: reduceMo ? 0 : 0.02, // Almost no initial delay - pops up immediately
-      },
-    },
+    visible: {},
   };
 
   return (
@@ -1050,8 +1040,9 @@ function FooterCreativeCtaBase({
                   bringGRef={bringGRef}
                   emphasizeBringGPx={22}
                   progress={pathProgress}
-                  revealStops={[0, 0.04, 0.11, 0.2]}
+                  revealStops={[0, 0, 1, 1]} // Always fully visible from start
                   dofStops={[0, 0.62, 0.8, 1]}
+                  dofOutputs={["blur(0px)", "blur(0px)", "blur(0px)", "blur(0px)"]}
                 />
               </div>
             </div>
@@ -1075,8 +1066,9 @@ function FooterCreativeCtaBase({
                   emphasizeLastCharPx={14}
                   emphasisCharRef={holoboxXRef}
                   progress={pathProgress}
-                  revealStops={[0, 0.28, 0.38, 0.5]}
+                  revealStops={[0, 0, 1, 1]} // Always fully visible from start
                   dofStops={[0, 0.45, 0.74, 1]}
+                  dofOutputs={["blur(0px)", "blur(0px)", "blur(0px)", "blur(0px)"]}
                 />
               </div>
             </div>
@@ -1099,7 +1091,7 @@ function FooterCreativeCtaBase({
                   wordRef={setWordRef(2)}
                   lifeWordRef={lifeWordRef}
                   progress={pathProgress}
-                  revealStops={[0, 0.48, 0.58, 0.72]}
+                  revealStops={[0, 0, 1, 1]} // Always fully visible from start
                   dofStops={[0, 0.25, 0.55, 1]}
                   dofOutputs={[
                     "blur(0px)",
@@ -1118,17 +1110,19 @@ function FooterCreativeCtaBase({
           aria-hidden
         />
 
-        <LadderRollingBall
-          variant={variant}
-          geom={geom}
-          ready={ready}
-          pathDone={pathDone}
-          onPathComplete={handlePathComplete}
-          backgroundVariant={backgroundVariant}
-          pathDurationSec={rollDur}
-          trackerInnerRef={ballTrackerRef}
-          pathProgress={pathProgress}
-        />
+        {ready && !pathDone && animationStarted && (
+          <LadderRollingBall
+            variant={variant}
+            geom={geom}
+            ready={ready}
+            pathDone={pathDone}
+            onPathComplete={handlePathComplete}
+            backgroundVariant={backgroundVariant}
+            pathDurationSec={rollDur}
+            trackerInnerRef={ballTrackerRef}
+            pathProgress={pathProgress}
+          />
+        )}
         {pathDone && followVisible && followAnchor ? (
           <FooterCursorFollowCta
             variant={variant}
