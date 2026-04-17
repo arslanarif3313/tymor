@@ -11,8 +11,10 @@ import StepSection from "@/components/StepSection";
 import WorkStrip from "@/components/WorkStrip";
 import Team from "@/components/Team";
 import Footer from "@/components/Footer";
+import { FooterV2 } from "@/components/FooterV2";
+import { MapSection } from "@/components/MapSection";
 import Banner from "@/components/Banner";
-import ProjectBannerTwo from "@/components/ProjectBannerTwo";
+// import ProjectBannerTwo from "@/components/ProjectBannerTwo";
 // import MeetTheTeam from "@/components/MeetTheTeam";
 
 const marqueeItems = [
@@ -40,6 +42,8 @@ export default function Home() {
       <StepSection />
       {/* <ImpactSection /> */}
       {/* <Team /> */}
+      {/* <MapSection /> */}
+      <FooterV2 />
       <Footer />
     </main>
   );

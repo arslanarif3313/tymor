@@ -164,7 +164,7 @@ function FooterLadderLineWord({
     return 1;
   };
 
-  const charCount = isHoloboxGap ? 7 : text.length;
+  const charCount = isHoloboxGap ? 8 : text.length;
   const splitLife = text === "TO LIFE" && lifeWordRef;
   const splitBringG = text === "BRING" && bringGRef;
   const splitHoloboxGap = isHoloboxGap;
@@ -180,9 +180,9 @@ function FooterLadderLineWord({
 
   const renderChars = (wordText: string, isPaint: boolean) => {
     if (splitHoloboxGap) {
-      const chars = ["H", "\u00A0", "\u00A0", "L", " ", "O", "B", "O", "X"];
+      const chars = ["H", "O", "\u00A0", "\u00A0", "L", " ", "O", "B", "O", "X"];
       return chars.map((char, i) => {
-        const isGap = i === 1 || i === 2;
+        const isGap = i === 2 || i === 3;
         const squish = getCharSquish(i, charCount, progress.get());
         return (
           <motion.span
@@ -299,7 +299,7 @@ function FooterLadderLineWord({
   const glowOpacity = useTransform(
     progress,
     [impactThresholds.start, impactThresholds.peak, impactThresholds.end],
-    [0.15, 1.0, 0.15]
+    [0.3, 1.0, 0.3]
   );
 
   const isActive = activeWordIdx === wordIndex;
@@ -310,19 +310,20 @@ function FooterLadderLineWord({
       className="footer-ladder-word footer-ladder-word--natural footer-ladder-word--extruded anton-font relative inline-block"
       style={{
         filter: isActive
-          ? `drop-shadow(0 0 20px rgba(250, 100, 0, 0.8)) drop-shadow(0 0 40px rgba(250, 100, 0, 0.4)) ${dofBlur.get()}`
+          ? `drop-shadow(0 0 30px rgba(250, 100, 0, 1)) drop-shadow(0 0 60px rgba(250, 100, 0, 0.6)) drop-shadow(0 0 100px rgba(250, 100, 0, 0.3)) ${dofBlur.get()}`
           : filter,
+        opacity: 1,
       }}
       animate={isImpacted ? { y: [0, 5, 0] } : { y: 0 }}
       transition={{ duration: 0.15, ease: "easeOut" }}
     >
       <span className="sr-only">{text}</span>
-      <span className="text-[#fa6400]" aria-hidden>
+      <span className="text-black" aria-hidden>
         {renderChars(text, false)}
       </span>
       <motion.span
         className="footer-ladder-word--paint absolute left-0 top-0 text-[#fa6400]"
-        style={{ opacity: reveal }}
+        style={{ opacity: 1 }}
         aria-hidden
       >
         {renderChars(text, true)}
@@ -439,6 +440,7 @@ function LadderRollingBall({
     return () => unsubscribe();
   }, [animationStarted, pathProgress, activeWordIdx, isImpacting, onWordChange, onImpact]);
 
+  if (pathDone) return null;
   if (!ready || !geom || !animationStarted) return null;
 
   const rollR = geom.ballD / 2;
@@ -690,51 +692,6 @@ function LadderRollingBall({
   );
 }
 
-/** Cursor-following CTA that appears after ball animation completes */
-function FooterCursorFollowCta({
-  variant,
-  anchor,
-  backgroundVariant,
-}: {
-  variant: "yellow" | "red";
-  anchor: CursorAnchor;
-  backgroundVariant?: "black" | "gradient";
-}) {
-  const x = useMotionValue(anchor.x);
-  const y = useMotionValue(anchor.y);
-  const sx = useSpring(x, { stiffness: 240, damping: 28, mass: 0.45 });
-  const sy = useSpring(y, { stiffness: 240, damping: 28, mass: 0.45 });
-
-  useEffect(() => {
-    x.set(anchor.x);
-    y.set(anchor.y);
-  }, [anchor.x, anchor.y, x, y]);
-
-  return (
-    <motion.div
-      className="footer-cursor-follow-wrap"
-      style={{
-        position: "absolute",
-        left: sx,
-        top: sy,
-        x: "-50%",
-        y: "-50%",
-        zIndex: 9,
-      }}
-    >
-      <Link
-        href="/contact"
-        className={`footer-cursor-follow-btn ${backgroundVariant === "gradient" ? "footer-cursor-follow-btn--teal" : `footer-cursor-follow-btn--${variant}`}`}
-        aria-label="One Demo Game Over — book a demo"
-      >
-        One Demo
-        <br />
-        Game Over
-      </Link>
-    </motion.div>
-  );
-}
-
 function FooterCreativeCtaBase({
   lineAccent,
   variant,
@@ -814,7 +771,7 @@ function FooterCreativeCtaBase({
     let landY: number;
     if (lifeEl) {
       const lb = lifeEl.getBoundingClientRect();
-      const gap = Math.min(80, w * 0.12);
+      const gap = Math.min(40, w * 0.06);
       landX = lb.right - sr.left + gap + rollR;
       landY = lb.top - sr.top + lb.height / 2 - Math.min(14, w * 0.018);
     } else {
@@ -971,7 +928,7 @@ function FooterCreativeCtaBase({
                 />
                 <div ref={setLineRef(1)} className="footer-ladder-line">
                   <FooterLadderLineWord
-                    text="HOLOBOX"
+                    text="H&nbsp;&nbsp;L OBOX"
                     wordRef={setWordRef(1)}
                     emphasizeLastCharPx={14}
                     emphasisCharRef={holoboxXRef}
@@ -1028,7 +985,7 @@ function FooterCreativeCtaBase({
             aria-hidden
           />
 
-          {ready && !followVisible && (
+          {ready && !pathDone && (
             <LadderRollingBall
               variant={variant}
               geom={geom}
@@ -1042,14 +999,6 @@ function FooterCreativeCtaBase({
               isInView={isInView}
               onWordChange={setActiveWordIdx}
               onImpact={setIsImpacting}
-            />
-          )}
-
-          {followVisible && followAnchor && (
-            <FooterCursorFollowCta
-              variant={variant}
-              anchor={followAnchor}
-              backgroundVariant={backgroundVariant}
             />
           )}
         </div>
@@ -1090,3 +1039,4 @@ export function FooterCreativeCtaBlack({
   );
 }
 
+export type { PathGeom, CursorAnchor };
