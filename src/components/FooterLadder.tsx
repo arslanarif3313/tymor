@@ -1038,5 +1038,3 @@ export function FooterCreativeCtaBlack({
     />
   );
 }
-
-export type { PathGeom, CursorAnchor };
