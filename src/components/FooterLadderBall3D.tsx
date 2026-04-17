@@ -3,7 +3,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ContactShadows, Environment } from "@react-three/drei";
 import type { MotionValue } from "framer-motion";
-import { useSpring, useTransform, motion, useMotionValue } from "framer-motion";
+import { useSpring, useTransform, useMotionValue } from "framer-motion";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { Suspense, useMemo, useRef, useEffect } from "react";
 import * as THREE from "three";
@@ -151,6 +151,9 @@ function SceneContent({
     if (!mesh) return;
     const mat = mesh.material as MeshPhysicalMaterial;
 
+    // Apply squash/stretch scale from Framer Motion springs
+    mesh.scale.set(scaleXZ.get(), scaleY.get(), scaleXZ.get());
+
     const p = Math.min(1, Math.max(0, pathProgress.get()));
 
     // Intensity-based animation - keep color at #fa6400, vary emissive intensity
@@ -234,11 +237,10 @@ function SceneContent({
 
       <group>
         {/* Animated mesh with squash/stretch spring physics */}
-        <motion.mesh 
+        <mesh 
           ref={meshRef} 
           castShadow 
           receiveShadow
-          scale={[scaleXZ, scaleY, scaleXZ]}
         >
           <sphereGeometry args={[1, 128, 128]} />
           <meshPhysicalMaterial
@@ -256,7 +258,7 @@ function SceneContent({
             specularIntensity={1.25}
             specularColor="#ffffff"
           />
-        </motion.mesh>
+        </mesh>
         <pointLight
           position={[0, 0, 1.15]}
           intensity={2.8}
