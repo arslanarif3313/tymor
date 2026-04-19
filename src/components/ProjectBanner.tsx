@@ -12,6 +12,7 @@ import {
   useTransform,
   useMotionValueEvent,
   useMotionTemplate,
+  useSpring,
   MotionValue,
 } from "framer-motion";
 import { GeistSans } from "geist/font/sans";
@@ -117,10 +118,34 @@ function SolutionImagesLayer({
 }) {
   const refs = useRef<(HTMLDivElement | null)[]>([]);
 
+  // Spring-smoothed depth values for each card (initialized properly at component level)
+  const scaleSpring1 = useSpring(0.96, { stiffness: 150, damping: 25, mass: 0.5 });
+  const scaleSpring2 = useSpring(0.96, { stiffness: 150, damping: 25, mass: 0.5 });
+  const scaleSpring3 = useSpring(0.96, { stiffness: 150, damping: 25, mass: 0.5 });
+  const scaleSpring4 = useSpring(0.96, { stiffness: 150, damping: 25, mass: 0.5 });
+  const scaleSpring5 = useSpring(0.96, { stiffness: 150, damping: 25, mass: 0.5 });
+  const scaleSpring6 = useSpring(0.96, { stiffness: 150, damping: 25, mass: 0.5 });
+  const scaleSpring7 = useSpring(0.96, { stiffness: 150, damping: 25, mass: 0.5 });
+
+  const zSpring1 = useSpring(0, { stiffness: 150, damping: 25, mass: 0.5 });
+  const zSpring2 = useSpring(0, { stiffness: 150, damping: 25, mass: 0.5 });
+  const zSpring3 = useSpring(0, { stiffness: 150, damping: 25, mass: 0.5 });
+  const zSpring4 = useSpring(0, { stiffness: 150, damping: 25, mass: 0.5 });
+  const zSpring5 = useSpring(0, { stiffness: 150, damping: 25, mass: 0.5 });
+  const zSpring6 = useSpring(0, { stiffness: 150, damping: 25, mass: 0.5 });
+  const zSpring7 = useSpring(0, { stiffness: 150, damping: 25, mass: 0.5 });
+
+  const scaleSprings = useRef([scaleSpring1, scaleSpring2, scaleSpring3, scaleSpring4, scaleSpring5, scaleSpring6, scaleSpring7]);
+  const zSprings = useRef([zSpring1, zSpring2, zSpring3, zSpring4, zSpring5, zSpring6, zSpring7]);
+
   const apply = useCallback(() => {
     const v = scrollProgress.get();
     const t =
       v <= ANIM_START ? 0 : v >= ANIM_END ? 1 : (v - ANIM_START) / ANIM_RANGE;
+
+    // Viewport center point (normalized 0-1, where 0.5 is center)
+    const viewportCenterX = 0.5;
+    const viewportCenterY = 0.5;
 
     for (let i = 0; i < SOLUTION_IMAGES.length; i++) {
       const el = refs.current[i];
@@ -128,7 +153,35 @@ function SolutionImagesLayer({
       const cfg = SOLUTION_IMAGES[i];
       const dx = cfg.endX - cfg.startX;
       const dy = cfg.endY - cfg.startY;
-      el.style.transform = `translate3d(${cfg.startX + t * dx}%, ${cfg.startY + t * dy}%, 0px)`;
+
+      // Calculate card's current normalized position (0-1 range)
+      const currentX = (cfg.startX + t * dx) / 100 + 0.5;
+      const currentY = (cfg.startY + t * dy) / 100 + 0.5;
+
+      // Distance from viewport center
+      const distFromCenter = Math.sqrt(
+        Math.pow(currentX - viewportCenterX, 2) +
+        Math.pow(currentY - viewportCenterY, 2)
+      ) * 1.4;
+
+      // Card proximity to center
+      const cardCenterProximity = Math.max(0, 1 - Math.min(1, distFromCenter));
+      const depthFactor = cardCenterProximity * cardCenterProximity;
+
+      // Target depth values (same calculation as before)
+      const targetScale = 0.96 + (depthFactor * 0.04);
+      const targetZ = depthFactor * 40;
+
+      // Update spring targets (springs handle the smoothing)
+      scaleSprings.current[i].set(targetScale);
+      zSprings.current[i].set(targetZ);
+
+      // Get smoothed values
+      const smoothScale = scaleSprings.current[i].get();
+      const smoothZ = zSprings.current[i].get();
+
+      // Apply transform with spring-smoothed depth
+      el.style.transform = `translate3d(${cfg.startX + t * dx}%, ${cfg.startY + t * dy}%, ${smoothZ}px) scale(${smoothScale})`;
     }
   }, [scrollProgress]);
 

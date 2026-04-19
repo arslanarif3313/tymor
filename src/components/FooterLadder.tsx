@@ -28,6 +28,20 @@ const FooterLadderBall3D = dynamic(() => import("./FooterLadderBall3D"), {
       className="footer-ladder-ball-3d-fallback"
       style={{
         width: "var(--footer-ladder-ball, 118px)",
+      }}
+    />
+  ),
+});
+
+const HoloboxHumanPresence = dynamic(() => import("./HoloboxHumanPresence"), {
+  ssr: false,
+  loading: () => (
+    <div
+      className="holobox-human-fallback"
+      style={{
+        position: "absolute",
+        inset: 0,
+        background: "rgba(250, 100, 0, 0.1)",
         height: "var(--footer-ladder-ball, 118px)",
       }}
       aria-hidden
@@ -129,7 +143,7 @@ function FooterLadderLineWord({
   );
   const filter = useMotionTemplate`${dofBlur}`;
 
-  const isHoloboxGap = text.includes("H") && text.includes("L OBOX");
+  const isHoloboxGap = false; // Disabled: now renders as HOLOBOX without gap
 
   const getCharSquish = (charIndex: number, totalChars: number, p: number) => {
     const charProgress = charIndex / Math.max(totalChars - 1, 1);
@@ -180,22 +194,16 @@ function FooterLadderLineWord({
 
   const renderChars = (wordText: string, isPaint: boolean) => {
     if (splitHoloboxGap) {
-      const chars = ["H", "O", "\u00A0", "\u00A0", "L", " ", "O", "B", "O", "X"];
-      return chars.map((char, i) => {
-        const isGap = i === 2 || i === 3;
+      return wordText.split("").map((char, i) => {
         const squish = getCharSquish(i, charCount, progress.get());
         return (
           <motion.span
             key={i}
             className="inline-block"
             style={{
-              transformOrigin: "bottom center",
-              scaleY: squish,
-              scaleX: 1 + (1 - squish) * 0.3,
-              marginRight: isGap ? "0.3em" : undefined,
+              transform: `scaleY(${squish})`,
+              transformOrigin: "center center",
             }}
-            animate={isImpacted && activeWordIdx === wordIndex ? { y: [0, 5, 0] } : {}}
-            transition={{ duration: 0.15, ease: "easeOut" }}
           >
             {char}
           </motion.span>
@@ -440,7 +448,6 @@ function LadderRollingBall({
     return () => unsubscribe();
   }, [animationStarted, pathProgress, activeWordIdx, isImpacting, onWordChange, onImpact]);
 
-  if (pathDone) return null;
   if (!ready || !geom || !animationStarted) return null;
 
   const rollR = geom.ballD / 2;
@@ -457,6 +464,7 @@ function LadderRollingBall({
   const bigArcHeight = 280;
   const entryDist = 240;
 
+  // X positions remain the same
   const xSeq = [
     bringStartX - entryDist,
     bringStartX - entryDist * 0.4,
@@ -471,18 +479,36 @@ function LadderRollingBall({
     lifeX,
   ];
 
+  // Y positions with anticipation dips and final bounce
+  const anticipation = 6; // Small dip before jump
+  const finalBounce = 10; // Small bounce after final landing
   const ySeq = [
     bringY - 80,
     bringY - 40,
     bringY,
-    bringY,
+    bringY + anticipation, // Anticipation dip before jump to gap
     bringY - arcHeight,
     holoboxY,
-    holoboxY,
+    holoboxY + anticipation * 0.5, // Smaller dip before big jump
     holoboxY - bigArcHeight,
     lifeY,
-    lifeY - 30,
-    lifeY,
+    lifeY - finalBounce, // Final bounce up
+    lifeY, // Settle
+  ];
+
+  // Z-axis for depth perception during jumps
+  const zSeq = [
+    0,
+    0,
+    0,
+    10, // Slight forward during anticipation
+    20, // Peak of arc
+    0,
+    8, // Forward during second anticipation
+    18, // Peak of big arc
+    0,
+    5, // Slight forward during bounce
+    0,
   ];
 
   const times = [
@@ -499,18 +525,44 @@ function LadderRollingBall({
     1,
   ] as const;
 
-  const easePerSegment: EasingDef[] = Array(11).fill(gravityEase);
+  // Gravity-based easing: slower ease-out upward, faster acceleration downward
+  const smoothEase: CubicBezier = [0.23, 1, 0.32, 1];
+  const upwardEase: CubicBezier = [0.25, 1, 0.5, 1]; // Slower at peak
+  const downwardEase: CubicBezier = [0.55, 0, 0.75, 0.5]; // Faster acceleration
+  const settleEase: CubicBezier = [0.33, 1, 0.68, 1]; // Soft landing
+
+  const easePerSegment: EasingDef[] = [
+    smoothEase,    // 0: Entry start
+    smoothEase,    // 1: Entry end
+    downwardEase,  // 2: Anticipation dip (moving down)
+    upwardEase,    // 3: Jump up to gap
+    downwardEase,  // 4: Landing on gap
+    smoothEase,    // 5: Roll across gap
+    downwardEase,  // 6: Anticipation before big jump
+    upwardEase,    // 7: Big jump up
+    downwardEase,  // 8: Landing on LIFE
+    settleEase,    // 9: Final bounce up
+    settleEase,    // 10: Settle
+  ];
 
   const leftSeq = xSeq.map((v) => v + rollR);
   let cumulativeX = 0;
 
+  // Rotation based on horizontal movement (dx) with tighter connection to motion
   const rotateKf = xSeq.map((_, i) => {
+    if (i === 0) return 0;
+    
+    const dx = leftSeq[i] - leftSeq[i - 1];
+    // Rotation proportional to distance traveled (rolling without slipping)
+    const rotationIncrement = (dx / (2 * Math.PI * Math.max(rollR, 1))) * 360;
+    cumulativeX += rotationIncrement;
+    
+    // At big jump apex (index 7), maintain rotation from previous
     if (i === 7) {
-      const prevRot = i > 0 ? (cumulativeX / (2 * Math.PI * Math.max(rollR, 1))) * 360 : 0;
-      return Math.round(prevRot / 360) * 360;
+      return cumulativeX;
     }
-    if (i > 0) cumulativeX += Math.abs(leftSeq[i] - leftSeq[i - 1]);
-    return (cumulativeX / (2 * Math.PI * Math.max(rollR, 1))) * 360;
+    
+    return cumulativeX;
   });
 
   const shadowOp = [
@@ -568,19 +620,24 @@ function LadderRollingBall({
         initial={{
           x: bringStartX - 200,
           y: bringY - 150 - rollR,
+          z: 0,
           opacity: 0,
           borderColor: borderColorKF[0],
         }}
         animate={{
           x: xSeq,
           y: ySeq,
-          opacity: opacityKF,
+          z: zSeq,
+          opacity: pathDone ? 0 : opacityKF,
+          scale: pathDone ? 0.8 : 1,
           borderColor: borderColorKF,
         }}
         transition={{
           duration: pathDur,
           times: [...times],
           ease: easePerSegment,
+          opacity: { duration: 0.8, ease: [0.23, 1, 0.32, 1] },
+          scale: { duration: 0.8, ease: [0.23, 1, 0.32, 1] },
         }}
         onAnimationComplete={() => {
           if (pathCompleteFired.current) return;
@@ -692,6 +749,153 @@ function LadderRollingBall({
   );
 }
 
+// ==========================================
+// MAGNETIC CTA BUTTON - Cursor Following (Next to TO LIFE)
+// ==========================================
+function MagneticCtaButton({
+  anchor,
+  variant,
+  backgroundVariant,
+  size,
+  containerRef,
+}: {
+  anchor: CursorAnchor;
+  variant: "yellow" | "red";
+  backgroundVariant: "black" | "gradient";
+  size: number;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const buttonRef = useRef<HTMLAnchorElement | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  // Button starts at anchor position (where ball landed)
+  const startX = anchor.x + 20; 
+  const startY = anchor.y - 59;
+  
+  // Track button position (it will follow cursor within container)
+  const [buttonPos, setButtonPos] = useState({ x: startX, y: startY });
+  const targetPos = useRef({ x: startX, y: startY });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) return;
+      
+      const rect = containerRef.current.getBoundingClientRect();
+      
+      // Check if mouse is within the ladder container
+      const isWithinContainer = 
+        e.clientX >= rect.left && 
+        e.clientX <= rect.right && 
+        e.clientY >= rect.top && 
+        e.clientY <= rect.bottom;
+      
+      if (isWithinContainer) {
+        // Mouse is within container - follow cursor with offset
+        targetPos.current = {
+          x: e.clientX - rect.left + 20, // Relative to container
+          y: e.clientY - rect.top - 59,
+        };
+      } else {
+        // Mouse outside - return to start position
+        targetPos.current = { x: startX, y: startY };
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    
+    // Animation loop for smooth following
+    let animationId: number;
+    const animate = () => {
+      setButtonPos(prev => ({
+        x: prev.x + (targetPos.current.x - prev.x) * 0.15, // Smooth lerp
+        y: prev.y + (targetPos.current.y - prev.y) * 0.15,
+      }));
+      animationId = requestAnimationFrame(animate);
+    };
+    animationId = requestAnimationFrame(animate);
+    
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      cancelAnimationFrame(animationId);
+    };
+  }, [containerRef, startX, startY]);
+
+  const borderColor =
+    variant === "red"
+      ? "#ff5a6a"
+      : backgroundVariant === "gradient"
+        ? "#3ec0c0"
+        : "#fa6400";
+
+  const bgColor = isHovered
+    ? variant === "red"
+      ? "rgba(196, 42, 56, 0.9)"
+      : backgroundVariant === "gradient"
+        ? "rgba(42, 158, 158, 0.9)"
+        : "rgba(250, 100, 0, 0.9)"
+    : "transparent";
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: buttonPos.x,
+        top: buttonPos.y,
+        zIndex: 100,
+        pointerEvents: "none",
+        willChange: "left, top",
+      }}
+    >
+      <motion.a
+        ref={buttonRef}
+        href="/contact"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          position: "absolute",
+          width: `${size}px`,
+          height: `${size}px`,
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: bgColor,
+          border: `3px solid ${borderColor}`,
+          boxShadow:
+            backgroundVariant === "gradient"
+              ? "inset -12px -12px 25px rgba(0, 0, 0, 0.5), inset 6px 6px 15px rgba(255, 255, 255, 0.3), 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 40px rgba(250, 100, 0, 0.4)"
+              : "inset -12px -12px 25px rgba(0, 0, 0, 0.5), inset 6px 6px 15px rgba(255, 255, 255, 0.3), 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(250, 100, 0, 0.3)",
+          pointerEvents: "auto",
+          cursor: "pointer",
+          transition: "background 0.3s ease, transform 0.1s ease",
+          transform: "translate(-50%, -50%)", // Center the button on the point
+        }}
+        whileHover={{
+          scale: 1.08,
+        }}
+        transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+        className="footer-ladder-magnetic-cta"
+      >
+        <span
+          className="footer-cta-round-label"
+          style={{
+            color: "#ffffff",
+            textShadow: "0 2px 8px rgba(0,0,0,0.8), 0 0 12px rgba(255,255,255,0.2)",
+            textAlign: "center",
+            lineHeight: 1.2,
+            fontSize: "12px",
+            fontWeight: 600,
+          }}
+        >
+          One Demo
+          <br />
+          Game Over
+        </span>
+      </motion.a>
+    </div>
+  );
+}
+
 function FooterCreativeCtaBase({
   lineAccent,
   variant,
@@ -713,11 +917,16 @@ function FooterCreativeCtaBase({
   const [followAnchor, setFollowAnchor] = useState<CursorAnchor | null>(null);
   const [followVisible, setFollowVisible] = useState(false);
   const [animationStarted, setAnimationStarted] = useState(false);
+  const [humanPresenceActive, setHumanPresenceActive] = useState(false);
 
   const handlePathComplete = useCallback((anchor: CursorAnchor) => {
     setFollowAnchor(anchor);
     setPathDone(true);
     setFollowVisible(true);
+    // Activate human presence after ball completes
+    setTimeout(() => {
+      setHumanPresenceActive(true);
+    }, 600);
   }, []);
 
   const measure = useCallback(() => {
@@ -861,8 +1070,12 @@ function FooterCreativeCtaBase({
     visible: {},
   };
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
   return (
     <div
+      id="holobox"
+      ref={containerRef}
       className={`footer-cta-container position-relative px-2 bg-variant-${backgroundVariant}`}
       style={{ padding: "80px 0" }}
     >
@@ -928,7 +1141,7 @@ function FooterCreativeCtaBase({
                 />
                 <div ref={setLineRef(1)} className="footer-ladder-line">
                   <FooterLadderLineWord
-                    text="H&nbsp;&nbsp;L OBOX"
+                    text="HOLOBOX"
                     wordRef={setWordRef(1)}
                     emphasizeLastCharPx={14}
                     emphasisCharRef={holoboxXRef}
@@ -985,7 +1198,7 @@ function FooterCreativeCtaBase({
             aria-hidden
           />
 
-          {ready && !pathDone && (
+          {ready && (
             <LadderRollingBall
               variant={variant}
               geom={geom}
@@ -1001,8 +1214,31 @@ function FooterCreativeCtaBase({
               onImpact={setIsImpacting}
             />
           )}
+
         </div>
       </div>
+      
+      {/* Human Presence - Premium holographic experience */}
+      <HoloboxHumanPresence
+        isActive={humanPresenceActive}
+        variant={variant}
+        backgroundVariant={backgroundVariant}
+        reducedMotion={reduceMo}
+        onPresenceComplete={() => {
+          // Optional: callback when presence sequence completes
+        }}
+      />
+      
+      {/* Magnetic button - follows cursor within container */}
+      {followVisible && followAnchor && geom && (
+        <MagneticCtaButton
+          anchor={followAnchor}
+          variant={variant}
+          backgroundVariant={backgroundVariant}
+          size={geom.ballD}
+          containerRef={containerRef}
+        />
+      )}
     </div>
   );
 }

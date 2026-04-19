@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+
+// Premium easing
+const smoothEase: [number, number, number, number] = [0.23, 1, 0.32, 1];
 
 interface ProjectItem {
   id: string;
@@ -84,29 +87,49 @@ const ProjectCard = ({
     offset: ["start end", "end start"],
   });
 
-  // L-Shape Reveal Progress (Architectural reveal from images)
-  const revealProgress = useTransform(scrollYProgress, [0.1, 0.45], [0, 100]);
+  // L-Shape Reveal Progress with eased interpolation (not linear)
+  const revealProgressRaw = useTransform(scrollYProgress, [0.1, 0.45], [0, 100]);
+  const revealProgress = useSpring(revealProgressRaw, { stiffness: 60, damping: 20, mass: 0.8 });
 
   const lReveal = useTransform(revealProgress, (p) => {
+    // Apply easing curve to the progress for more natural reveal
+    const easedP = p < 50 ? (p * p) / 50 : 100 - Math.pow(100 - p, 2) / 50;
     if (isRight) {
       // Top-Right L-Reveal
-      // Starting from top-right corner, revealing horizontally left and vertically down
-      return `polygon(100% 0%, 0% 0%, 0% ${p}%, ${100 - p}% ${p}%, ${100 - p}% 100%, 100% 100%)`;
+      return `polygon(100% 0%, 0% 0%, 0% ${easedP}%, ${100 - easedP}% ${easedP}%, ${100 - easedP}% 100%, 100% 100%)`;
     } else {
       // Top-Left L-Reveal
-      // Starting from top-left corner, revealing horizontally right and vertically down
-      return `polygon(0% 0%, 100% 0%, 100% ${p}%, ${p}% ${p}%, ${p}% 100%, 0% 100%)`;
+      return `polygon(0% 0%, 100% 0%, 100% ${easedP}%, ${easedP}% ${easedP}%, ${easedP}% 100%, 0% 100%)`;
     }
   });
 
-  const imageScale = useTransform(scrollYProgress, [0.1, 0.5], [1.1, 1]);
+  // Image scale with subtle depth during reveal (1.15 → 1)
+  const imageScaleRaw = useTransform(scrollYProgress, [0.1, 0.5], [1.15, 1]);
+  const imageScale = useSpring(imageScaleRaw, { stiffness: 80, damping: 25 });
 
-  const opacity = useTransform(scrollYProgress, [0.1, 0.35], [0, 1]);
-  const xOffset = useTransform(
-    scrollYProgress,
-    [0.1, 0.35],
-    [isRight ? -30 : 30, 0],
-  );
+  // Z-depth shift during reveal (image feels closer)
+  const imageZ = useTransform(revealProgress, [0, 100], [30, 0]);
+
+  // TEXT: Fully scroll-driven with consistent ranges
+  // Company: 0.20-0.45 (appears first)
+  // Description: 0.28-0.52 (follows with micro delay via range offset)
+
+  // Company text transforms
+  const companyProgress = useTransform(scrollYProgress, [0.20, 0.45], [0, 1]);
+  const companyProgressSpring = useSpring(companyProgress, { stiffness: 50, damping: 25, mass: 0.6 });
+  const companyY = useTransform(companyProgressSpring, [0, 1], [12, 0]);
+  const companyScale = useTransform(companyProgressSpring, [0, 1], [0.97, 1]);
+  const companyOpacity = useTransform(companyProgressSpring, [0, 0.7], [0, 1]);
+
+  // Description text transforms (slightly delayed via range)
+  const descProgress = useTransform(scrollYProgress, [0.28, 0.52], [0, 1]);
+  const descProgressSpring = useSpring(descProgress, { stiffness: 50, damping: 25, mass: 0.6 });
+  const descY = useTransform(descProgressSpring, [0, 1], [16, 0]);
+  const descScale = useTransform(descProgressSpring, [0, 1], [0.96, 1]);
+  const descOpacity = useTransform(descProgressSpring, [0, 0.7], [0, 1]);
+
+  // Shared horizontal offset (directional based on layout)
+  const textXOffset = useTransform(companyProgressSpring, [0, 1], [isRight ? -15 : 15, 0]);
 
   return (
     <div
@@ -127,45 +150,59 @@ const ProjectCard = ({
             style={{
               clipPath: lReveal as any,
               scale: imageScale,
+              z: imageZ,
+              transformOrigin: "center center",
             }}
             whileHover={{
               scale: 1.05,
               filter: "brightness(1.1) contrast(1.05)",
             }}
-            transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
+            transition={{ duration: 0.8, ease: smoothEase }}
           />
         </div>
       </div>
 
-      {/* Info Column */}
+      {/* Info Column - Text feels "behind" and follows image reveal (fully scroll-driven) */}
       <div
         className={`col-lg flex-grow-1 d-flex flex-column justify-content-center ${isRight ? "align-items-center align-items-lg-start ps-lg-5" : "align-items-center align-items-lg-end pe-lg-5"} px-4`}
       >
-        <motion.div
-          className="project-info py-5 w-100"
-          style={{
-            textAlign:
-              typeof window !== "undefined" && window.innerWidth < 992
+        <div className="project-info py-5 w-100">
+          {/* Company name - scroll-driven reveal */}
+          <motion.div
+            className={`d-flex align-items-baseline gap-3 mb-2 justify-content-center ${isRight ? "justify-content-lg-start" : "justify-content-lg-end"}`}
+            style={{
+              opacity: companyOpacity,
+              y: companyY,
+              scale: companyScale,
+              x: textXOffset,
+              textAlign: typeof window !== "undefined" && window.innerWidth < 992
                 ? "center"
                 : isRight
                   ? "left"
                   : "right",
-            opacity,
-            x: xOffset,
-          }}
-        >
-          <div
-            className={`d-flex align-items-baseline gap-3 mb-2 justify-content-center ${isRight ? "justify-content-lg-start" : "justify-content-lg-end"}`}
+            }}
           >
             <h4 className="project-company-name mb-0">{project.company}</h4>
-          </div>
-          <p
+          </motion.div>
+          {/* Description - scroll-driven reveal (follows company) */}
+          <motion.p
             className="project-description-text mt-2 mx-auto mx-lg-0"
-            style={{ maxWidth: "550px" }}
+            style={{
+              maxWidth: "550px",
+              opacity: descOpacity,
+              y: descY,
+              scale: descScale,
+              x: textXOffset,
+              textAlign: typeof window !== "undefined" && window.innerWidth < 992
+                ? "center"
+                : isRight
+                  ? "left"
+                  : "right",
+            }}
           >
             {project.description}
-          </p>
-        </motion.div>
+          </motion.p>
+        </div>
       </div>
     </div>
   );

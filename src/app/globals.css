@@ -1191,29 +1191,75 @@ body {
 }
 
 .marquee-left .marquee-inner {
-  animation: marqueeLeft 35s linear infinite;
+  animation: marqueeLeft 36s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
 }
 
 .marquee-right .marquee-inner {
-  animation: marqueeRight 35s linear infinite;
+  animation: marqueeRight 34s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
 }
 
 @keyframes marqueeLeft {
-  from {
+  0% {
     transform: translateX(0);
   }
-
-  to {
+  5% {
+    transform: translateX(calc(-50% * 0.05));
+    animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+  95% {
+    transform: translateX(calc(-50% * 0.95));
+    animation-timing-function: cubic-bezier(0.4, 0.0, 0.6, 1);
+  }
+  100% {
     transform: translateX(-50%);
   }
 }
 
 @keyframes marqueeRight {
-  from {
+  0% {
     transform: translateX(-50%);
   }
+  5% {
+    transform: translateX(calc(-50% * 0.95));
+    animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+  95% {
+    transform: translateX(calc(-50% * 0.05));
+    animation-timing-function: cubic-bezier(0.4, 0.0, 0.6, 1);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
 
-  to {
+/* Scroll-responsive marquee - uses CSS custom property for dynamic duration */
+.marquee-inner-scroll-responsive {
+  display: flex;
+  width: max-content;
+}
+
+.marquee-inner-scroll-responsive[data-direction="right"] {
+  animation: marqueeScrollRight var(--marquee-duration, 35s) cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+}
+
+.marquee-inner-scroll-responsive[data-direction="left"] {
+  animation: marqueeScrollLeft var(--marquee-duration, 35s) cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+}
+
+@keyframes marqueeScrollRight {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marqueeScrollLeft {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
     transform: translateX(0);
   }
 }

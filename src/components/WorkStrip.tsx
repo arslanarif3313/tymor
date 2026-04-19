@@ -6,6 +6,9 @@ import {
   useMotionValueEvent,
   AnimatePresence,
 } from "framer-motion";
+
+// Premium easing
+const smoothEase: [number, number, number, number] = [0.23, 1, 0.32, 1];
 import { ArrowUpRight } from "lucide-react";
 
 function TitleLeadSquare({ color = "#fa6400" }: { color?: string }) {
@@ -105,25 +108,68 @@ function IsometricStack({
       ? activeIndex - 1
       : -1;
 
+  // Track previous active for overshoot detection
+  const [overshootTile, setOvershootTile] = useState<number | null>(null);
+  const lastActiveTileRef = useRef(highlightedTile);
+
+  useEffect(() => {
+    if (highlightedTile !== lastActiveTileRef.current) {
+      if (highlightedTile !== -1) {
+        setOvershootTile(highlightedTile);
+        const timer = setTimeout(() => setOvershootTile(null), 250);
+        return () => clearTimeout(timer);
+      }
+      lastActiveTileRef.current = highlightedTile;
+    }
+  }, [highlightedTile]);
+
   return (
     <div className="relative" style={{ width: stackW, height: stackH }}>
       {ICON_IMAGES.map((src, i) => {
         const isHighlighted = i === highlightedTile;
         const pos = tilePositions[i];
+        
+        // Distance from active tile for focus hierarchy
+        const distanceFromActive = Math.abs(i - highlightedTile);
+        const isValidActive = highlightedTile !== -1;
+        
+        // FOCUS HIERARCHY: distance-based opacity and scale
+        const proximity = isValidActive ? Math.max(0, 1 - distanceFromActive * 0.25) : 1;
+        const baseOpacity = isValidActive ? 0.5 + (proximity * 0.5) : 1;
+        const baseScale = isHighlighted ? 1.15 : 1 + (proximity * 0.05);
+        
+        // DEPTH ENHANCEMENT: slight tilt for non-active tiles
+        const rotateX = isHighlighted ? 0 : isValidActive ? (i < highlightedTile ? 5 : -5) : 0;
+        const rotateY = isHighlighted ? 0 : isValidActive ? (i < highlightedTile ? -8 : 8) : 0;
+        
+        // Z-index based on distance (closer tiles on top)
+        const zIndex = isHighlighted ? 20 : 10 - distanceFromActive;
+        
+        // MICRO STAGGER: delay based on index distance from active
+        const staggerDelay = distanceFromActive * 0.03;
+        
+        // TILE ACTIVATION MOMENT: spring overshoot when becoming active
+        const isOvershooting = overshootTile === i;
+        const targetScale = isOvershooting ? 1.2 : baseScale;
+        const targetY = isHighlighted ? -(tileSize * 0.35) : 0;
 
         return (
           <motion.div
             key={i}
             animate={{
-              scale: isHighlighted ? 1.15 : 1,
+              scale: targetScale,
               x: 0,
-              y: isHighlighted ? -(tileSize * 0.35) : 0,
+              y: targetY,
+              rotateX,
+              rotateY,
+              opacity: baseOpacity,
             }}
             transition={{
               type: "spring",
-              stiffness: 200,
-              damping: 22,
+              stiffness: isOvershooting ? 300 : 180,
+              damping: isOvershooting ? 15 : 25,
               mass: 0.8,
+              delay: staggerDelay,
             }}
             style={{
               position: "absolute",
@@ -133,18 +179,20 @@ function IsometricStack({
               top: pos.y,
               borderRadius: 14,
               overflow: "hidden",
-              zIndex: isHighlighted ? 20 : i + 1,
+              zIndex,
               willChange: "transform",
+              transformStyle: "preserve-3d",
+              perspective: 600,
             }}
           >
             <motion.div
               animate={{
                 boxShadow: isHighlighted
-                  ? "0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(255,255,255,0.08)"
-                  : "0 8px 24px rgba(0,0,0,0.4)",
-                opacity: isHighlighted ? 1 : highlightedTile === -1 ? 1 : 0.5,
+                  ? "0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(255,255,255,0.1)"
+                  : "0 4px 16px rgba(0,0,0,0.3)",
+                filter: isHighlighted ? "brightness(1.05) contrast(1.02)" : "brightness(0.95)",
               }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+              transition={{ duration: 0.4, ease: smoothEase }}
               style={{
                 width: "100%",
                 height: "100%",
@@ -291,10 +339,10 @@ export default function WorkStrip() {
                 {feature ? (
                   <motion.div
                     key={feature.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -30 }}
-                    transition={{ duration: 0.45, ease: [0.25, 1, 0.5, 1] }}
+                    initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -15, scale: 0.98 }}
+                    transition={{ duration: 0.4, ease: smoothEase }}
                   >
                     <span
                       style={{
@@ -393,6 +441,8 @@ export default function WorkStrip() {
             transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] }}
           >
             <div className="relative flex items-center justify-center">
+              {/* WHY TYMOR - Aligned to tile stack geometry */}
+              {/* W aligns with top tile (last), R aligns with bottom tile (first) */}
               <motion.div
                 aria-hidden={activeIndex !== 0}
                 initial={false}
@@ -404,9 +454,13 @@ export default function WorkStrip() {
                 style={{
                   pointerEvents: "none",
                   position: "absolute",
-                  right: "100%",
-                  bottom: "45px", // Lowered from 87px
-                  marginRight: "clamp(150px, 15vw, 400px)",
+                  // Position based on tile stack geometry:
+                  // Stack: xStep=tileSize/2, yStep=tileSize/2
+                  // Top tile (i=6): x=3*tileSize, y=0
+                  // Bottom tile (i=0): x=0, y=3*tileSize
+                  // Align text so W touches top tile and R touches bottom tile
+                  right: `calc(100% + ${tileSize * 0.65}px)`,
+                  bottom: `${tileSize * 0.02}px`,
                 }}
               >
                 <p
@@ -422,7 +476,7 @@ export default function WorkStrip() {
                     width: "600px",
                     transform: "rotate(40deg)",
                     transformOrigin: "100% 100%",
-                    margin: "220px 0 0 0", // Pushed even further down
+                    margin: 0,
                   }}
                 >
                   <span
@@ -436,7 +490,7 @@ export default function WorkStrip() {
                     <span
                       style={{
                         whiteSpace: "nowrap",
-                        marginLeft: "0.85em", // Indents 'T' smoothly under 'H' based on font size
+                        marginLeft: "0.85em",
                         marginTop: "5px",
                       }}
                     >

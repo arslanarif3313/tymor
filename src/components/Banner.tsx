@@ -210,6 +210,10 @@ export default function Banner() {
   const titleRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const slotSetRef = useRef<NumSlotSet>(getNumSlotSet(1600));
 
+  // Track center card for emphasis moment
+  const lastCenterIdx = useRef<number>(-1);
+  const overshootSpring = useRef<number[]>(new Array(N).fill(0));
+
   useEffect(() => {
     const sync = () => {
       slotSetRef.current = getNumSlotSet(window.innerWidth);
@@ -226,9 +230,18 @@ export default function Banner() {
 
     const baseIdx = Math.floor(rawActive);
     const frac = rawActive - baseIdx;
-    const HOLD = 0.15; // Reduced from 0.6 for smoother movement
+    const HOLD = 0.15;
     const moveFrac = frac <= HOLD ? 0 : (frac - HOLD) / (1 - HOLD);
     const posActive = clamp(0, N - 1, baseIdx + moveFrac);
+
+    // Identify current center card
+    const centerIdx = Math.round(posActive);
+    const isNewCenter = centerIdx !== lastCenterIdx.current;
+    if (isNewCenter) {
+      lastCenterIdx.current = centerIdx;
+      // Trigger overshoot for new center card
+      overshootSpring.current[centerIdx] = 1;
+    }
 
     for (let i = 0; i < N; i++) {
       const el = cardRefs.current[i];
@@ -240,13 +253,32 @@ export default function Banner() {
       const posOffset = i - posActive;
       const slot = getInterpolatedSlot(posOffset, i, slotSet);
 
-      const staggerDelay = abs * 0.07;
+      // MICRO STAGGER: delay based on distance from center
+      const centerDist = Math.abs(i - centerIdx);
+      const staggerDelay = abs * 0.07 + centerDist * 0.015;
       const fadeStart = 0.08 + staggerDelay;
       const fadeEnd = 0.16 + staggerDelay;
       const deckFade = v <= fadeStart ? 0 : v >= fadeEnd ? 1 : (v - fadeStart) / (fadeEnd - fadeStart);
 
-      const opacity = deckFade;
+      // ATMOSPHERIC DEPTH: non-center cards slightly recessed
+      const centerProximity = 1 - Math.min(1, centerDist * 0.5);
+      const depthOpacity = 0.92 + (centerProximity * 0.08); // 0.92 to 1.0
+      const opacity = deckFade * depthOpacity;
+
       const clipInset = clamp(0, 48, (1 - clamp(0, 1, deckFade)) * 48);
+
+      // CENTER EMPHASIS: scale overshoot spring decay
+      const currentOvershoot = overshootSpring.current[i];
+      if (currentOvershoot > 0.001) {
+        overshootSpring.current[i] = currentOvershoot * 0.92; // Decay
+      }
+      // Overshoot curve: 1 → 1.02 → 1 over time
+      const overshootScale = 1 + (currentOvershoot * 0.025); // Max 1.025
+
+      // FOCUS PRIORITY: center card brightness/clarity filter
+      const isCenter = i === centerIdx;
+      const brightness = isCenter ? 1.02 : 0.98;
+      const contrast = isCenter ? 1.01 : 0.99;
 
       el.style.left   = `${slot.left}vw`;
       el.style.top    = `${slot.top}vh`;
@@ -255,6 +287,8 @@ export default function Banner() {
       el.style.zIndex = String(slot.z);
       el.style.opacity = String(opacity);
       el.style.clipPath = `inset(${clipInset}% 0% ${clipInset}% 0%)`;
+      el.style.transform = `scale(${overshootScale})`;
+      el.style.filter = `brightness(${brightness}) contrast(${contrast})`;
 
       const posAbs = Math.abs(posOffset);
       const isNearCenter = posAbs < 0.4;
@@ -262,19 +296,16 @@ export default function Banner() {
 
       const titleEl = titleRefs.current[i];
       if (titleEl) {
-        // Smoother reveal calculation with eased curve
         const rawReveal = 1 - (posAbs - 0.35) / 0.55;
         const clampedReveal = clamp(0, 1, rawReveal);
-        // Apply smoothstep easing for buttery animation
         const titleReveal = clampedReveal * clampedReveal * (3 - 2 * clampedReveal);
-        const translateY = (1 - titleReveal) * 60; // Reduced from 110% for subtler motion
+        const translateY = (1 - titleReveal) * 60;
         titleEl.style.opacity = String(titleReveal);
         titleEl.style.transform = `translateY(${translateY}%)`;
       }
 
       const desc = descRefs.current[i];
       if (desc) {
-        // Smooth eased opacity for description
         const rawDescOpacity = 1 - posAbs * 2.2;
         const clampedDesc = clamp(0, 1, rawDescOpacity);
         const descOpacity = clampedDesc * clampedDesc * (3 - 2 * clampedDesc);

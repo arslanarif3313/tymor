@@ -2,7 +2,7 @@
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 
 // ==========================================
@@ -43,16 +43,10 @@ function UnderlinedLink({
 }
 
 // ==========================================
-// SPLIT TEXT ANIMATION WITH AUTO WAVE
+// SPLIT TEXT ANIMATION - SINGLE ENTRANCE
 // ==========================================
 function SplitText({ text, delay = 0 }: { text: string; delay?: number }) {
   const characters = text.split("");
-  const [hasAnimated, setHasAnimated] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setHasAnimated(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <strong className="inline-block group cursor-default">
@@ -60,37 +54,20 @@ function SplitText({ text, delay = 0 }: { text: string; delay?: number }) {
         <motion.span
           key={i}
           className="inline-block relative"
-          initial={{ y: 60, opacity: 0, rotateX: -90 }}
-          whileInView={{ y: 0, opacity: 1, rotateX: 0 }}
+          initial={{ y: 40, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
           viewport={{ once: true }}
           transition={{
-            delay: i * 0.05 + delay,
-            duration: 0.6,
-            ease: [0.22, 1, 0.36, 1],
+            delay: i * 0.04 + delay,
+            duration: 0.5,
+            ease: [0.23, 1, 0.32, 1],
           }}
-          animate={hasAnimated ? {
-            scale: [1, 1.1, 1],
-            y: [0, -4, 0],
-            color: ["rgb(240, 199, 19)", "#fff", "rgb(240, 199, 19)"],
-            textShadow: [
-              "0 0 0px rgba(240, 199, 19, 0)",
-              "0 0 30px rgba(240, 199, 19, 0.8)",
-              "0 0 0px rgba(240, 199, 19, 0)"
-            ],
-            transition: {
-              delay: i * 0.08 + delay,
-              duration: 1.2,
-              ease: [0.16, 1, 0.3, 1]
-            }
-          } : {}}
           whileHover={{
-            scale: 1.15,
-            y: -5,
+            scale: 1.05,
+            y: -2,
             color: "#fff",
-            textShadow: "0 0 40px rgba(240, 199, 19, 1), 0 0 80px rgba(240, 199, 19, 0.5)",
-            transition: { duration: 1, ease: [0.16, 1, 0.3, 1] }
+            transition: { duration: 0.3, ease: [0.23, 1, 0.32, 1] }
           }}
-          style={{ transformStyle: "preserve-3d" }}
         >
           {char === " " ? "\u00A0" : char}
         </motion.span>
@@ -100,14 +77,14 @@ function SplitText({ text, delay = 0 }: { text: string; delay?: number }) {
 }
 
 // ==========================================
-// ROTATING SMILEY CANVAS
+// ROTATING SMILEY CANVAS - SMOOTH TRACKING
 // ==========================================
 function SmileyCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const targetRotation = useMotionValue(0);
 
-  // Smooth rotation spring
-  const rotation = useSpring(targetRotation, { stiffness: 150, damping: 25 });
+  // Smoother rotation with increased damping and reduced stiffness
+  const rotation = useSpring(targetRotation, { stiffness: 80, damping: 35, mass: 1.2 });
 
   // Track previous angle for continuous rotation
   const prevAngleRef = useRef<number | null>(null);
@@ -127,13 +104,14 @@ function SmileyCanvas() {
       if (prevAngleRef.current === null) {
         prevAngleRef.current = degrees;
       } else {
-        // Calculate delta and update target
+        // Calculate delta with reduced sensitivity (0.4x multiplier)
         let delta = degrees - prevAngleRef.current;
         // Handle wrap-around
         if (delta > 180) delta -= 360;
         if (delta < -180) delta += 360;
 
-        const newRotation = targetRotation.get() + delta;
+        // Apply reduced sensitivity for smoother, less reactive movement
+        const newRotation = targetRotation.get() + (delta * 0.4);
         targetRotation.set(newRotation);
         prevAngleRef.current = degrees;
       }
@@ -323,7 +301,7 @@ export function FooterV2() {
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
         />
 
         {/* Navigation */}
