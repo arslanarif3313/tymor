@@ -33,22 +33,6 @@ const FooterLadderBall3D = dynamic(() => import("./FooterLadderBall3D"), {
   ),
 });
 
-const HoloboxHumanPresence = dynamic(() => import("./HoloboxHumanPresence"), {
-  ssr: false,
-  loading: () => (
-    <div
-      className="holobox-human-fallback"
-      style={{
-        position: "absolute",
-        inset: 0,
-        background: "rgba(250, 100, 0, 0.1)",
-        height: "var(--footer-ladder-ball, 118px)",
-      }}
-      aria-hidden
-    />
-  ),
-});
-
 export type RailGeom = {
   y: number;
   xLeft: number;
@@ -917,16 +901,10 @@ function FooterCreativeCtaBase({
   const [followAnchor, setFollowAnchor] = useState<CursorAnchor | null>(null);
   const [followVisible, setFollowVisible] = useState(false);
   const [animationStarted, setAnimationStarted] = useState(false);
-  const [humanPresenceActive, setHumanPresenceActive] = useState(false);
-
   const handlePathComplete = useCallback((anchor: CursorAnchor) => {
     setFollowAnchor(anchor);
     setPathDone(true);
     setFollowVisible(true);
-    // Activate human presence after ball completes
-    setTimeout(() => {
-      setHumanPresenceActive(true);
-    }, 600);
   }, []);
 
   const measure = useCallback(() => {
@@ -1217,17 +1195,6 @@ function FooterCreativeCtaBase({
 
         </div>
       </div>
-      
-      {/* Human Presence - Premium holographic experience */}
-      <HoloboxHumanPresence
-        isActive={humanPresenceActive}
-        variant={variant}
-        backgroundVariant={backgroundVariant}
-        reducedMotion={reduceMo}
-        onPresenceComplete={() => {
-          // Optional: callback when presence sequence completes
-        }}
-      />
       
       {/* Magnetic button - follows cursor within container */}
       {followVisible && followAnchor && geom && (

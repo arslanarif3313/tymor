@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 // Premium cubic-bezier easing: smooth, elegant deceleration
@@ -55,12 +56,13 @@ const navItems = [
   { href: "#project", label: "Project" },
   { href: "#industry", label: "AI By Industry" },
   { href: "#blog", label: "Blog" },
-  { href: "#holobox", label: "Holobox" },
+  { href: "/holobox", label: "Holobox" },
   { href: "#contact", label: "Contact" },
 ];
 
-export default function Navbar() {
+export default function Navbar({ glassmorphic = false, darkMode = false }: { glassmorphic?: boolean; darkMode?: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <motion.nav
@@ -68,8 +70,24 @@ export default function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: premiumEase }}
+      style={
+        glassmorphic
+          ? {
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1000,
+              background: darkMode ? "rgba(0, 0, 0, 0.3)" : "rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              borderBottom: darkMode ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(255, 255, 255, 0.2)",
+              boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+            }
+          : undefined
+      }
     >
-      <div className="container">
+      <div className="container d-flex align-items-center justify-content-between">
         {/* Logo with subtle entrance */}
         <motion.div
           initial={{ opacity: 0, x: -10 }}
@@ -87,13 +105,79 @@ export default function Navbar() {
           </Link>
         </motion.div>
 
-        {/* Hamburger with smooth animation */}
+        {/* Navigation items - in the MIDDLE between logo and CTA */}
+        <motion.div 
+          className="d-none d-lg-flex align-items-center gap-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.2, ease: premiumEase }}
+        >
+          {navItems.map((item, index) => {
+            const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
+            return (
+              <motion.div
+                key={item.href}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: 0.15 + index * 0.05,
+                  ease: premiumEase,
+                }}
+              >
+                <Link 
+                  href={item.href} 
+                  className="nav-link"
+                  style={isActive ? {
+                    background: "rgba(249, 101, 1, 0.15)",
+                    padding: "6px 12px",
+                    borderRadius: "20px",
+                    color: "#f96501 !important",
+                  } : undefined}
+                >
+                  <motion.span
+                    className="nav-link-inner"
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.2, ease: premiumEase }}
+                    style={{ display: "inline-block" }}
+                  >
+                    {item.label}
+                    {isActive && (
+                      <span 
+                        style={{
+                          display: "block",
+                          width: "100%",
+                          height: "2px",
+                          background: "#f96501",
+                          marginTop: "2px",
+                          borderRadius: "1px",
+                        }}
+                      />
+                    )}
+                  </motion.span>
+                </Link>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        {/* CTA with magnetic effect - on the RIGHT */}
+        <motion.div
+          className="d-none d-lg-block"
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.4, ease: premiumEase }}
+        >
+          <MagneticButton className="nav-cta">
+            Get Started
+          </MagneticButton>
+        </motion.div>
+
+        {/* Hamburger - visible on mobile only */}
         <motion.button
-          className={`navbar-toggler ${isMenuOpen ? "active" : ""}`}
+          className={`navbar-toggler d-lg-none ${isMenuOpen ? "active" : ""}`}
           type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.2, ease: premiumEase }}
@@ -113,59 +197,43 @@ export default function Navbar() {
           />
         </motion.button>
 
-        {/* Navigation with staggered entrance */}
-        <div className={`collapse navbar-collapse justify-content-end ${isMenuOpen ? "show" : ""}`} id="navbarNav">
-          <ul className="navbar-nav align-items-lg-center">
-            {navItems.map((item, index) => (
-              <motion.li
-                key={item.href}
-                className="nav-item"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.4,
-                  delay: 0.15 + index * 0.05,
-                  ease: premiumEase,
-                }}
-              >
+        {/* Mobile menu dropdown */}
+        {isMenuOpen && (
+          <motion.div 
+            className="position-absolute top-100 start-0 end-0 d-lg-none"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            transition={{ duration: 0.3, ease: premiumEase }}
+            style={{ 
+              zIndex: 1000,
+              background: glassmorphic 
+                ? (darkMode ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.15)")
+                : "#212529",
+              backdropFilter: glassmorphic ? "blur(20px)" : undefined,
+              WebkitBackdropFilter: glassmorphic ? "blur(20px)" : undefined,
+            }}
+          >
+            <div className="container py-3">
+              {navItems.map((item) => (
                 <Link
+                  key={item.href}
                   href={item.href}
-                  className="nav-link"
-                  onClick={() => isMenuOpen && setIsMenuOpen(false)}
+                  className="d-block py-2 nav-link"
+                  onClick={() => setIsMenuOpen(false)}
                 >
-                  <motion.span
-                    className="nav-link-inner"
-                    whileHover={{ y: -2 }}
-                    transition={{ duration: 0.2, ease: premiumEase }}
-                  >
-                    {item.label}
-                  </motion.span>
+                  {item.label}
                 </Link>
-              </motion.li>
-            ))}
-            <li className="nav-item d-lg-none">
+              ))}
               <Link
-                className="nav-link nav-cta"
                 href="#contact"
+                className="d-block py-2 nav-link nav-cta"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Get Started
               </Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* CTA with magnetic effect */}
-        <motion.div
-          className="d-none d-lg-block"
-          initial={{ opacity: 0, x: 10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.4, ease: premiumEase }}
-        >
-          <MagneticButton className="nav-cta">
-            Get Started
-          </MagneticButton>
-        </motion.div>
+            </div>
+          </motion.div>
+        )}
       </div>
     </motion.nav>
   );
