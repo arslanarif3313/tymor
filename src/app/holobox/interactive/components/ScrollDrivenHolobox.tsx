@@ -30,41 +30,61 @@ function useStageProgress(
 }
 
 // ==========================================
-// POST-PRESENCE LIGHT RAYS
+// POST-PRESENCE LIGHT RAYS - Energy release
 // ==========================================
 function PostPresenceRays({ progress }: { progress: MotionValue<number> }) {
   const rayCount = 6;
   const rays = Array.from({ length: rayCount }, (_, i) => ({
     id: i,
     angle: (i * 360) / rayCount,
-    delay: i * 0.1,
+    delay: i * 0.15,
   }));
 
-  const opacity = useTransform(progress, [0, 0.5], [0, 0.6]);
-  const scale = useTransform(progress, [0, 1], [0.5, 1.2]);
+  // Rays appear at 90-100% scroll
+  const opacity = useSpring(
+    useTransform(progress, [0, 0.3, 0.7, 1], [0, 0.6, 0.6, 0]),
+    { stiffness: 60, damping: 25 }
+  );
+
+  const scale = useSpring(
+    useTransform(progress, [0, 0.5, 1], [0.8, 1.2, 1.3]),
+    { stiffness: 60, damping: 25 }
+  );
+
+  const rotation = useSpring(
+    useTransform(progress, [0, 1], [-2, 2]),
+    { stiffness: 40, damping: 30 }
+  );
 
   return (
     <motion.div
       className="absolute inset-0 pointer-events-none"
-      style={{ opacity, scale }}
+      style={{
+        opacity,
+        scale,
+        rotate: rotation,
+        transformOrigin: "center center",
+      }}
     >
       {rays.map((ray) => (
         <motion.div
           key={ray.id}
-          className="absolute top-1/2 left-1/2 w-px h-32 origin-top"
+          className="absolute top-1/2 left-1/2 w-px h-40 origin-bottom"
           style={{
-            background: `linear-gradient(180deg,
-              rgba(249, 101, 1, 0.8) 0%,
-              rgba(249, 101, 1, 0) 100%)`,
-            transform: `rotate(${ray.angle}deg) translateX(-50%)`,
-            transformOrigin: "top center",
+            background: `linear-gradient(0deg,
+              rgba(249, 101, 1, 0.9) 0%,
+              rgba(249, 101, 1, 0.4) 50%,
+              transparent 100%)`,
+            transform: `rotate(${ray.angle}deg) translateY(-50%)`,
+            transformOrigin: "bottom center",
+            bottom: "50%",
           }}
           animate={{
-            opacity: [0.3, 0.8, 0.3],
-            scaleY: [1, 1.3, 1],
+            opacity: [0.4, 1, 0.4],
+            scaleY: [1, 1.4, 1],
           }}
           transition={{
-            duration: 2 + ray.delay,
+            duration: 3 + ray.delay,
             repeat: Infinity,
             ease: "easeInOut",
             delay: ray.delay,
@@ -76,7 +96,7 @@ function PostPresenceRays({ progress }: { progress: MotionValue<number> }) {
 }
 
 // ==========================================
-// HOLOGRAM COMPONENT with IMAGES
+// HOLOGRAM COMPONENT - Materialization effect
 // ==========================================
 function Hologram({
   emergenceProgress,
@@ -87,51 +107,103 @@ function Hologram({
   presenceProgress: MotionValue<number>;
   postPresenceProgress: MotionValue<number>;
 }) {
-  // Spring for overall hologram appearance
-  const springOpacity = useSpring(
-    useTransform(emergenceProgress, [0, 0.3], [0, 1]),
-    { stiffness: 40, damping: 20 }
+  // Non-linear opacity curve for natural emergence [0, 0.2, 1]
+  const hologramOpacity = useSpring(
+    useTransform(emergenceProgress, [0, 0.3, 0.6], [0, 0.2, 1]),
+    { stiffness: 60, damping: 25 }
   );
 
-  const springScale = useSpring(
-    useTransform(emergenceProgress, [0, 0.5], [0.9, 1]),
-    { stiffness: 60, damping: 20 }
+  // Materialization: starts back and deep, moves forward
+  const depthZ = useSpring(
+    useTransform(emergenceProgress, [0, 0.5], [-50, 0]),
+    { stiffness: 60, damping: 25 }
   );
 
-  // Post-presence: float upward based on scroll
-  const floatY = useTransform(postPresenceProgress, [0, 1], [0, -30]);
+  // Vertical rise from bottom
+  const riseY = useSpring(
+    useTransform(emergenceProgress, [0, 0.5], [20, 0]),
+    { stiffness: 60, damping: 25 }
+  );
 
-  // Image crossfade: HoloboxBlur (emergence) → MyPic (presence)
-  // emergence 0-1 = blur image fades in
-  // presence 0-1 = blur fades out, MyPic fades in
+  // Scale with materialization feel
+  const hologramScale = useSpring(
+    useTransform(emergenceProgress, [0, 0.5], [0.92, 1]),
+    { stiffness: 60, damping: 25 }
+  );
+
+  // Blur clears as hologram forms
+  const hologramBlur = useSpring(
+    useTransform(emergenceProgress, [0, 0.4], [8, 0]),
+    { stiffness: 60, damping: 25 }
+  );
+
+  // IMPACT MOMENT: at ~65% scroll (emergence 0.25)
+  const impactScale = useSpring(
+    useTransform(emergenceProgress, [0, 0.25, 0.5], [1, 1.04, 1]),
+    { stiffness: 80, damping: 15 }
+  );
+
+  const impactBrightness = useSpring(
+    useTransform(emergenceProgress, [0, 0.25, 0.5], [1, 1.2, 1]),
+    { stiffness: 80, damping: 15 }
+  );
+
+  const impactFlash = useSpring(
+    useTransform(emergenceProgress, [0, 0.2, 0.35, 0.5], [0, 0.15, 0.08, 0]),
+    { stiffness: 100, damping: 20 }
+  );
+
+  // Imperfect breathing - organic, non-uniform
+  const breathingY = useTransform(postPresenceProgress, [0, 0.25, 0.5, 0.75, 1], [0, -1.5, -0.5, -2, 0]);
+  const breathingScale = useTransform(postPresenceProgress, [0, 0.25, 0.5, 0.75, 1], [1, 1.005, 1.01, 1.006, 1]);
+
+  // Image crossfade with refined timing
   const blurImageOpacity = useTransform(
     emergenceProgress,
-    [0, 0.5, 0.8, 1],
-    [0, 1, 1, 0]
+    [0, 0.4, 0.7, 1],
+    [0, 1, 0.8, 0]
   );
 
   const myPicOpacity = useTransform(
     presenceProgress,
-    [0, 0.3, 0.6],
-    [0, 0, 1]
+    [0, 0.2, 0.5],
+    [0, 0.3, 1]
   );
 
   return (
     <motion.div
       className="absolute inset-0 flex items-center justify-center"
       style={{
-        opacity: springOpacity,
-        scale: springScale,
-        y: floatY,
+        opacity: hologramOpacity,
+        scale: hologramScale,
+        y: riseY,
+        z: depthZ,
+        transformPerspective: 1000,
       }}
     >
-      {/* Image container */}
-      <div className="relative w-[70%] h-[75%]">
-        {/* HoloboxBlur image - shown during emergence, fades out during presence */}
+      {/* Impact flash overlay */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none z-20"
+        style={{
+          opacity: impactFlash,
+          background: "radial-gradient(circle at center, rgba(249, 101, 1, 0.3) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* Image container with impact scale */}
+      <motion.div
+        className="relative w-[70%] h-[75%]"
+        style={{
+          scale: impactScale,
+          filter: useTransform(impactBrightness, (v) => `brightness(${v})`),
+        }}
+      >
+        {/* HoloboxBlur - emergence phase with blur clearing */}
         <motion.div
           className="absolute inset-0"
           style={{
             opacity: blurImageOpacity,
+            filter: useTransform(hologramBlur, (v) => `blur(${v}px)`),
           }}
         >
           <div className="relative w-full h-full flex items-center justify-center">
@@ -140,25 +212,19 @@ function Hologram({
               alt="Emerging hologram"
               className="max-w-full max-h-full object-contain"
               style={{
-                filter: "drop-shadow(0 0 30px rgba(249, 101, 1, 0.5))",
-              }}
-            />
-            {/* Glow overlay for blur image */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background: "radial-gradient(ellipse at center, rgba(249, 101, 1, 0.2) 0%, transparent 70%)",
-                mixBlendMode: "screen",
+                filter: "drop-shadow(0 0 20px rgba(249, 101, 1, 0.4))",
               }}
             />
           </div>
         </motion.div>
 
-        {/* MyPic image - shown during presence */}
+        {/* MyPic - presence phase with imperfect breathing */}
         <motion.div
           className="absolute inset-0"
           style={{
             opacity: myPicOpacity,
+            y: breathingY,
+            scale: breathingScale,
           }}
         >
           <div className="relative w-full h-full flex items-center justify-center">
@@ -167,137 +233,123 @@ function Hologram({
               alt="Hologram presence"
               className="max-w-full max-h-full object-contain"
               style={{
-                filter: "drop-shadow(0 0 40px rgba(249, 101, 1, 0.6))",
+                filter: "drop-shadow(0 0 30px rgba(249, 101, 1, 0.5))",
               }}
             />
-            {/* Hologram scanline effect overlay */}
+            {/* Organic glow pulse - imperfect timing */}
             <motion.div
               className="absolute inset-0 pointer-events-none"
               style={{
-                background: `repeating-linear-gradient(
-                  0deg,
-                  transparent,
-                  transparent 2px,
-                  rgba(249, 101, 1, 0.1) 2px,
-                  rgba(249, 101, 1, 0.1) 4px
-                )`,
-                mixBlendMode: "overlay",
+                background: "radial-gradient(ellipse at center, rgba(249, 101, 1, 0.25) 0%, transparent 50%)",
               }}
               animate={{
-                backgroundPosition: ["0px 0px", "0px 10px"],
+                opacity: [0.3, 0.55, 0.35, 0.6, 0.3],
+                scale: [1, 1.03, 1.01, 1.04, 1],
               }}
               transition={{
-                duration: 0.5,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-            />
-            {/* Glow pulse */}
-            <motion.div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background: "radial-gradient(ellipse at center, rgba(249, 101, 1, 0.3) 0%, transparent 60%)",
-                mixBlendMode: "screen",
-              }}
-              animate={{
-                opacity: [0.4, 0.7, 0.4],
-              }}
-              transition={{
-                duration: 3,
+                duration: 5.2,
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
             />
           </div>
         </motion.div>
-
-        {/* Scanline effect */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 3px,
-              rgba(249, 101, 1, 0.05) 3px,
-              rgba(249, 101, 1, 0.05) 6px
-            )`,
-          }}
-        />
-
-        {/* Subtle flicker at emergence start */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: [0, 0.3, 0, 0.2, 0],
-          }}
-          transition={{
-            duration: 0.5,
-            delay: 0,
-            repeat: 0,
-          }}
-          style={{
-            background: "rgba(249, 101, 1, 0.3)",
-          }}
-        />
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
 
 // ==========================================
-// ENERGY PARTICLES
+// ENERGY PARTICLES - Converging to center
 // ==========================================
 function EnergyParticles({
   energyProgress,
+  emergenceProgress,
 }: {
   energyProgress: MotionValue<number>;
+  emergenceProgress: MotionValue<number>;
 }) {
   const particles = useMemo(
     () =>
       Array.from({ length: 12 }, (_, i) => ({
         id: i,
-        x: 20 + ((i * 37) % 60), // Deterministic pseudo-random
-        delay: ((i * 13) % 5) * 0.1, // 0.0 to 0.4
-        duration: 2 + ((i * 7) % 20) * 0.1, // 2.0 to 3.9
+        // Start from edges, converge to center
+        startX: 10 + ((i * 23) % 80), // 10-90% spread
+        endX: 50, // converge to center (50%)
+        delay: ((i * 13) % 5) * 0.1,
+        duration: 2 + ((i * 7) % 20) * 0.1,
       })),
     []
   );
 
-  const opacity = useTransform(energyProgress, [0, 0.3, 0.8, 1], [0, 0.6, 0.8, 0]);
+  // Particles peak at ~50%, fade during emergence
+  const particleIntensity = useSpring(
+    useTransform(energyProgress, [0, 0.5, 0.8, 1], [0, 1, 0.6, 0]),
+    { stiffness: 60, damping: 25 }
+  );
 
   return (
     <motion.div
       className="absolute inset-0 overflow-hidden"
-      style={{ opacity }}
+      style={{ opacity: particleIntensity }}
     >
       {particles.map((particle) => (
-        <motion.div
+        <ConvergingParticle
           key={particle.id}
-          className="absolute w-0.5 h-10 rounded-full"
-          style={{
-            left: `${particle.x}%`,
-            bottom: "-40px",
-            background: `linear-gradient(180deg,
-              transparent 0%,
-              rgba(249, 101, 1, 0.8) 50%,
-              transparent 100%)`,
-            filter: "blur(1px)",
-          }}
-          animate={{
-            y: [-200, -400],
-            opacity: [0, 1, 0],
-          }}
-          transition={{
-            duration: particle.duration,
-            delay: particle.delay,
-            repeat: Infinity,
-            ease: "linear",
-          }}
+          particle={particle}
+          energyProgress={energyProgress}
+          emergenceProgress={emergenceProgress}
         />
       ))}
     </motion.div>
+  );
+}
+
+// Individual particle that converges toward center
+function ConvergingParticle({
+  particle,
+  energyProgress,
+  emergenceProgress,
+}: {
+  particle: { id: number; startX: number; endX: number; delay: number; duration: number };
+  energyProgress: MotionValue<number>;
+  emergenceProgress: MotionValue<number>;
+}) {
+  // During 40-60%: particles converge to center and slow down
+  const x = useTransform(
+    energyProgress,
+    [0.5, 1],
+    [`${particle.startX}%`, "50%"]
+  );
+
+  // Fade out during emergence
+  const opacity = useTransform(emergenceProgress, [0, 0.3], [1, 0]);
+
+  return (
+    <motion.div
+      className="absolute w-0.5 h-12 rounded-full"
+      style={{
+        x,
+        bottom: "-40px",
+        opacity,
+        background: `linear-gradient(180deg,
+          transparent 0%,
+          rgba(249, 101, 1, 0.9) 50%,
+          transparent 100%)`,
+        filter: "blur(1px)",
+        transformOrigin: "bottom center",
+      }}
+      animate={{
+        y: [-100, -350],
+        opacity: [0, 1, 0.5, 0],
+      }}
+      transition={{
+        duration: particle.duration * 1.5,
+        delay: particle.delay,
+        repeat: Infinity,
+        ease: [0.23, 1, 0.32, 1], // PREMIUM_EASE
+      }}
+    />
   );
 }
 
@@ -311,6 +363,7 @@ function HoloboxFrame({
   emergenceProgress,
   presenceProgress,
   postPresenceProgress,
+  scrollProgress,
   mouseRotateX,
   mouseRotateY,
 }: {
@@ -320,10 +373,11 @@ function HoloboxFrame({
   emergenceProgress: MotionValue<number>;
   presenceProgress: MotionValue<number>;
   postPresenceProgress: MotionValue<number>;
+  scrollProgress: MotionValue<number>;
   mouseRotateX: MotionValue<number>;
   mouseRotateY: MotionValue<number>;
 }) {
-  // Compose all animation values
+  // Compose all animation values with spring smoothing
   const breathingScale = useTransform(
     idleProgress,
     [0, 1],
@@ -355,17 +409,53 @@ function HoloboxFrame({
     [0.3, 0.9]
   );
 
+  // Brightness hierarchy across stages
+  const stageBrightness = useSpring(
+    useTransform(
+      scrollProgress,
+      [0, 0.2, 0.4, 0.6, 0.8, 1],
+      [0.9, 1.0, 1.1, 1.2, 1.05, 1.0]
+    ),
+    { stiffness: 60, damping: 25 }
+  );
+
+  // Subtle camera depth based on scroll
+  const cameraRotateX = useSpring(
+    useTransform(scrollProgress, [0, 1], [1, -1]),
+    { stiffness: 40, damping: 30 }
+  );
+  const cameraRotateY = useSpring(
+    useTransform(scrollProgress, [0, 1], [-0.5, 0.5]),
+    { stiffness: 40, damping: 30 }
+  );
+
   // Spring-smoothed mouse rotation
   const springRotateX = useSpring(mouseRotateX, { stiffness: 80, damping: 20 });
   const springRotateY = useSpring(mouseRotateY, { stiffness: 80, damping: 20 });
+
+  // Combine camera and mouse rotation
+  const totalRotateX = useTransform(
+    [cameraRotateX, springRotateX],
+    ([cam, mouse]) => (cam as number) + (mouse as number)
+  );
+  const totalRotateY = useTransform(
+    [cameraRotateY, springRotateY],
+    ([cam, mouse]) => (cam as number) + (mouse as number)
+  );
+
+  // Internal light depth - radial gradient from bottom center
+  const internalLightOpacity = useSpring(
+    useTransform(energyProgress, [0, 0.5, 1], [0, 0.4, 0.2]),
+    { stiffness: 60, damping: 25 }
+  );
 
   return (
     <motion.div
       className="relative w-full h-full"
       style={{
         scale: breathingScale,
-        rotateX: springRotateX,
-        rotateY: springRotateY,
+        rotateX: totalRotateX,
+        rotateY: totalRotateY,
         transformStyle: "preserve-3d",
         perspective: "1000px",
       }}
@@ -391,13 +481,23 @@ function HoloboxFrame({
       />
 
       {/* Inner dark chamber - ENERGY: strong inner glow */}
-      <div
+      <motion.div
         className="absolute inset-2 rounded overflow-hidden"
         style={{
           background: "linear-gradient(180deg, #0a0a0a 0%, #111 100%)",
           boxShadow: energyInnerGlow as unknown as string,
+          filter: useTransform(stageBrightness, (v) => `brightness(${v})`),
         }}
       >
+        {/* Internal light depth - radial gradient from bottom center */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(circle at 50% 100%, rgba(249, 101, 1, 0.5) 0%, transparent 60%)",
+            opacity: internalLightOpacity,
+          }}
+        />
+
         {/* ACTIVATION: Subtle pulsing bottom glow */}
         <motion.div
           className="absolute bottom-0 left-0 right-0 h-1/3 pointer-events-none"
@@ -427,8 +527,8 @@ function HoloboxFrame({
           }}
         />
 
-        {/* Energy particles */}
-        <EnergyParticles energyProgress={energyProgress} />
+        {/* Energy particles - converge toward center */}
+        <EnergyParticles energyProgress={energyProgress} emergenceProgress={emergenceProgress} />
 
         {/* Hologram */}
         <Hologram emergenceProgress={emergenceProgress} presenceProgress={presenceProgress} postPresenceProgress={postPresenceProgress} />
@@ -447,7 +547,7 @@ function HoloboxFrame({
               rgba(255, 255, 255, 0.02) 100%)`,
           }}
         />
-      </div>
+      </motion.div>
 
       {/* Corner accents */}
       <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-[rgba(249,101,1,0.5)]" />
@@ -533,6 +633,7 @@ export default function ScrollDrivenHolobox({
         emergenceProgress={emergenceProgress}
         presenceProgress={presenceProgress}
         postPresenceProgress={postPresenceProgress}
+        scrollProgress={scrollProgress}
         mouseRotateX={mouseRotateX}
         mouseRotateY={mouseRotateY}
       />
