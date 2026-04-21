@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "@/app/sections/Navbar";
-import Footer from "@/app/sections/Footer";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const CINEMATIC_EASE: [number, number, number, number] = [0.6, 0.01, 0.15, 0.99];
 
